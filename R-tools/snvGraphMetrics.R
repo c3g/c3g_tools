@@ -33,10 +33,6 @@ outputBaseName=args[2]
 ## changeRate.tsv
 ##
 
-## Count by genomic region
-## 
-## Quality
-##   * change it as a cumulative sum
 ## 
 ## Coverage
 ##   * change it as a cumulative sum and bin the coverage value
@@ -168,7 +164,6 @@ dev.off()
 
 ## Count by genomic region
 ## 
-
 countByRegion=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[7],listFiles)],sep="\n",what='character')),",")
 regionOrder=c("UPSTREAM","UTR_5_PRIME","SPLICE_SITE_ACCEPTOR","EXON","SPLICE_SITE_DONOR","INTRON","UTR_3_PRIME","DOWNSTREAM","INTERGENIC")
 regionName=c("Up","5'","Splicing acceptor","Exon","Splicing donor","intron","3'","Down","Intergenic")
@@ -184,10 +179,33 @@ write.table(countTableF,paste(outputBaseName,"CountRegions.csv",sep="."),sep="\t
 jpeg(paste(outputBaseName,"CountRegions.jpeg",sep="."),800,800)
 par(las=2)
 par(oma=c(10,4,4,1))
-barplot(as.numeric(countTable),names.arg=regionName,col=rainbow(length(countTable)),main="Total number of variant by region type")
+barplot(as.numeric(countTable[orderR]),names.arg=regionName,col=rainbow(length(countTable)),main="Total number of variant by region type")
 dev.off()
 pdf(paste(outputBaseName,"CountRegions.pdf",sep="."),title="Total number of variant by region type",paper='special')
 par(las=2)
 par(oma=c(10,4,4,1))
-barplot(as.numeric(countTable),names.arg=regionName,col=rainbow(length(countTable)),main="Total number of variant by region type")
+barplot(as.numeric(countTable[orderR]),names.arg=regionName,col=rainbow(length(countTable)),main="Total number of variant by region type")
+dev.off()
+
+## Quality
+##   * change it as a cumulative
+quality=t(read.table(listFiles[grep(fileExtensionRetained[8],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+jpeg(paste(outputBaseName,"SNVQuality.jpeg",sep="."),800,800)
+par(las=2)
+par(mar=c(7,7,7,7))
+plot(-1000,-10000, xlim=c(0,1000), ylim=c(0,100),main="Variant count by quality",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+for (i in seq(0,100,by=10)) {
+	abline(h=i,col='grey',lty=3)
+}
+points(as.numeric(rownames(quality)),cumsum(quality)/sum(quality)*100,type='l',cex=2)
+points(as.numeric(rownames(quality)),quality/sum(quality)*100,type='l',lty=2,col=2,cex=2)
+axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+axis(1,at=seq(0,1000,by=50),labels=seq(0,1000,by=50))
+Map(function(x,y,z) 
+  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+  seq(0,100,by=10),
+  rep(2,11),
+  as.character(round(seq(0,sum(quality),length=11)))
+)
+axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
 dev.off()
