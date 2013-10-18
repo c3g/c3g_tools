@@ -33,14 +33,6 @@ outputBaseName=args[2]
 ## changeRate.tsv
 ##
 
-## 
-## Coverage
-##   * change it as a cumulative sum and bin the coverage value
-## 
-## 
-## InDel lengths
-##   * barplot
-## 
 ## Base changes
 ##   * 3d barplot
 ## 
@@ -135,7 +127,6 @@ write.table(effectFTable,paste(outputBaseName,"EffectsFunctionalClass.csv",sep="
 ##     CODON_DELETION
 ##     CODON_INSERTION
 ## 
-
 countByEffect=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[6],listFiles)],sep="\n",what='character')),",")
 removeINDEL=c("CODON_CHANGE_PLUS_CODON_DELETION","CODON_CHANGE_PLUS_CODON_INSERTION","CODON_DELETION","CODON_INSERTION")
 countTable=NULL
@@ -158,8 +149,6 @@ par(las=2)
 par(oma=c(10,4,4,1))
 barplot(as.numeric(countTable),names.arg=countName,col=rainbow(length(countTable)),main="Total number of variant by effect type")
 dev.off()
-
-
 
 
 ## Count by genomic region
@@ -190,6 +179,7 @@ dev.off()
 ## Quality
 ##   * change it as a cumulative
 quality=t(read.table(listFiles[grep(fileExtensionRetained[8],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+write.table(t(quality),paste(outputBaseName,"SNVQuality.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
 jpeg(paste(outputBaseName,"SNVQuality.jpeg",sep="."),800,800)
 par(las=2)
 par(mar=c(7,7,7,7))
@@ -197,15 +187,118 @@ plot(-1000,-10000, xlim=c(0,1000), ylim=c(0,100),main="Variant count by quality"
 for (i in seq(0,100,by=10)) {
 	abline(h=i,col='grey',lty=3)
 }
-points(as.numeric(rownames(quality)),cumsum(quality)/sum(quality)*100,type='l',cex=2)
-points(as.numeric(rownames(quality)),quality/sum(quality)*100,type='l',lty=2,col=2,cex=2)
+points(as.numeric(rownames(quality)),cumsum(quality)/sum(quality)*100,type='b',cex=2,pch="*")
+points(as.numeric(rownames(quality)),quality/(max(quality)*1.2)*100,type='b',lty=2,col=2,cex=2,pch="*")
 axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
 axis(1,at=seq(0,1000,by=50),labels=seq(0,1000,by=50))
 Map(function(x,y,z) 
   axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
   seq(0,100,by=10),
   rep(2,11),
-  as.character(round(seq(0,sum(quality),length=11)))
+  as.character(round(seq(0,max(quality)*1.2,length=11)))
 )
+par(las=0)
 axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+mtext(side = 4, line = 5, "Variant count",col=2)
+dev.off()
+pdf(paste(outputBaseName,"SNVQuality.pdf",sep="."),title="Variant count by quality",paper='special')
+par(las=2)
+par(mar=c(7,7,7,7))
+plot(-1000,-10000, xlim=c(0,1000), ylim=c(0,100),main="Variant count by quality",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+for (i in seq(0,100,by=10)) {
+	abline(h=i,col='grey',lty=3)
+}
+points(as.numeric(rownames(quality)),cumsum(quality)/sum(quality)*100,type='b',cex=2,pch="*")
+points(as.numeric(rownames(quality)),quality/max(quality)*1.2*100,type='b',lty=2,col=2,cex=2,pch="*")
+axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+axis(1,at=seq(0,1000,by=50),labels=seq(0,1000,by=50))
+Map(function(x,y,z) 
+  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+  seq(0,100,by=10),
+  rep(2,11),
+  as.character(round(seq(0,max(quality)*1.2,length=11)))
+)
+par(las=0)
+axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+mtext(side = 4, line = 5, "Variant count",col=2)
+dev.off()
+
+## Coverage
+##   * change it as a cumulative sum and bin the coverage value
+coverage=t(read.table(listFiles[grep(fileExtensionRetained[9],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+write.table(t(coverage),paste(outputBaseName,"SNVQuality.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
+jpeg(paste(outputBaseName,"SNVCoverage.jpeg",sep="."),800,800)
+par(las=2)
+par(mar=c(7,7,7,7))
+plot(-1000,-10000, xlim=c(0,10000), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+for (i in seq(0,100,by=10)) {
+	abline(h=i,col='grey',lty=3)
+}
+points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
+points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
+axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+axis(1,at=seq(0,10000,by=500),labels=seq(0,10000,by=500))
+Map(function(x,y,z) 
+  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+  seq(0,100,by=10),
+  rep(2,11),
+  as.character(round(seq(0,max(coverage)*1.2,length=11)))
+)
+par(las=0)
+axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+mtext(side = 4, line = 5, "Variant count",col=2)
+dev.off()
+pdf(paste(outputBaseName,"SNVCoverage.pdf",sep="."),title="Variant count by coverage",paper='special')
+par(las=2)
+par(mar=c(7,7,7,7))
+plot(-1000,-10000, xlim=c(0,10000), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+for (i in seq(0,100,by=10)) {
+	abline(h=i,col='grey',lty=3)
+}
+points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
+points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
+axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+axis(1,at=seq(0,10000,by=500),labels=seq(0,10000,by=500))
+Map(function(x,y,z) 
+  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+  seq(0,100,by=10),
+  rep(2,11),
+  as.character(round(seq(0,max(coverage)*1.2,length=11)))
+)
+par(las=0)
+axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+mtext(side = 4, line = 5, "Variant count",col=2)
+dev.off()
+
+## InDel lengths
+##   * barplot
+indelL=t(read.table(listFiles[grep(fileExtensionRetained[10],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+write.table(t(indelL),paste(outputBaseName,"IndelLength.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
+jpeg(paste(outputBaseName,"IndelLength.jpeg",sep="."),800,800)
+par(las=2)
+par(mar=c(7,7,7,7))
+ba=barplot(t(indelL),axes=F,axisnames =F,main="INDEL count distribution based on their length")
+axis(1,at=round(seq(min(ba),max(ba),length=10)),labels=round(seq(min(as.numeric(rownames(indelL))),max(as.numeric(rownames(indelL))),length=10)))
+axis(2)
+par(las=0)
+mtext(side = 1, line = 5, "INDEL length")
+mtext(side = 2, line = 5, "Count")
+dev.off()
+pdf(paste(outputBaseName,"IndelLength.pdf",sep="."),title="INDEL count distribution based on their length",paper='special')
+par(las=2)
+par(mar=c(7,7,7,7))
+ba=barplot(t(indelL),axes=F,axisnames =F,main="INDEL count distribution based on their length")
+axis(1,at=round(seq(min(ba),max(ba),length=10)),labels=round(seq(min(as.numeric(rownames(indelL))),max(as.numeric(rownames(indelL))),length=10)))
+axis(2)
+par(las=0)
+mtext(side = 1, line = 5, "INDEL length")
+mtext(side = 2, line = 5, "Count")
+dev.off()
+
+## Base changes
+##   * 3d barplot
+## 
+baseCh=t(read.table(listFiles[grep(fileExtensionRetained[11],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+jpeg(paste(outputBaseName,"BaseChange.jpeg",sep="."),800,800)
+barplot(baseCh,beside=T,col=rainbow(4),legend.text=paste("->",colnames(baseCh),sep=""))
 dev.off()
