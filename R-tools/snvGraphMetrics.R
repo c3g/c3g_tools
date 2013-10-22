@@ -8,6 +8,7 @@ library(pheatmap)
 args=commandArgs(TRUE)
 listFiles=scan(args[1],sep="\n",what='character')
 outputBaseName=args[2]
+listFileOutBasename=NULL
 
 ## what extension should be included in the listFiles
 ## Summary.table.csv
@@ -32,22 +33,6 @@ outputBaseName=args[2]
 ## Chromosome.change.table.csv
 ## changeRate.tsv
 ##
-
-## Base changes
-##   * 3d barplot
-## 
-## Ts/Tv : All variants
-## Ts/Tv : Known variants
-##   * pull the 2 rate together and plot them by samnple as barplot
-## 
-## Codon change table
-##   * 3d barplot
-## 
-## Amino acid change table
-##   * barplot
-## 
-## Chromosome change table
-##   * supllementary figures in a zip
 
 fileExtensionRetained=c("Summary.table.csv","TsTv.summary.csv","changeRate.tsv","Effects.by.impact.csv","Effects.by.functional.class.csv","Count.by.effects.csv","Count.by.genomic.region.csv","Quality.csv","Coverage.csv","InDel.lengths.csv","Base.changes.csv","TsTv.All.variants.csv","TsTv.Known.variants.csv","Codon.change.table.csv","Amino.acid.change.table.csv","Chromosome.change.table.csv")
 
@@ -75,6 +60,7 @@ for ( i in 1:length(sumTs)) {
 }
 colnames(summaryTable)=c("Summary_stats","Value")
 write.table(t(summaryTable),paste(outputBaseName,"SummaryTable.tsv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"SummaryTable",sep="."))
 
 ## change rate
 ##   * graphs
@@ -88,13 +74,13 @@ cnCh=order(rownames(chR)[cnpos[is.na(cn)]])
 cnChV=chR[is.na(cn),]
 chR.ord=rbind(cnNuV[cnNu,],cnChV[cnCh,])
 jpeg(paste(outputBaseName,"changeRate.jpeg",sep="."),800,800)
-pheatmap(t(as.matrix(chR.ord)),cluster_cols =F,cluster_rows =F,main="Change rate by sample and by chromosome",fontsize_row=6,fontsize_col=10)
+pheatmap(t(as.matrix(chR.ord)),cluster_cols =F,cluster_rows =F,main="Change rate by sample and by chromosome",fontsize_row=6,fontsize_col=10,display_numbers=T,number_format="%d",fontsize_number=10)
 dev.off()
 pdf(paste(outputBaseName,"changeRate.pdf",sep="."),title="Change rate by sample and by chromosome",pointsize=5,paper='special')
-pheatmap(t(as.matrix(chR.ord)),cluster_cols =F,cluster_rows =F,main="Change rate by sample and by chromosome",fontsize_row=3,fontsize_col=8)
+pheatmap(t(as.matrix(chR.ord)),cluster_cols =F,cluster_rows =F,main="Change rate by sample and by chromosome",fontsize_row=3,fontsize_col=8,display_numbers=T,number_format="%d",fontsize_number=7)
 dev.off()
 write.table(t(as.matrix(chR.ord)),paste(outputBaseName,"changeRate.tsv",sep="."),quote=F,row.names=T,col.names=T,sep="\t")
-
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"changeRate",sep="."))
 
 ## Effects by impact
 ## 
@@ -107,6 +93,7 @@ for (i in 2:length(effectIlist)){
 }
 effectITable=rbind(nameEffect,effectITable)
 write.table(effectITable,paste(outputBaseName,"EffectsImpact.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"EffectsImpact",sep="."))
 
 ## Effects by functional class
 ## 
@@ -118,7 +105,8 @@ for (i in 2:length(effectFlist)){
 	nameEffect=c(nameEffect,effectFlist[[i]][1])
 }
 effectFTable=rbind(nameEffect,effectFTable)
-write.table(effectFTable,paste(outputBaseName,"EffectsFunctionalClass.csv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
+write.table(effectFTable,paste(outputBaseName,"EffectsFunctionalClass.tsv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"EffectsFunctionalClass",sep="."))
 
 ## Count by effects
 ##  * deleting:
@@ -138,7 +126,7 @@ for (i in 2:length(countByEffect)){
 	}
 }
 countTableF=rbind(countName,countTable)
-write.table(countTableF,paste(outputBaseName,"CountEffects.csv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
+write.table(countTableF,paste(outputBaseName,"CountEffects.tsv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
 jpeg(paste(outputBaseName,"CountEffects.jpeg",sep="."),800,800)
 par(las=2)
 par(oma=c(10,4,4,1))
@@ -149,7 +137,7 @@ par(las=2)
 par(oma=c(10,4,4,1))
 barplot(as.numeric(countTable),names.arg=countName,col=rainbow(length(countTable)),main="Total number of variant by effect type")
 dev.off()
-
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"CountEffects",sep="."))
 
 ## Count by genomic region
 ## 
@@ -164,7 +152,7 @@ for (i in 2:length(countByRegion)){
 }
 orderR=match(regionOrder,countName)
 countTableF=rbind(countName[orderR],countTable[orderR])
-write.table(countTableF,paste(outputBaseName,"CountRegions.csv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
+write.table(countTableF,paste(outputBaseName,"CountRegions.tsv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
 jpeg(paste(outputBaseName,"CountRegions.jpeg",sep="."),800,800)
 par(las=2)
 par(oma=c(10,4,4,1))
@@ -175,6 +163,7 @@ par(las=2)
 par(oma=c(10,4,4,1))
 barplot(as.numeric(countTable[orderR]),names.arg=regionName,col=rainbow(length(countTable)),main="Total number of variant by region type")
 dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"CountRegions",sep="."))
 
 ## Quality
 ##   * change it as a cumulative
@@ -222,6 +211,7 @@ par(las=0)
 axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
 mtext(side = 4, line = 5, "Variant count",col=2)
 dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"SNVQuality",sep="."))
 
 ## Coverage
 ##   * change it as a cumulative sum and bin the coverage value
@@ -269,6 +259,7 @@ par(las=0)
 axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
 mtext(side = 4, line = 5, "Variant count",col=2)
 dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"SNVCoverage",sep="."))
 
 ## InDel lengths
 ##   * barplot
@@ -294,11 +285,127 @@ par(las=0)
 mtext(side = 1, line = 5, "INDEL length")
 mtext(side = 2, line = 5, "Count")
 dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"IndelLength",sep="."))
 
 ## Base changes
 ##   * 3d barplot
 ## 
 baseCh=t(read.table(listFiles[grep(fileExtensionRetained[11],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+write.table(baseCh,paste(outputBaseName,"BaseChange.tsv",sep="."),sep="\t",col.names=T,row.names=T,quote=F)
+colnames(baseCh)=paste("->",colnames(baseCh),sep="")
 jpeg(paste(outputBaseName,"BaseChange.jpeg",sep="."),800,800)
-barplot(baseCh,beside=T,col=rainbow(4),legend.text=paste("->",colnames(baseCh),sep=""))
+barplot(baseCh,beside=T,col=rainbow(4),legend.text=paste("->",colnames(baseCh),sep=""),main="Base Change count",ylim=c(0,round((max(baseCh)*1.2)/100000)*100000),ylab="Count")
 dev.off()
+pdf(paste(outputBaseName,"BaseChange.pdf",sep="."),title="Base Change count",paper='special')
+barplot(baseCh,beside=T,col=rainbow(4),legend.text=paste("->",colnames(baseCh),sep=""),main="Base Change count",ylim=c(0,round((max(baseCh)*1.2)/100000)*100000),ylab="Count")
+dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"BaseChange",sep="."))
+
+## Ts/Tv : All variants
+## Ts/Tv : Known variants
+##   * pull the 2 rate together and plot them by samnple as barplot
+## 
+tsTvA=t(read.table(listFiles[grep(fileExtensionRetained[12],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+colnames(tsTvA)=paste("All_Variant",colnames(tsTvA),sep="_")
+tsTvK=t(read.table(listFiles[grep(fileExtensionRetained[13],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+colnames(tsTvK)=paste("Known_Variant",colnames(tsTvK),sep="_")
+tsTv=cbind(tsTvA,tsTvK)
+write.table(baseCh,paste(outputBaseName,"TsTv.tsv",sep="."),sep="\t",col.names=T,row.names=T,quote=F)
+jpeg(paste(outputBaseName,"TsTv.jpeg",sep="."),dim(tsTv)[1]*12,800)
+par(las=2)
+par(mar=c(15,3,3,1))
+barplot(t(tsTv[,c(3,6)]),beside=T,col=rainbow(2),legend.text=colnames(tsTv)[c(3,6)],ylim=c(0,max(tsTv[,c(3,6)])*1.2),main="Transition-Transversion rate By sample")
+dev.off()
+pdf(paste(outputBaseName,"tsTV.pdf",sep="."),title="Transition-Transversion rate By sample",width=(dim(tsTv)[1]*12)/72,height=800/72,paper='special')
+par(las=2)
+par(mar=c(15,3,3,1))
+barplot(t(tsTv[,c(3,6)]),beside=T,col=rainbow(2),legend.text=colnames(tsTv)[c(3,6)],ylim=c(0,max(tsTv[,c(3,6)])*1.2),main="Transition-Transversion rate By sample")
+dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"TsTv",sep="."))
+
+## Codon change table
+##   * 3d barplot
+## 
+codonChLi=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[14],listFiles)],sep="\n",what='character',skip=1)),",")
+codonCh=NULL
+codonChRN=NULL
+for (i in 2:length(codonChLi)) {
+	codonCh=rbind(codonCh,as.numeric(codonChLi[[i]][-1]))
+	codonChRN=c(codonChRN,codonChLi[[i]][1])
+}
+colnames(codonCh)=paste(paste("->",codonChLi[[1]][-1],sep="")," ")
+rownames(codonCh)=paste(codonChRN," ")
+write.table(codonCh,paste(outputBaseName,"codonChange.tsv",sep="."),sep="\t",col.names=T,row.names=T,quote=F)
+jpeg(paste(outputBaseName,"codonChange.jpeg",sep="."),800,800)
+par(mar=c(15,1,7,15))
+pheatmap(codonCh[-1,-1],cluster_cols =F,cluster_rows =F,fontsize_row=11,fontsize_col=11,show_rownames=T,show_colnames=T,main="Codon change table",display_numbers=T,number_format="%d",fontsize_number=10)
+dev.off()
+pdf(paste(outputBaseName,"codonChange.pdf",sep="."),title="Coddon change Table",paper='special')
+par(mar=c(15,1,7,15))
+pheatmap(codonCh[-1,-1],cluster_cols =F,cluster_rows =F,fontsize_row=8,fontsize_col=8,show_rownames=T,show_colnames=T,main="Codon change table",display_numbers=T,number_format="%d",fontsize_number=7)
+dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"codonChange",sep="."))
+
+## Amino acid change table
+##   * barplot
+## 
+aaChLi=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[15],listFiles)],sep="\n",what='character')),",")
+aaCh=NULL
+aaChRN=NULL
+for (i in 2:length(aaChLi)) {
+	aaCh=rbind(aaCh,as.numeric(aaChLi[[i]][-1]))
+	aaChRN=c(aaChRN,aaChLi[[i]][1])
+}
+colnames(aaCh)=paste(paste("->",aaChLi[[1]][-1],sep="")," ")
+colnames(aaCh)[match("*",colnames(aaCh))]="+"
+rownames(aaCh)=paste(aaChRN," ")
+rownames(aaCh)[match("*",rownames(aaCh))]="+"
+write.table(aaCh,paste(outputBaseName,"AminoAcidChange.tsv",sep="."),sep="\t",col.names=T,row.names=T,quote=F)
+jpeg(paste(outputBaseName,"AminoAcidChange.jpeg",sep="."),800,800)
+par(mar=c(15,1,7,15))
+pheatmap(aaCh[-1*(1:3),-1*(1:3)],cluster_cols =F,cluster_rows =F,fontsize_row=11,fontsize_col=11,show_rownames=T,show_colnames=T,main="Amino acid change table",display_numbers=T,number_format="%d",fontsize_number=10)
+dev.off()
+pdf(paste(outputBaseName,"AminoAcidChange.pdf",sep="."),title="Amino acid change Table",paper='special')
+par(mar=c(15,1,7,15))
+pheatmap(aaCh[-1*(1:3),-1*(1:3)],cluster_cols =F,cluster_rows =F,fontsize_row=8,fontsize_col=8,show_rownames=T,show_colnames=T,main="Amino acid change table",display_numbers=T,number_format="%d",fontsize_number=7)
+dev.off()
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"AminoAcidChange",sep="."))
+ 
+## Chromosome change table
+##   * supllementary figures in a zip
+chChgLi=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[16],listFiles)],sep="\n",what='character')),",")
+chChg=list()
+cp=0
+maxB=0
+for (i in 2:length(chChgLi)) {
+	if (chChgLi[[i]][2] == "Count") {
+		cp=cp+1
+		chChg[[cp]]=as.numeric(chChgLi[[i]][-1*(1:2)])
+		names(chChg[[cp]])=as.numeric(chChgLi[[i-1]][-1*(1:2)])
+		names(chChg)[cp]=chChgLi[[i]][1]
+		if ((length(chChgLi[[i]])-2) > maxB) {
+			maxB=length(chChgLi[[i]])-2
+		}
+	}
+}
+cn=as.numeric(gsub("M","25",gsub("Y","24",gsub("X","23",gsub("chr","",names(chChg))))))
+cnpos=1:length(cn)
+cnNu=order(cn[cnpos[!(is.na(cn))]])
+cnNuV=names(chChg)[!(is.na(cn))]
+cnCh=order(names(chChg)[cnpos[is.na(cn)]])
+cnChV=names(chChg)[is.na(cn)]
+chR.ord=c(cnNuV[cnNu],cnChV[cnCh])
+pdf(paste(outputBaseName,"chromosomeChange.pdf",sep="."),title="Chromosme change Table",paper='special',onefile=T)
+chChgT=matrix(rep("-",maxB*length(chR.ord)),ncol=maxB)
+for (i in 1:length(chR.ord)) {
+	pos=match(chR.ord[i],names(chChg))
+	chChgT[pos,1:length(chChg[[pos]])]=as.numeric(chChg[[pos]])
+	plot(chChg[[pos]],type="l",col=2,main=paste("Number of variant change by Mb - chromosom",chR.ord[i]),xlab="position (Mb)",ylab="Change count / Mb")
+}
+rownames(chChgT)=chR.ord
+colnames(chChgT)=paste("Mb_",as.character(1:maxB),sep="")
+dev.off()
+write.table(aaCh,paste(outputBaseName,"chromosomeChange.tsv",sep="."),sep="\t",col.names=T,row.names=T,quote=F)
+zip(zipfile=paste(outputBaseName,"chromosomeChange.zip"),file=c(paste(outputBaseName,"chromosomeChange.pdf",sep="."),paste(outputBaseName,"chromosomeChange.tsv",sep=".")))
+listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"chromosomeChange",sep="."))
+write.table(as.data.frame(listFileOutBasename),paste(outputBaseName,"snvGraphMetrics_listFiles.txt",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
