@@ -159,7 +159,7 @@ if (type == "wholeGenome") {
 	}
 }
 ## get CCDS coverage metrics
-listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[5],"$",sep=""),recursive=T))
+listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[4],"$",sep=""),recursive=T))
 nameSample=strsplit(basename(listFile),".",fixed=T)
 if (sampleNum == length(listFile)) {
 	sampleNum=length(listFile)
