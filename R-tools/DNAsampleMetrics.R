@@ -10,9 +10,9 @@ type=args[3]
 name=NULL
 align=NULL
 duplicate=NULL
-paternFile=c(".flagstat",".insert_size_metrics",".all.coverage.sample_summary",".CCDS.coverage.sample_summary")
+paternFile=c(".flagstat$",".insert_size_metrics$",".all.coverage.sample_summary$",".CCDS.coverage.sample_summary$")
 ## get flagstat metrics
-listFile=file.path(fileDir,list.files(fileDir,pattern=paternFile[1],recursive=T))
+listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[1],"$",sep=""),recursive=T))
 sampleNum=length(listFile)
 nameSample=strsplit(basename(listFile),".",fixed=T)
 for(i in 1:length(listFile)) {
@@ -41,7 +41,7 @@ ccdsbase75=rep("NA",sampleNum)
 ccdsbase100=rep("NA",sampleNum)
 ccdsbase500=rep("NA",sampleNum)
 ## get insert size metrics
-listFile=file.path(fileDir,list.files(fileDir,pattern=paternFile[2],recursive=T))
+listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[2],"$",sep=""),recursive=T))
 nameSample=strsplit(basename(listFile),".",fixed=T)
 if (sampleNum == length(listFile)) {
 	sampleNum=length(listFile)
@@ -102,7 +102,7 @@ if (sampleNum == length(listFile)) {
 
 ## get WG coverage metrics
 if (type == "wholeGenome") {
-	listFile=file.path(fileDir,list.files(fileDir,pattern=paternFile[3],recursive=T))
+	listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[3],"$",sep=""),recursive=T))
 	nameSample=strsplit(basename(listFile),".",fixed=T)
 	if (sampleNum == length(listFile)) {
 		sampleNum=length(listFile)
@@ -159,7 +159,7 @@ if (type == "wholeGenome") {
 	}
 }
 ## get CCDS coverage metrics
-listFile=file.path(fileDir,list.files(fileDir,pattern=paternFile[4],recursive=T))
+listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[4],"$",sep=""),recursive=T))
 nameSample=strsplit(basename(listFile),".",fixed=T)
 if (sampleNum == length(listFile)) {
 	sampleNum=length(listFile)
