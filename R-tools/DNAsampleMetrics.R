@@ -10,7 +10,7 @@ type=args[3]
 name=NULL
 align=NULL
 duplicate=NULL
-paternFile=c(".flagstat",".insert_size_metrics",".all.coverage.sample_summary",".CCDS.coverage.sample_summary")
+paternFile=c(".flagstat$",".insert_size_metrics$",".all.coverage.sample_summary$",".CCDS.coverage.sample_summary$")
 ## get flagstat metrics
 listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[1],"$",sep=""),recursive=T))
 sampleNum=length(listFile)
