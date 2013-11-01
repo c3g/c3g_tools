@@ -102,11 +102,11 @@ sub createLinks {
     my $file1;
     my $file2;
     if($runType eq "SINGLE_END") {
-      $file1 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'qualOffset'}.".single.fastq.gz";  
+      $file1 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'libraryBarcode'}.'.'.$rH_Sample->{'qualOffset'}.".single.fastq.gz";  
     }
     elsif($runType eq "PAIRED_END") {
-      $file1 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'qualOffset'}.".pair1.fastq.gz";
-      $file2 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'qualOffset'}.".pair2.fastq.gz";
+      $file1 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'libraryBarcode'}.'.'.$rH_Sample->{'qualOffset'}.".pair1.fastq.gz";
+      $file2 = $directory.'/'.$rH_Sample->{'name'}.'.'.$rH_Sample->{'libraryBarcode'}.'.'.$rH_Sample->{'qualOffset'}.".pair2.fastq.gz";
     }  
 
     if($runType eq "PAIRED_END") {
