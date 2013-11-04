@@ -54,7 +54,7 @@ count_order_real=d$count[match(rownames(top_TMM$table), rownames(d$count)),]
 colnames(count_order_real)=paste(colnames(count_order_real),"raw",sep=".")
 id=rownames(top_TMM$table)
 geneN=genSymbol[names(genSymbol) %in% id]
-colnames(top_TMM$table)=c("gene_symbol", "log_conc","log_fc", "edger.p-value","edger.adj.p-value")
+colnames(top_TMM$table)=c("gene_symbol", "log_FC","log_CPM", "edger.p-value","edger.adj.p-value")
 top_TMM$table[,2:3]=round(top_TMM$table[,2:3], digits=3)
 top_TMM$table[,4]=as.numeric(format(top_TMM$table[,4], digits=2))
 top_TMM$table[,5]=as.numeric(format(top_TMM$table[,5], digits=2))
