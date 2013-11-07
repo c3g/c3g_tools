@@ -31,6 +31,7 @@ use warnings;
 #-----------------------
 use POSIX qw(strftime);
 use File::Basename;
+use File::Spec;
 
 # Check and assign the parameters
 $ARGV[0] or die "Usage: perl " . basename($0) . " <job_log_list_file>\n";
@@ -50,6 +51,8 @@ sub readJobLogListFile {
   # Read the global list of log files
   open(JOB_LOG_LIST_FILE, $jobLogListPath) or die "Cannot open $jobLogListPath\n";
   while(my $line = <JOB_LOG_LIST_FILE>) {
+    chomp($line);
+
     # Retrieve each job's log file path
     my ($jobId, $jobName, $jobDependencies, $clusterJobLogPath) = split(/\t/, $line);
 
@@ -59,9 +62,17 @@ sub readJobLogListFile {
       $jobLog{'jobId'} = $jobId;
       $jobLog{'jobName'} = $jobName;
       $jobLog{'jobDependencies'} = $jobDependencies;
-      $jobLog{'path'} = $clusterJobLogPath;
+
+      # In old job log list version, cluster job log path was absolute. Now it is relative to job log list directory (useful if project directory has been moved or renamed).
+      my $clusterJobLogFullPath = File::Spec->rel2abs(dirname($jobLogListPath)) . "/" . $clusterJobLogPath;
+      unless (-e $clusterJobLogFullPath) {
+        # Assume cluster job log path is absolute (old version)
+        $clusterJobLogFullPath = $clusterJobLogPath;
+      }
+      $jobLog{'path'} = $clusterJobLogFullPath;
+
       # Read the job log file
-      if (open(CLUSTER_JOB_LOG_FILE, $clusterJobLogPath)) {
+      if (open(CLUSTER_JOB_LOG_FILE, $clusterJobLogFullPath)) {
         while(my $jobLine = <CLUSTER_JOB_LOG_FILE>) {
           # Job start date
           if($jobLine =~ /^Begin PBS Prologue (.*) (\d+)$/) {
