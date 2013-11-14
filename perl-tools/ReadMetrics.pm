@@ -53,13 +53,13 @@ sub parseFlagstats{
   while(my $line = <FLAGSTATS>) {
     chomp($line);
     if($line =~ /^([0-9]+) \+ [0-9]+ in total/) {
-       $nbQCPassedReads = $1+0;
+       $nbQCPassedReads = $1;
     }
     elsif($line =~ /^([0-9]+) \+ [0-9]+ duplicates/) {
-      $nbDuplicateReads += $1;
+      $nbDuplicateReads = $1;
     }
     elsif($line =~ /^([0-9]+) \+ [0-9]+ mapped/) {
-      $nbAlignedReads += $1;
+      $nbAlignedReads = $1;
     }
   }
   $stats{$sampleName}=[$nbQCPassedReads, $nbAlignedReads, $nbDuplicateReads];
@@ -187,6 +187,10 @@ sub mergeStats{
   my $rHoA_alignmentStats  = shift;
   my $printHeader          = shift;
   
+  # Print a header by default
+  if (!defined($printHeader) ){
+    $printHeader=1;
+  }
   # Open an output file
   open(OUTFILE, ">".$outputFile) or die "ERROR : Unable to open". $outputFile;
   
