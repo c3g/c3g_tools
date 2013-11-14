@@ -19,7 +19,7 @@ for(i in 2:ncol(designs[1,])) {
 
 		# TSS categories stats
 		postscript(paste("graphs/", designName, "_Misc_Graphs.ps", sep=""), paper="letter", horizontal=T)
-		par(mfrow=c(2,2))
+		par(mfrow=c(2,2), cex.main=0.6)
 		fileDir=file.path(output_dir,"annotation")
 		listFile=file.path(fileDir,list.files(fileDir,pattern=paste(designName,".tss.stats.csv","$",sep=""),recursive=T))
 		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","),sep=" "))
@@ -35,7 +35,7 @@ for(i in 2:ncol(designs[1,])) {
         pct <- round(slices/sum(slices)*100)
         lbls <- paste(lbls, "(",pct, sep="") # add percents to labels
         lbls <- paste(lbls,"%)",sep="") # ad % to labels 
-        pie(slices,labels=lbls, main=paste("Location analysis of binding sites\ndesign ", designName, " ,group ", designGroup, sep=""))
+        pie(slices,labels=lbls, main=paste("Location analysis of binding sites\ndesign ", designName, "\ngroup ", designGroup, sep=""))
       }
       # Exon intron stats
       exons<-paste(prefix, ".exon.stats.csv",sep="")
@@ -46,7 +46,7 @@ for(i in 2:ncol(designs[1,])) {
       else {
         d1<-read.table(exons, header=F, sep=",", check.names=F)
       }
-      hist(d1[,1], breaks=length(levels(as.factor(d1[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within exons\ndesign ", designName, "\n"," ,group ", designGroup, sep=""), xlab="Exon", ylab="Number of peaks")
+      hist(d1[,1], breaks=length(levels(as.factor(d1[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within exons\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Exon", ylab="Number of peaks")
       introns=paste(prefix, ".intron.stats.csv",sep="")
       print(paste("NOTICE: processing annotation intron stats files: ", paste(introns, collapse=","),sep=" "))
       if(file.info(introns)$size == 0) {
@@ -55,13 +55,13 @@ for(i in 2:ncol(designs[1,])) {
       else {
         d2<-read.table(introns, header=F, sep=",", check.names=F)
       } 
-      hist(d2[,1], breaks=length(levels(as.factor(d2[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within introns\ndesign ", designName, "\n"," ,group ", designGroup, sep=""), xlab="Intron", ylab="Number of peaks")
+      hist(d2[,1], breaks=length(levels(as.factor(d2[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within introns\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Intron", ylab="Number of peaks")
       # Distance to TSS
       distance=paste(prefix, ".tss.distance.csv",sep="")
       print(paste("NOTICE: processing annotation distance to tss stats files: ", paste(distance, collapse=","),sep=" "))      
       d1<-read.table(distance, header=F, sep=",", check.names=F)
       d1<-subset(d1, d1[,1] > -10000 & d1[,1] < 10000)
-      hist(d1[,1], breaks=seq(-10000,10000,1000), main=paste("Distribution of peak distances relative to TSS\ndesign ", designName, "\n","group ", designGroup, sep=""), xlab="Distance to TSS (bp)", ylab="Number of peaks")
+      hist(d1[,1], breaks=seq(-10000,10000,1000), main=paste("Distribution of peak distances relative to TSS\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Distance to TSS (bp)", ylab="Number of peaks")
     }        
 		dev.off()
 	}
