@@ -129,16 +129,19 @@ def main():
 				else :
 					region[chr]={}
 					for i in samples:
+						region[chr][i]=0
 						if record.genotype(i)['GT'] != "0/0" :
-							region[chr][i]=1
-						else :
-							region[chr][i]=0
+							region[chr][i]=region[chr][i]+1
 	out=open(outB,'w')
 	out.write("Contig\t"+"\t".join(region[region.keys()[0]].keys())+"\n")
 	for i in region.keys() :
 		clen=vcf_reader.contigs[i][1]
 		for j in region[i].keys():
-			region[i][j]=str(int(round(clen/region[i][j])))
+			if region[i][j] == 0:
+				print str(i) + " : " + str(j)
+				region[i][j]="0"
+			else:
+				region[i][j]=str(int(round(clen/int(region[i][j]))))
 		out.write(i+"\t"+"\t".join(region[i].values())+"\n")
 	out.close()
 	f=open(fil,'a')
