@@ -18,6 +18,11 @@ sub printUsage {
     print "\t--nolinks               Don't create raw_reads directory or symlinks\n";
     print "\t--projectId     <INT>   Nanuq project id from which to get the sample sheet\n";
     print "\t--help                  This help\n";
+    print "\n";
+    print "\tThe 'nanuqAuthFile' contains your nanuq username and password.\n";
+    print "\tThe easiest was to generate it is with the command:\n";
+    print "\t".'echo -n "user=<USERNAME>&password=<PASSWD>" > $HOME/.nanuqAuth.txt ; chmod u+r,go-rwx $HOME/.nanuqAuth.txt'."\n";
+    print "\tThe '-n' is important because there cannot be a Carriage Return, EOL at the end of the line\n";
     exit(0);
 }
 
