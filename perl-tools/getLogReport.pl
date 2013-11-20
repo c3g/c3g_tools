@@ -203,7 +203,7 @@ sub timeToSeconds {
   if ($time =~ /^(\d+):(\d\d):(\d\d)/) {
     return $1 * 60 ** 2 + $2 * 60 + $3;
   } else {
-    die "N/A";
+    return "N/A";
   }
 }
 
