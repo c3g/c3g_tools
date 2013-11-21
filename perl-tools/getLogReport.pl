@@ -169,7 +169,7 @@ sub getLogTextReport {
     "CPU_REAL_TIME_RATIO",
     "PHYSICAL_MEM",
     "VIRTUAL_MEM",
-    "VIRTUAL_PHYSICAL_MEM_RATIO",
+    "EXTRA_VIRTUAL_MEM_PCT",
     "PATH"
   )) . "\n";
 
@@ -185,10 +185,10 @@ sub getLogTextReport {
       exists $jobLog->{'startSecondsSinceEpoch'} ? strftime('%FT%T', localtime($jobLog->{'startSecondsSinceEpoch'})) : "N/A",
       exists $jobLog->{'endSecondsSinceEpoch'} ? strftime('%FT%T', localtime($jobLog->{'endSecondsSinceEpoch'})) : "N/A",
       exists $jobLog->{'cput'} ? $jobLog->{'cput'} . " (" . formatDuration(timeToSeconds($jobLog->{'cput'})) . ")" : "N/A",
-      (exists $jobLog->{'walltime'} and exists $jobLog->{'cput'}) ? sprintf("%.2f", timeToSeconds($jobLog->{'cput'}) / timeToSeconds($jobLog->{'walltime'})) : "N/A",
-      exists $jobLog->{'mem'} ? $jobLog->{'mem'} . " (" . sprintf("%.1f", kiBToGiB($jobLog->{'mem'})) . " GiB)" : "N/A",
-      exists $jobLog->{'vmem'} ? $jobLog->{'vmem'} . " (" . sprintf("%.1f", kiBToGiB($jobLog->{'vmem'})) . " GiB)" : "N/A",
-      (exists $jobLog->{'vmem'} and exists $jobLog->{'mem'}) ? sprintf("%.2f", kiBToGiB($jobLog->{'vmem'}) / kiBToGiB($jobLog->{'mem'})) : "N/A",
+      (exists $jobLog->{'walltime'} and exists $jobLog->{'cput'} and timeToSeconds($jobLog->{'walltime'}) != 0) ? sprintf("%.2f", timeToSeconds($jobLog->{'cput'}) / timeToSeconds($jobLog->{'walltime'})) : "N/A",
+      exists $jobLog->{'mem'} ? sprintf("%.1f", kiBToGiB($jobLog->{'mem'})) . " GiB" : "N/A",
+      exists $jobLog->{'vmem'} ? sprintf("%.1f", kiBToGiB($jobLog->{'vmem'})) . " GiB" : "N/A",
+      (exists $jobLog->{'vmem'} and exists $jobLog->{'mem'} and kiBToGiB($jobLog->{'mem'}) != 0) ? sprintf("%.1f", (kiBToGiB($jobLog->{'vmem'}) / kiBToGiB($jobLog->{'mem'}) - 1) * 100) . " %" : "N/A",
       exists $jobLog->{'path'} ? $jobLog->{'path'} : "N/A"
     )) . "\n";
   }
