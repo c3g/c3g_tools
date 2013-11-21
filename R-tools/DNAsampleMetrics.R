@@ -95,7 +95,7 @@ if (sampleNum == length(listFile)) {
 			ccdsbase50=c(ccdsbase50,"NA")
 			ccdsbase75=c(ccdsbase75,"NA")
 			ccdsbase100=c(ccdsbase100,"NA")
-			ccdsbase500=c(ccdsbase500,"NA")
+			ccdsbase500=c(ccdsbase500,"NA")	
 		}
 	}
 }
@@ -165,7 +165,7 @@ if (sampleNum == length(listFile)) {
 	sampleNum=length(listFile)
 	for(i in 1:length(listFile)) {
 		nameLoc=match(nameSample[[i]][1],name)
-		stats=scan(file=listFile[i],what="character",sep="\n")
+		stats=scan(file=listFile[i],what="character",sep="\n", skip=1)	#JT: Skip header, because some samples's name can match header fields...
 		statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
 		statsValue=strsplit(statsLigne,"\t",fixed=T)
 		ccdsMeanCov[nameLoc]=statsValue[[1]][3]
@@ -223,5 +223,5 @@ if (sampleNum == length(listFile)) {
 	}
 }
 finalTable=cbind(name,align,duplicate,pairOrient,medianInsS,meanInsS,averageDev,standD,wgMeanCov,wgbase10,wgbase25,wgbase50,wgbase75,wgbase100,wgbase500,ccdsMeanCov,ccdsbase10,ccdsbase25,ccdsbase50,ccdsbase75,ccdsbase100,ccdsbase500)
-colnames(finalTable)=c("SampleName","Aligned","Duplicates","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","WG Mean Coverage","WG %_bases_above_10","WG %_bases_above_25","WG %_bases_above_50","WG %_bases_above_75","WG %_bases_above_100","WG %_bases_above_500","CCDS Mean Coverage","CCDS %_bases_above_10","CCDS %_bases_above_25","CCDS %_bases_above_50","CCDS %_bases_above_75","CCDS %_bases_above_100","CCDS %_bases_above_500")
+#colnames(finalTable)=c("SampleName","Aligned","Duplicates","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","WG Mean Coverage","WG %_bases_above_10","WG %_bases_above_25","WG %_bases_above_50","WG %_bases_above_75","WG %_bases_above_100","WG %_bases_above_500","CCDS Mean Coverage","CCDS %_bases_above_10","CCDS %_bases_above_25","CCDS %_bases_above_50","CCDS %_bases_above_75","CCDS %_bases_above_100","CCDS %_bases_above_500")
 write.table(finalTable,file=outputFile,sep="\t",row.names=F,col.names=T,quote=F)
