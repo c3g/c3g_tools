@@ -4,7 +4,7 @@ use strict;
 use warnings;
 
 use Getopt::Long;
-use List::Util qw(sum);
+use List::Util qw( sum min max);
 use File::Slurp;
 
 my $usage=<<'ENDHERE';
@@ -130,39 +130,88 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	#my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
 	my $readsStats = $filteredSummary;
 
+	my $totalReads = 0;
+	my $passedReads = 0;
+	my $failedReads = 0;
+	my @readLength;
+	my @passedReads;
+
 	open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
 	while(<IN>){
 		chomp;
-		
-		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
-			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+		next if($. == 1);
+		my @row = split(/,/, $_);
+		my $readLength = $row[4];					
+		push(@row, $readLength);
+		if($row[5] == 1){
+			$passedReads++;
+			push(@passedReads, $readLength);
 		}
-		if($_ =~ m/name=\"(Post-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
-			print OUT "\"$1 (bp)\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Pre-Filter Polymerase Reads)\" value=\"(\d+)\"/){
-			print OUT "\"$1\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Post-Filter Polymerase Reads)\" value=\"(\d+)\"/){
-			print OUT "\"$1\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
-			print OUT "\"$1 (bp)\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Post-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
-			print OUT "\"$1 (bp)\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
-			print OUT "\"$1\"\t\"$2\"\n";
-		}
-		if($_ =~ m/name=\"(Post-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
-			print OUT "\"$1\"\t\"$2\"\n";
-		}
+		$failedReads++ if($row[5] == 0);
+		$totalReads++;
+		push(@readLength, $readLength);
 	}
+		
+	my $shortestRead = min(@passedReads);
+	my $longestRead = max(@passedReads);
+	my $averageReadLength = sum(@readLength)/@readLength;
+	my $averageReadLengthQCpassed = sum(@passedReads)/@passedReads;
+	
+	$averageReadLength = int $averageReadLength;
+	$averageReadLengthQCpassed = int $averageReadLengthQCpassed;
+
+	print OUT "\"Number of SMRT cells\"\t\"".$smrtCells."\"\n";
+	print OUT "\"Total subreads\"\t\"".$totalReads."\"\n";
+	print OUT "\"Subreads that passed QC\"\t\"".$passedReads."\"\n";
+	print OUT "\"Subreads that failed QC\"\t\"".$failedReads."\"\n";
+	print OUT "\"Average subread length\"\t\"".$averageReadLength."\"\n";
+	print OUT "\"Average subread length that passed QC\"\t\"".$averageReadLengthQCpassed."\"\n";
+	print OUT "\"Shortest subread length that passed QC\"\t\"".$shortestRead."\"\n";
+	print OUT "\"Longest subread length that passed QC\"\t\"".$longestRead."\"\n";
 	print OUT "\"Number of SMRT cells\"\t\"".$smrtCells."\"\n";
 	close(IN);
 	close(OUT);
 }
+
+#if( (-e $filteredSummary) and (-s $filteredSummary) ){
+#	open(OUT, '>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
+#	print OUT "\"Description\"\t\"Value\"\n";
+#	#my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
+#	my $readsStats = $filteredSummary;
+#
+#	open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
+#	while(<IN>){
+#		chomp;
+#		
+#		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
+#			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Post-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
+#			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Pre-Filter Polymerase Reads)\" value=\"(\d+)\"/){
+#			print OUT "\"$1\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Post-Filter Polymerase Reads)\" value=\"(\d+)\"/){
+#			print OUT "\"$1\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
+#			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Post-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
+#			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
+#			print OUT "\"$1\"\t\"$2\"\n";
+#		}
+#		if($_ =~ m/name=\"(Post-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
+#			print OUT "\"$1\"\t\"$2\"\n";
+#		}
+#	}
+#	print OUT "\"Number of SMRT cells\"\t\"".$smrtCells."\"\n";
+#	close(IN);
+#	close(OUT);
+#}
 
 exit;
 
