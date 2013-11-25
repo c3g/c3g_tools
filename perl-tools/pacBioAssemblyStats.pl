@@ -39,7 +39,7 @@ my ($help, $indir, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCel
 my $verbose = 0;
 
 GetOptions(
-    'indir=s' 	     		  => \$indir,
+    #'indir=s' 	     		  => \$indir,
 	'filteredSubreadsTable=s' => \$filteredSubreadsTable,
 	'filteredSummary=s'       => \$filteredSummary,
 	'assemblyQc=s'            => \$assemblyQc,
@@ -54,7 +54,9 @@ GetOptions(
 if ($help) { print $usage; exit; }
 
 ## Validate
-die "--indir missing\n" unless($indir);
+die "--filteredSubreadsTable missing\n" unless($filteredSubreadsTable);
+die "--filteredSummary missing\n" unless($filteredSummary);
+die "--assemblyQc missing\n" unless($assemblyQc);
 die "--outdir missing\n" unless($outdir);
 
 ## MAIN
