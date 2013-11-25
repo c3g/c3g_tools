@@ -6,8 +6,7 @@ use warnings;
 use Getopt::Long;
 use List::Util qw(sum);
 use File::Slurp;
-use Itagger::FastaDb;
-use Itagger::FastqDb;
+use Iterator::FastaDb;
 
 my $usage=<<'ENDHERE';
 NAME:
@@ -92,7 +91,7 @@ if($xmlOut){
 my $readCount = 0;
 my %hash;
 my @array;
-my $ref_fasta_db = Itagger::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
 while( my $curr = $ref_fasta_db->next_seq() ) {
 	$hash{length($curr->seq())}++;
 	push(@array, length($curr->seq()));

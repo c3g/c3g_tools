@@ -6,8 +6,7 @@ use warnings;
 use Getopt::Long;
 use List::Util qw(sum);
 use File::Slurp;
-use Itagger::FastqDb;
-use Itagger::FastaDb;
+use Iterator::FastaDb;
 
 my $usage=<<'ENDHERE';
 NAME:
@@ -60,7 +59,7 @@ open(OUT_L, ">".$outfileLong) or die "Can't open $outfileLong\n";
 my $readCount = 0;
 my $shortReads = 0;
 my $longReads = 0;
-my $ref_fasta_db = Itagger::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
 while( my $curr = $ref_fasta_db->next_seq() ) {
 	if(length($curr->seq()) >= $cutoff){
 		print OUT_L $curr->header()."\n".$curr->seq()."\n";	

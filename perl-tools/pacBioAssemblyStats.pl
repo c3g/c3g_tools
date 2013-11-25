@@ -15,10 +15,12 @@ PURPOSE:
 Generate relevant plots and table(s) of current PacBio assembly.
 
 INPUT:
---indir <string>            : input directory
---sampleName <string>       : sample name
---suffix <string>           : suffix
---estimatedGenomeSize <int> : Estimated genome size
+--filteredSubreadsTable <string> : File path (usually /bla/bla/filtered_summary.csv)
+--filteredSummary <string>       : File path (usually /bla/bla/filterReports_filterStats.xml)
+--assemblyQc <string>            : Celera assembly QC stats file
+--sampleName <string>            : sample name
+--suffix <string>                : suffix
+--estimatedGenomeSize <int>      : Estimated genome size
 
 OUTPUT:
 --outdir <string>  : ouput directory
@@ -33,18 +35,21 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $indir, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells);
+my ($help, $indir, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSubreadsTable, $filteredSummary, $assemblyQc);
 my $verbose = 0;
 
 GetOptions(
-    'indir=s' 	     		=> \$indir,
-    'outdir=s' 	     		=> \$outdir,
-	'sampleName=s'   		=> \$sampleName,
-	'suffix=s'			 	=> \$suffix,
-	'estimatedGenomeSize=i' => \$estimatedGenomeSize,
-	'smrtCells=i'			=> \$smrtCells,
-    'verbose' 	     		=> \$verbose,
-    'help' 		     		=> \$help
+    'indir=s' 	     		  => \$indir,
+	'filteredSubreadsTable=s' => \$filteredSubreadsTable,
+	'filteredSummary=s'       => \$filteredSummary,
+	'assemblyQc=s'            => \$assemblyQc,
+    'outdir=s' 	     		  => \$outdir,
+	'sampleName=s'   		  => \$sampleName,
+	'suffix=s'			 	  => \$suffix,
+	'estimatedGenomeSize=i'   => \$estimatedGenomeSize,
+	'smrtCells=i'			  => \$smrtCells,
+    'verbose' 	     		  => \$verbose,
+    'help' 		     		  => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -57,7 +62,8 @@ die "--outdir missing\n" unless($outdir);
 my $cmd;
 
 # Generate plots of raw data.
-$cmd .= " Rscript \$R_TOOLS/pacBioAssemblyPlots.R -i ".$indir."/filtering/data/filtered_summary.csv -o ".$outdir;
+#$cmd .= " Rscript \$R_TOOLS/pacBioAssemblyPlots.R -i ".$indir."/filtering/data/filtered_summary.csv -o ".$outdir;
+$cmd .= " Rscript \$R_TOOLS/pacBioAssemblyPlots.R -i ".$filteredSubreadsTable." -o ".$outdir;
 print STDERR "[DEBUG] ".$cmd."\n";
 system($cmd);
 die "Command failed: $!\n" if($? != 0);
@@ -71,7 +77,8 @@ my $N50Bases;        #		N50ContigBases
 my $contigCoverage;  #		$contigCoverage = ContigsOnly
 my $gcContent;       #		Content
 
-my $contigStats = "$indir/$suffix/assembly/9-terminator/$sampleName.qc";
+#my $contigStats = "$indir/$suffix/assembly/9-terminator/$sampleName.qc";
+my $contigStats = $assemblyQc;
 open(IN, '<'.$contigStats) or die "Can't open $contigStats\n";
 while(<IN>){
 	chomp;
@@ -118,7 +125,8 @@ close(OUT);
 
 open(OUT, '>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
 print OUT "\"Description\"\t\"Value\"\n";
-my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
+#my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
+my $readsStats = $filteredSummary;
 open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
 while(<IN>){
 	chomp;

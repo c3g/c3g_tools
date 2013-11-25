@@ -16,10 +16,14 @@ that run directory and create symlinks in raw_reads/
 Usually in a PAcBio folder, there are ~8 wells.
 
 INPUT:
---runName <string> : Example: Run044_379 
---infile <string>  : run Id csv file from nanuq.
-				
+--runName <string>       : Example: Run044_379 
+Or 
+--projectId <int>        : ex: 9999
+
+--nanutAuthFile <string> : File having username and pass on one line.
+	
 OUTPUT:
+Sample sheet need to launch the PacBioAssembly pipeline.
 
 NOTES:
 
@@ -31,12 +35,12 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $runName, $nanuqAuthFile);
+my ($help, $runName, $projectId, $nanuqAuthFile);
 my $verbose = 0;
 
 GetOptions(
     'runName=s'	      => \$runName,
-	#'infile=s'       => \$infile,
+	'projectId=i'     => \$projectId,
 	'nanuqAuthFile=s' => \$nanuqAuthFile,
     'verbose' 	      => \$verbose,
     'help' 		      => \$help
@@ -45,21 +49,25 @@ if ($help) { print $usage; exit; }
 
 # Get sample sheet from Run name.
 sub getSheet {
-	#my $tech = shift;
-	my $projectFile = shift;
-	my $runName = shift;
+	my $projectFile   = shift;
 	my $nanuqAuthFile = shift;
+	my $runName       = shift;
+	my $projectId     = shift;
 
 	# Delete previous project.nanuq.csv
 	if(-e "./$projectFile") {
 		system("rm ./$projectFile");
 	}
  
-	# RUN NAME 
-	#my $command = 'wget --no-cookies --post-file '.$nanuqAuthFile.' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/Pacbio/run/'.$runName.'/filename/'.$projectFile."\n";
-	
-	# OR BY PROJECT NAME
-	my $command = 'wget --no-cookies --post-file '.$nanuqAuthFile.' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/Pacbio/project/'.$runName.'/filename/'.$projectFile."\n";
+	# Run name or project ID.
+	my $command;
+	if(defined($runName)){
+		$command = 'wget --no-cookies --post-file '.$nanuqAuthFile.' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/Pacbio/run/'.$runName.'/filename/'.$projectFile."\n";
+	}
+	if(defined $projectId){
+		$command = 'wget --no-cookies --post-file '.$nanuqAuthFile.' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/Pacbio/project/'.$projectId.'/filename/'.$projectFile."\n";
+	}
+
 	print STDERR '#'.$command;
 	system($command);
 	if ($? == -1) {
@@ -80,16 +88,19 @@ sub getSheet {
 }
 
 ## MAIN
-die "--runName arg missing.\n" unless($runName);
-#die "--infile arg missing.\n" unless($infile);
+#unless( $runName || $projectId ){
+#	die "--runName or --projectId arg missing.\n";
+#}
 die "--nanuqAuthFile arg missing.\n" unless($nanuqAuthFile);
 
-#my $projectFile = "run.nanuq.csv";
 my $projectFile = "project.nanuq.csv";
+
 # Get sample Sheet from RunId (and not projectId)
-getSheet($projectFile, $runName, $nanuqAuthFile);
-#exit;
-#my $root = "/lb/robot/pacbioSequencer/pacbioRuns/$runName";
+if($runName){
+	getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
+}elsif($projectId){
+	getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
+}
 my $root;
 my $infile = "./".$projectFile;
 

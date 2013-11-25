@@ -6,8 +6,6 @@ use warnings;
 use Getopt::Long;
 use List::Util qw(sum);
 use File::Slurp;
-use Itagger::FastaDb;
-use Itagger::FastqDb;
 
 my $usage=<<'ENDHERE';
 NAME:
