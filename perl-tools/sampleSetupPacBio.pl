@@ -19,11 +19,13 @@ INPUT:
 --runName <string>       : Example: Run044_379 
 Or 
 --projectId <int>        : ex: 9999
+Or
+--sampleSheet <string>   : Path to your sample sheet already downloaded from nanuq.
 
 --nanutAuthFile <string> : File having username and pass on one line.
 	
 OUTPUT:
-Sample sheet need to launch the PacBioAssembly pipeline.
+Sample sheet needed to launch the PacBioi assembly pipeline.
 
 NOTES:
 
@@ -35,12 +37,13 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $runName, $projectId, $nanuqAuthFile);
+my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile);
 my $verbose = 0;
 
 GetOptions(
     'runName=s'	      => \$runName,
 	'projectId=i'     => \$projectId,
+	'sampleSheet=s'   => \$sampleSheet,
 	'nanuqAuthFile=s' => \$nanuqAuthFile,
     'verbose' 	      => \$verbose,
     'help' 		      => \$help
@@ -94,15 +97,22 @@ sub getSheet {
 die "--nanuqAuthFile arg missing.\n" unless($nanuqAuthFile);
 
 my $projectFile = "project.nanuq.csv";
-
-# Get sample Sheet from RunId (and not projectId)
-if($runName){
-	getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
-}elsif($projectId){
-	getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
-}
 my $root;
-my $infile = "./".$projectFile;
+my $infile;
+
+# If no sampleSheet infile was provided.
+if(!$sampleSheet){
+	# Get sample Sheet from RunId (and not projectId)
+	if($runName){
+		getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
+	}elsif($projectId){
+		getSheet($projectFile, $nanuqAuthFile, $runName, $projectId);
+	}
+	$infile = "./".$projectFile;
+
+}else{ # Else take provided sampleSheet.
+	$infile = $sampleSheet;
+}
 
 #/lb/robot/pacbioSequencer/pacbioRuns/Run044_379/A04_1/Analysis_Results#
 
@@ -116,9 +126,9 @@ while(<IN>){
 	my @row = split(/","/, $_);
 	my $sampleName = $row[0];
 	my $protocol = $row[4];
-	my $well = $row[11];
-	my $run = $row[10];
-	my $bp = $row[22];
+	my $well = $row[17];
+	my $run = $row[16];
+	my $bp = $row[28];
 
 	$sampleName =~ s/_MPS.*//;
 	$well =~ s/"//g;
