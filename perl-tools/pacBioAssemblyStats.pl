@@ -35,11 +35,10 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $indir, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSubreadsTable, $filteredSummary, $assemblyQc);
+my ($help, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSubreadsTable, $filteredSummary, $assemblyQc);
 my $verbose = 0;
 
 GetOptions(
-    #'indir=s' 	     		  => \$indir,
 	'filteredSubreadsTable=s' => \$filteredSubreadsTable,
 	'filteredSummary=s'       => \$filteredSummary,
 	'assemblyQc=s'            => \$assemblyQc,
@@ -125,43 +124,45 @@ close(OUT);
 
 # Print to file relevant values from raw reads.
 
-open(OUT, '>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
-print OUT "\"Description\"\t\"Value\"\n";
-#my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
-my $readsStats = $filteredSummary;
-open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
-while(<IN>){
-	chomp;
-	
-	if($_ =~ m/name=\"(Pre-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
-		print OUT "\"$1 (bp)\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Post-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
-		print OUT "\"$1 (bp)\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Pre-Filter Polymerase Reads)\" value=\"(\d+)\"/){
-		print OUT "\"$1\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Post-Filter Polymerase Reads)\" value=\"(\d+)\"/){
-		print OUT "\"$1\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Pre-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
-		print OUT "\"$1 (bp)\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Post-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
-		print OUT "\"$1 (bp)\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Pre-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
-		print OUT "\"$1\"\t\"$2\"\n";
-	}
-	if($_ =~ m/name=\"(Post-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
-		print OUT "\"$1\"\t\"$2\"\n";
-	}
-}
-print OUT "\"Number of SMRT cells\"\t\"".$smrtCells."\"\n";
-close(IN);
-close(OUT);
+if( (-e $filteredSummary) and (-s $filteredSummary) ){
+	open(OUT, '>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
+	print OUT "\"Description\"\t\"Value\"\n";
+	#my $readsStats = "$indir/filtering/results/filterReports_filterStats.xml";
+	my $readsStats = $filteredSummary;
 
+	open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
+	while(<IN>){
+		chomp;
+		
+		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
+			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Post-Filter Polymerase Read Bases)\" value=\"(\d+)\"/){
+			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Pre-Filter Polymerase Reads)\" value=\"(\d+)\"/){
+			print OUT "\"$1\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Post-Filter Polymerase Reads)\" value=\"(\d+)\"/){
+			print OUT "\"$1\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
+			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Post-Filter Polymerase Read Length)\" value=\"(\d+)\"/){
+			print OUT "\"$1 (bp)\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Pre-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
+			print OUT "\"$1\"\t\"$2\"\n";
+		}
+		if($_ =~ m/name=\"(Post-Filter Polymerase Read Quality)\" value=\"(\d+)\"/){
+			print OUT "\"$1\"\t\"$2\"\n";
+		}
+	}
+	print OUT "\"Number of SMRT cells\"\t\"".$smrtCells."\"\n";
+	close(IN);
+	close(OUT);
+}
 
 exit;
 
