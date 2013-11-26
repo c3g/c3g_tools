@@ -108,13 +108,11 @@ if($infile =~ m/\.fastq|\.fq/){
 }
 
 my $cutoff=0;
-print STDOUT "[DEBUG] \@array: ".@array."\n";
 if($coverageCutoff){
 	@array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
 	my $sum=0;
 	for (my $i=0;$i<@array;$i++){
 		$sum = $sum + $array[$i];
-		print STDOUT "[DEBUG] Sum: ".$sum."\t".$i."\n";
 		if($sum > ( ($coverage * $genomeSize) * 0.4 )){ # Coult be refined... this cutoff depends on the read length distribution.
 			$cutoff = $array[$i]; 
 			last;
