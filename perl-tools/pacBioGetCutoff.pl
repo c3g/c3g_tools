@@ -7,6 +7,7 @@ use Getopt::Long;
 use List::Util qw(sum);
 use File::Slurp;
 use Iterator::FastaDb;
+use Iterator::FastqDb;
 
 my $usage=<<'ENDHERE';
 NAME:
@@ -15,7 +16,7 @@ pacBioGetCutoff.pl
 PURPOSE:
 
 INPUT:
---infile <string>  : Sequence file
+--infile <string>  : Sequence file (either fasta or fastq)
 --coverage <int>   : Coverage
 --genomeSize <int> : Estimated genome size	
 
@@ -91,19 +92,30 @@ if($xmlOut){
 my $readCount = 0;
 my %hash;
 my @array;
-my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
-while( my $curr = $ref_fasta_db->next_seq() ) {
-	$hash{length($curr->seq())}++;
-	push(@array, length($curr->seq()));
+
+if($infile =~ m/\.fastq|\.fq/){
+	my $ref_fastq_db = Iterator::FastqDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+	while( my $curr = $ref_fastq_db->next_seq() ) {
+		$hash{length($curr->seq())}++;
+		push(@array, length($curr->seq()));
+	}
+}elsif($infile =~ m/\.fasta|\.fa|\.fsa|\.fna/){
+	my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+	while( my $curr = $ref_fasta_db->next_seq() ) {
+		$hash{length($curr->seq())}++;
+		push(@array, length($curr->seq()));
+	}
 }
 
 my $cutoff=0;
+print STDOUT "[DEBUG] \@array: ".@array."\n";
 if($coverageCutoff){
 	@array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
 	my $sum=0;
 	for (my $i=0;$i<@array;$i++){
 		$sum = $sum + $array[$i];
-		if($sum > ($coverage * $genomeSize)){
+		print STDOUT "[DEBUG] Sum: ".$sum."\t".$i."\n";
+		if($sum > ( ($coverage * $genomeSize) * 0.4 )){ # Coult be refined... this cutoff depends on the read length distribution.
 			$cutoff = $array[$i]; 
 			last;
 		}
