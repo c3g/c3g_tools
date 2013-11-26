@@ -183,6 +183,7 @@ if($coverageCutoff){
 if($xml && $xmlOut){
 	my $text = read_file( $xml );
 	$text =~ s/(<param name=\"minLongReadLength\">\n.*<value>)(.*)(<\/value>\n.*<\/param>)/$1$cutoff$3/;
+	$text =~ s/(<title>Compute \"Minimum Seed Read Length\"<\/title>\n.*<value>)True(<\/value>\n.*<input type=\"checkbox\" \/>)/$1False$2/;
 	open(XMLOUT, '>'.$xmlOut) or die "Can't open $xmlOut\n";
 	print XMLOUT $text;
 	close(XMLOUT);
