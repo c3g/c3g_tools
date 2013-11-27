@@ -14,21 +14,32 @@ NAME:
 pacBioGetCutoff.pl
 
 PURPOSE:
+Loop through fasta sequences. put the length of each
+sequence in an array, sort it by descinding order, 
+loop through it again and compute the cummulative length 
+covered by each sequence as we loop though the array. 
+Once that length is > (coverage * genome size) * covFraction, 
+we have our threshold. The idea is to consider all reads 
+above that threshold to be seeding reads to which will be 
+align lower shorter subreads.
 
 INPUT:
---infile <string>  : Sequence file (either fasta or fastq)
---coverage <int>   : Coverage
---genomeSize <int> : Estimated genome size	
+--infile <string>          : Sequence file (either fasta or fastq)
+--coverage <int>           : Coverage
+--genomeSize <int>         : Estimated genome size
+--coverageFraction <float> : At what cutoff of the estimated coverage you 
+                             want the cutoff value. Default: 0.30
 
---coverageCutoff   : To get cutoff based on cummulative length
-                     of sequences up until a (Coverage * 
-                     Genome size).
---xml <string>     : XML file to parse.
---xmlOut <string>  : XML outfile with modified value in the minReadLength field.
+--coverageCutoff           : To get cutoff based on cummulative length
+                             of sequences up until a (Coverage * 
+                             Genome size) * coverageFraction.
+--xml <string>             : XML file to parse.
+--xmlOut <string>          : XML outfile with modified value in the 
+                             minReadLength field.
 
 TODO
---hgapCutoff       : To get cutoff based upon a more 
-                     sophisticated algorithm.
+--hgapCutoff               : To get cutoff based on a more 
+                             sophisticated algorithm.
 			
 OUTPUT:
 STDOUT
@@ -43,19 +54,20 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $infile, $coverage, $genomeSize, $coverageCutoff, $hgapCutoff, $xml, $xmlOut);
+my ($help, $infile, $coverage, $genomeSize, $coverageFraction, $coverageCutoff, $hgapCutoff, $xml, $xmlOut);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 	   		=> \$infile,
-	'xml=s'				=> \$xml,
-	'xmlOut=s'			=> \$xmlOut,
-	'genomeSize=i' 		=> \$genomeSize,
-	'coverageCutoff' 	=> \$coverageCutoff,
-	'hgapCutoff'		=> \$hgapCutoff,
-	'coverage=i'   		=> \$coverage,
-    'verbose' 	   		=> \$verbose,
-    'help' 		   		=> \$help
+    'infile=s' 	   		 => \$infile,
+	'xml=s'				 => \$xml,
+	'xmlOut=s'			 => \$xmlOut,
+	'genomeSize=i' 		 => \$genomeSize,
+	'coverageCutoff' 	 => \$coverageCutoff,
+	'coverageFraction=f' => \$coverageFraction,
+	'hgapCutoff'		 => \$hgapCutoff,
+	'coverage=i'   		 => \$coverage,
+    'verbose' 	   		 => \$verbose,
+    'help' 		   		 => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -69,6 +81,8 @@ if($xml){
 if($xmlOut){
 	die "--xml missing\n" unless($xml);
 }
+
+$coverageFraction = 0.30 unless($coverageFraction);
 
 ## MAIN
 
@@ -105,6 +119,8 @@ if($infile =~ m/\.fastq|\.fq/){
 		$hash{length($curr->seq())}++;
 		push(@array, length($curr->seq()));
 	}
+}else{
+	die "Couldn't determine if file was fastq or fasta.\n";
 }
 
 my $cutoff=0;
@@ -113,7 +129,7 @@ if($coverageCutoff){
 	my $sum=0;
 	for (my $i=0;$i<@array;$i++){
 		$sum = $sum + $array[$i];
-		if($sum > ( ($coverage * $genomeSize) * 0.4 )){ # Coult be refined... this cutoff depends on the read length distribution.
+		if($sum > ( ($coverage * $genomeSize) * $coverageFraction )){ # Coult be refined... this cutoff depends on the read length distribution.
 			$cutoff = $array[$i]; 
 			last;
 		}
