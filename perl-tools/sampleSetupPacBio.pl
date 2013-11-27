@@ -168,10 +168,10 @@ foreach my $run (%hash){
 					@files = readdir(DIR);
 					closedir DIR;
 					foreach $key (@files){
-						my $searchString = "(.*.bas.h5)";
+						my $searchString = "(.*.ba[sx].h5)";
 						if($key =~ m/$searchString/){
-							$root .= "$1";
-							$hash{$run}{$well}{path} = $root;
+							#$root .= "$1";
+							$hash{$run}{$well}{path} = $root."$1";
 							
 							print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$hash{$run}{$well}{path}."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
 						}
