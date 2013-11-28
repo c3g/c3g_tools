@@ -4,7 +4,8 @@ pacBioPlots <- function(infile, outdir) {
   library(ggplot2)
   
   tData <- read.csv(file=infile, header=T)
-  readLength <- tData[,4] + 1 
+  tData <- tData[tData[8] == 1,]
+  #readLength <- tData[,4] + 1
   
   outfile1 <- file.path(outdir, "pacBioGraph_readLengthScore.pdf")
   outfile2 <- file.path(outdir, "pacBioGraph_readLengthScore.jpeg")
@@ -12,7 +13,7 @@ pacBioPlots <- function(infile, outdir) {
   outfile4 <- file.path(outdir, "pacBioGraph_histoReadLength.jpeg")
   
   p <- ggplot(environment = environment(), data=tData, aes(x=tData[,4], y=tData[,5])) + 
-    geom_point(shape=20, colour="#E69F00") +   
+    geom_point(shape=20, fill="#0066CC") +   
     xlab("Read length") +
     ylab("Read quality score") +
     theme(axis.text=element_text(size=14),axis.title=element_text(size=16,face="bold"))
@@ -21,7 +22,7 @@ pacBioPlots <- function(infile, outdir) {
   dev.off()  
   
   p <- ggplot(environment = environment(), data=tData, aes(x=tData[,4], y=tData[,5])) + 
-    geom_point(shape=20, colour="#E69F00") +   
+    geom_point(shape=20, fill="#0066CC") +   
     xlab("Read length") +
     ylab("Read quality score") +
     theme(axis.text=element_text(size=14),axis.title=element_text(size=16,face="bold"))
@@ -30,20 +31,20 @@ pacBioPlots <- function(infile, outdir) {
   dev.off()
   
   p <- ggplot(environment = environment(), data=tData, aes(x=readLength)) +
-    geom_histogram(binwidth=100, colour="#E69F00") +
-    scale_y_log10() +
+    geom_histogram(binwidth=100, fill="#0066CC") +
+    #scale_y_log10() +
     xlab("Read length") +
-    ylab("Frequency log10") +
+    ylab("Frequency") +
     theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold"))
   pdf( file=outfile3 )
   print(p)
   dev.off()
   
   p <- ggplot(environment = environment(), data=tData, aes(x=readLength)) +
-    geom_histogram(binwidth=100, colour="#E69F00") +
-    scale_y_log10() +
+    geom_histogram(binwidth=100, fill="#0066CC") +
+    #scale_y_log10() +
     xlab("Read length") +
-    ylab("Frequency log10") +
+    ylab("Frequency") +
     theme(axis.text=element_text(size=14), axis.title=element_text(size=16,face="bold"))
   jpeg( file=outfile4 )
   print(p)
