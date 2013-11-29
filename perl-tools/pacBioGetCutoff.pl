@@ -76,10 +76,10 @@ die "--infile missing\n" unless($infile);
 die "--genomeSize missing\n" unless($genomeSize);
 die "--coverageCutoff or --hgapCutoff missing\n" unless($coverageCutoff || $hgapCutoff);
 if($xml){
-	die "--xmlOut missing\n" unless($xmlOut);
+	#die "--xmlOut missing\n" unless($xmlOut);
 }
 if($xmlOut){
-	die "--xml missing\n" unless($xml);
+	#die "--xml missing\n" unless($xml);
 }
 
 $coverageFraction = 0.30 unless($coverageFraction);
