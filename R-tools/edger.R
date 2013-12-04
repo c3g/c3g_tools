@@ -35,7 +35,7 @@ if(numb == 1) {
 	de.common<-exactTest(dTMM3)
 }
 else if(numb == 2) {
-	dTMM<-estimateGLMCommonDisp(dTMM,matrix(1,2,1),method="deviance",robust=TRUE)
+	dTMM<-estimateGLMCommonDisp(dTMM,matrix(1,2,1))
 	de.common<-exactTest(dTMM)
 }
 
