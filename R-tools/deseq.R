@@ -19,7 +19,7 @@ perform_dge=function(counts, groups, count_limit, path) {
 
 # Retain row which have > count_limit
 
-counts<-counts[rowSums(counts) > count_limit,]
+counts<-round(counts[rowSums(counts) > count_limit,])
 
 # Normalize and do test
 
