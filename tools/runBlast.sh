@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 #get args
 SAMPLE_TO=$1
 OUTPUT_PREFIX=$2
