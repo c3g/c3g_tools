@@ -11,7 +11,7 @@ awk ' BEGIN {
 	en=0
 }
 {
-	if ($3 == "exon" || $3 == "start_codon") {
+	if ($3 == "exon") {
 		gsub (" ", "",$9)
 		x=split($9,col,";")
 		for (i=1 ; i<= x ; i++) {

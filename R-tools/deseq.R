@@ -87,7 +87,7 @@ if (tmpFP[[1]][length(tmpFP[[1]])] == "/" ) {
 }
 tmpOP=strsplit(out_path,"")
 if (tmpOP[[1]][length(tmpOP[[1]])] == "/" ) {
-	out_path=paste(tmpOP[[1]][1:(length(tmpOP[[1]]-1))],collapse="")
+	out_path=paste(tmpOP[[1]][1:(length(tmpOP[[1]])-1)],collapse="")
 }
 
 design = read.csv2(design_file, header=T, sep = "\t", na.strings = "0", check.names=F)
