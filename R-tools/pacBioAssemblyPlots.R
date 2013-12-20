@@ -4,12 +4,12 @@ pacBioPlots <- function(infile, outdir) {
 	library(ggplot2)
 	library(scales)
   
+	print(paste0("Infile: ",infile))
+
 	tData <- read.csv(file=infile, header=T)
-	#tData <- tData[tData[8] == 1,]
-	tData2 <- tData[tData[8] == 1,]
+	tData2 <- tData[tData[9] == 1,]
 	readLength <- tData2[,4] 
-	#readLength <- tData[,4] + 1
-  
+ 
 	outfile1 <- file.path(outdir, "pacBioGraph_readLengthScore.pdf")
 	outfile2 <- file.path(outdir, "pacBioGraph_readLengthScore.jpeg")
 	outfile3 <- file.path(outdir, "pacBioGraph_histoReadLength.pdf")
