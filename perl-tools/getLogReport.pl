@@ -267,6 +267,7 @@ sub getLogTextReport {
   ));
 
   if($memtime){
+	$logTextReport .= "\t";
     $logTextReport .= join("\t", (
       "MEMTIME_USER (hrs)",
       "MEMTIME_SYSTEM (hrs)",
