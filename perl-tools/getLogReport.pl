@@ -32,9 +32,39 @@ use warnings;
 use POSIX qw(strftime);
 use File::Basename;
 use File::Spec;
+use Getopt::Long;
+
+my $usage=<<'ENDHERE';
+NAME:
+getLogReport.pl
+
+USAGE:
+getLogReport.pl [options] <joblist file>
+
+OPTIONS:
+--memtime : Flag if memtime output if present in your jobs output files.
+				
+OUTPUT:
+STDOUT
+
+NOTES:
+
+BUGS/LIMITATIONS:
+ 
+AUTHOR/SUPPORT:
+Joel Fillon - joel.fillon@mcgill.ca
+
+ENDHERE
 
 # Check and assign the parameters
-$ARGV[0] or die "Usage: perl " . basename($0) . " <job_log_list_file>\n";
+my($memtime, $help);
+GetOptions( 
+  "memtime" => \$memtime,
+  "help"    => \$help
+);
+if ($help) { print $usage; exit; }
+
+#my $jobLogList = unshift @ARGV;
 my $jobLogList = $ARGV[0];
 
 print getLogTextReport($jobLogList);
@@ -47,6 +77,7 @@ sub readJobLogListFile {
   my $jobLogListPath = shift;
   # Return array of hash of log values
   my $rAoH_jobLogList = shift;
+  my $rAoHoH_jobLogMemtime = shift;
 
   # Read the global list of log files
   open(JOB_LOG_LIST_FILE, $jobLogListPath) or die "Cannot open $jobLogListPath\n";
@@ -58,6 +89,7 @@ sub readJobLogListFile {
 
     if (defined $jobName and defined $clusterJobLogPath) {
       my %jobLog;
+      my %memtime;
 
       $jobLog{'jobId'} = $jobId;
       $jobLog{'jobName'} = $jobName;
@@ -73,6 +105,7 @@ sub readJobLogListFile {
 
       # Read the job log file
       if (open(CLUSTER_JOB_LOG_FILE, $clusterJobLogFullPath)) {
+		my $i = 0;
         while(my $jobLine = <CLUSTER_JOB_LOG_FILE>) {
           # Job start date
           if ($jobLine =~ /^Begin PBS Prologue (.*) (\d+)$/) {
@@ -120,11 +153,26 @@ sub readJobLogListFile {
           } elsif ($jobLine =~ /^End PBS Epilogue (.*) (\d+)$/) {
             $jobLog{'endDate'} = $1;
             $jobLog{'endSecondsSinceEpoch'} = $2;
+          } 
+          
+          # Memtime if present in options (-m).
+          if($memtime){
+			if ($jobLine =~ m/(\d+\.\d+) user, (\d+\.\d+) system, (\d+\.\d+) elapsed -- Max VSize = (\d+)KB, Max RSS = (\d+)KB/) {
+              $memtime{$i}{'memTime_user'} = $1;
+           	  $memtime{$i}{'memTime_system'} = $2;
+           	  $memtime{$i}{'memTime_elapsed'} = $3;
+           	  $memtime{$i}{'memTime_MaxVSize'} = $4;
+           	  $memtime{$i}{'memTime_MaxRSS'} = $5;
+              #print STDERR "[DEBUG]\t\$i:".$i."\n";
+              $i++;
+              #print STDERR "[DEBUG]\t1:\t".$1."\n"."2:\t".$2."\n"."3:\t".$3."\n"."3:\t".$3."\n"."3:\t".$3."\n"."4:\t".$4."\n"."5:\t".$5."\n";
+            }
           }
         }
         close(CLUSTER_JOB_LOG_FILE);
       }
       push (@$rAoH_jobLogList, \%jobLog);
+      push (@$rAoHoH_jobLogMemtime, \%memtime);
     }
   }
   close(JOB_LOG_LIST_FILE);
@@ -135,9 +183,10 @@ sub getLogTextReport {
 
   my $jobLogListPath = shift;
   my @AoH_jobLogList;
+  my @AoHoH_jobLogMemtime;
 
   # Parse the job log files and get an array of hashes of those logs
-  readJobLogListFile($jobLogListPath, \@AoH_jobLogList);
+  readJobLogListFile($jobLogListPath, \@AoH_jobLogList, \@AoHoH_jobLogMemtime);
 
   my $logTextReport = "";
 
@@ -215,9 +264,21 @@ sub getLogTextReport {
     "ACCOUNT",
     "NODES",
     "PATH"
-  )) . "\n";
+  ));
 
+  if($memtime){
+    $logTextReport .= join("\t", (
+      "MEMTIME_USER (hrs)",
+      "MEMTIME_SYSTEM (hrs)",
+      "MEMTIME_ELAPSED (Gb)",
+      "MEMTIME_MAXVSIZE (Gb)",
+      "MEMTIME_MAXRSS (Gb)"
+    )) . "\n";
+  }
+  
   for my $jobLog (@AoH_jobLogList) {
+    my $memtimeLog = shift(@AoHoH_jobLogMemtime) if($memtime);
+
     $logTextReport .= join("\t", (
       exists $jobLog->{'jobId'} ? $jobLog->{'jobId'} : "N/A",
       exists $jobLog->{'jobFullId'} ? $jobLog->{'jobFullId'} : "N/A",
@@ -241,9 +302,31 @@ sub getLogTextReport {
       exists $jobLog->{'account'} ? $jobLog->{'account'} : "N/A",
       exists $jobLog->{'nodes'} ? $jobLog->{'nodes'} : "N/A",
       exists $jobLog->{'path'} ? $jobLog->{'path'} : "N/A"
-    )) . "\n";
-  }
+    ));
 
+	if($memtime){
+		$logTextReport .= "\tN/A\tN/A\tN/A\tN/A\tN/A\tN/A\n";
+	}else{
+		$logTextReport .= "\n";
+	}
+  
+    # memtime log on a separate line.
+    if($memtime){
+      foreach my $key (sort{$a <=> $b} keys %$memtimeLog) {
+		#print STDERR "[DEBUG]\t".$key."\n";
+		#print STDERR $memtimeLog->{$key}{'memTime_user'}."\n";
+	
+        $logTextReport .= join("\t", (
+          "N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A","N/A",
+          exists $memtimeLog->{$key}{'memTime_user'} ?  secondsToHours($memtimeLog->{$key}{'memTime_user'}) : "N/A",
+          exists $memtimeLog->{$key}{'memTime_system'} ? secondsToHours($memtimeLog->{$key}{'memTime_system'}) : "N/A",
+          exists $memtimeLog->{$key}{'memTime_elapsed'} ? secondsToHours($memtimeLog->{$key}{'memTime_elapsed'}) : "N/A",
+          exists $memtimeLog->{$key}{'memTime_MaxVSize'} ? sprintf("%.6f", kiBToGiB($memtimeLog->{$key}{'memTime_MaxVSize'} )) : "N/A",
+          exists $memtimeLog->{$key}{'memTime_MaxRSS'} ? sprintf("%.6f", kiBToGiB($memtimeLog->{$key}{'memTime_MaxRSS'} )) : "N/A"
+        )) . "\n";
+      }
+    }
+  }
   return $logTextReport;
 }
 
@@ -253,6 +336,17 @@ sub timeToSeconds {
 
   if ($time =~ /^(\d+):(\d\d):(\d\d)/) {
     return $1 * 60 ** 2 + $2 * 60 + $3;
+  } else {
+    return "N/A";
+  }
+}
+
+# Return hours from time given seconds in 00.00 (say 10 sec and 10/100 secs...)
+sub secondsToHours {
+  my $time =  shift;
+
+  if ($time =~ /^(\d+)\.(\d+)/) {
+    return sprintf("%.2f", ($1 / 60 /  60));
   } else {
     return "N/A";
   }
@@ -283,7 +377,7 @@ sub formatDuration {
 sub kiBToNum {
   my $size = shift;
 
-  if ($size =~ /^(\d+)kb/) {
+  if ($size =~ /^(\d+)kb/i) {
     return $1;
   } else {
     return "N/A";
@@ -295,7 +389,9 @@ sub kiBToGiB {
 
   if ($size =~ /^(\d+)kb/) {
     return $1 / (1024 ** 2);
-  } else {
+  } elsif ($size =~ /^(\d+)/){
+    return $1 / (1024 ** 2);
+  }else {
     return "N/A";
   }
 }

@@ -101,7 +101,7 @@ function InstallGenome () {
 	mkdir -p $INSTALL_PATH
 	cd $INSTALL_PATH
 	if [[ -z "$genomeAlias" ]]; then
-    genomeAlias=`echo $genomeSource | awk -F"/" '{print $NF}'`
+	    genomeAlias=`echo $genomeSource | awk -F"/" '{print $NF}'`
 	fi
 	case $gType in
       "zip")  
@@ -113,7 +113,7 @@ function InstallGenome () {
 				cat $fastaFiles > $genomeAlias.fasta
 				fastaFiles=`echo $fastaFiles $genomeAlias.fasta`
         ;;
-     "tar.gz") 
+      "tar.gz") 
 				#if [ ! -f $genomeAlias.tar.gz ]; then
 					wget $genomeSource -O $genomeAlias.tar.gz
 				#fi;
@@ -152,6 +152,13 @@ function InstallGenome () {
   esac
   
   mkdir -p fasta;
+  # bowtie and bwa version
+  bowtieVersion=`bowtie2 --version | grep version | awk 'NR==1 {print $NF}'`
+  bwaVersion=`bwa 2>&1 | grep Version | sed -e 's/.*Version\: \([0-9a-zA-Z\.\-]*\).*/\1/1'`
+  bowtieDir=`echo "bowtie"$bowtieVersion`
+  bwaDir=`echo "bwa"$bwaVersion`
+  mkdir -p $INSTALL_PATH/$bowtieDir
+  mkdir -p $INSTALL_PATH/$bwaDir
   for fa in $fastaFiles ;
   do
 		rm fasta/$fa;
@@ -159,8 +166,9 @@ function InstallGenome () {
 		ln -fs fasta/$fa $fa;
     dictName=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.dict/g'`
     chrsize=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.chromsize\.txt/g'`
-    # bowtie-build Index reference (already done for iGenomes)
-		bowtie-build fasta/$fa 	fasta/$fa || bowtie2-build fasta/$fa 	fasta/$fa
+    # bowtie-build Index reference (already done for iGenomes)    
+    ln -fs fasta/$fa $INSTALL_PATH/$bowtieDir/$fa;
+		bowtie2-build $INSTALL_PATH/$bowtieDir/$fa $INSTALL_PATH/$bowtieDir/$fa
 		# Index reference with samtools faidx reference (already done for iGenomes)
 		samtools faidx fasta/$fa 	
 		# reference dictionary (already done for iGenomes)
@@ -168,7 +176,8 @@ function InstallGenome () {
 		# Generate tab delimited chromosome size file
 		sed 1d fasta/$dictName | awk '{print $2"\t"$3}' | sed -e 's/SN://g' | sed -e 's/LN://g' > $chrsize
 		# bwa index  reference (already done for iGenomes)
-		bwa index -a bwtsw fasta/$fa 
+    ln -fs fasta/$fa $INSTALL_PATH/$bwaDir/$fa;
+		bwa index -a bwtsw $INSTALL_PATH/$bwaDir/$fa 
 	done;
 }
 

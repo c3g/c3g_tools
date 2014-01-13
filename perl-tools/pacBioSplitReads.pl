@@ -7,6 +7,7 @@ use Getopt::Long;
 use List::Util qw(sum);
 use File::Slurp;
 use Iterator::FastaDb;
+use Iterator::FastqDb;
 
 my $usage=<<'ENDHERE';
 NAME:
@@ -59,16 +60,31 @@ open(OUT_L, ">".$outfileLong) or die "Can't open $outfileLong\n";
 my $readCount = 0;
 my $shortReads = 0;
 my $longReads = 0;
-my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
-while( my $curr = $ref_fasta_db->next_seq() ) {
-	if(length($curr->seq()) >= $cutoff){
-		print OUT_L $curr->header()."\n".$curr->seq()."\n";	
-		$longReads++;
-	}else{
-		print OUT_S $curr->header()."\n".$curr->seq()."\n";	
-		$shortReads++;
+
+if($infile =~ m/\.fastq|\.fq/){
+	my $ref_fastq_db = Iterator::FastqDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+	while( my $curr = $ref_fastq_db->next_seq() ) {
+		if(length($curr->seq()) >= $cutoff){
+			print OUT_L $curr->header()."\n".$curr->seq()."\n";	
+			$longReads++;
+		}else{
+			print OUT_S $curr->header()."\n".$curr->seq()."\n";	
+			$shortReads++;
+		}
+		$readCount++;	
 	}
-	$readCount++;	
+}elsif($infile =~ m/\.fasta|\.fa|\.fsa|\.fna/){
+	my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+	while( my $curr = $ref_fasta_db->next_seq() ) {
+		if(length($curr->seq()) >= $cutoff){
+			print OUT_L $curr->header()."\n".$curr->seq()."\n";	
+			$longReads++;
+		}else{
+			print OUT_S $curr->header()."\n".$curr->seq()."\n";	
+			$shortReads++;
+		}
+		$readCount++;	
+	}
 }
 close(OUT_S);
 close(OUT_L);

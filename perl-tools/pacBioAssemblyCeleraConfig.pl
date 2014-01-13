@@ -14,20 +14,24 @@ pacBioAssemblyCeleraConfig.pl
 PURPOSE:
 
 INPUT:
---infile <string>  : Sequence file
---coverage <int>   : Coverage
---genomeSize <int> : Estimated genome size	
-
---coverageCutoff   : To get cutoff based on cummulative length
-                     of sequences up until a (Coverage * 
-                     Genome size).
---xml <string>     : XML file to parse.
---xmlOut <string>  : XML outfile with modified value in the minReadLength field.
---merylMemory      : Set the merylMemory parameter...
+--infile <string>    : Sequence file
+--merylThreads       : 
+--frgMinLen          : 
+--overlapper         : 
+--merCompression     : 
+--merSize            : 
+--merylMemory        : Set the merylMemory parameter...
+--ovlErrorRate       : 
+--ovlMinLen          :
+--ovlStoreMemory     :
+--ovlConcurrency     :
+--ovlCorrConcurrency :
+--cnsConcurrency     :
+--frgCorrThreads     :
+--ovlErrorRate       :
+--ovlThreads         : 
 
 TODO
---hgapCutoff       : To get cutoff based upon a more 
-                     sophisticated algorithm.
 			
 OUTPUT:
 STDOUT
@@ -42,27 +46,35 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $infile, $num_threads, $minReadSize, $overlapper, $merCompression, $merSize, $merylMemory);
+my ($help, $infile, $merylThreads, $frgMinLen, $frgCorrThreads, $cnsConcurrency, $ovlCorrConcurrency, $ovlConcurrency, $ovlStoreMemory, $ovlMinLen, $ovlErrorRate, $ovlThreads, $overlapper, $merCompression, $merSize, $merylMemory);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 	   		=> \$infile,
-	'num_threads=i'		=> \$num_threads,
-	'minReadSize=i'		=> \$minReadSize,
-	'overlapper=s' 		=> \$overlapper,
-	'merCompression=i' 	=> \$merCompression,
-	'merSize=i'			=> \$merSize,
-	'merylMemory=i'		=> \$merylMemory,
-    'verbose' 	   		=> \$verbose,
-    'help' 		   		=> \$help
+    'infile=s' 	   		    => \$infile,
+	'merylThreads=i'		=> \$merylThreads,
+	'ovlThreads=i'		    => \$ovlThreads,
+	'frgCorrThreads=i'		=> \$frgCorrThreads,
+	'cnsConcurrency=i'		=> \$cnsConcurrency,
+	'ovlCorrConcurrency=i'	=> \$ovlCorrConcurrency,
+	'ovlConcurrency=i'		=> \$ovlConcurrency,
+	'ovlStoreMemory=i'		=> \$ovlStoreMemory,
+	'ovlErrorRate=f'		=> \$ovlErrorRate,
+	'ovlMinLen=i'           => \$ovlMinLen,
+	'frgMinLen=i'	        => \$frgMinLen,
+	'overlapper=s' 		    => \$overlapper,
+	'merCompression=i'  	=> \$merCompression,
+	'merSize=i'			    => \$merSize,
+	'merylMemory=i'		    => \$merylMemory,
+    'verbose' 	   		    => \$verbose,
+    'help' 		   		    => \$help
 );
 if ($help) { print $usage; exit; }
 
 ## Validate
 die "--infile missing\n" 			unless($infile);
 warn "--merylMemory missing\n"		unless($merylMemory);
-warn "--num_threads missing\n" 		unless($num_threads);
-warn "--minReadSize missing\n" 		unless($minReadSize);
+warn "--merylThreads missing\n"     unless($merylThreads);
+warn "--frgMinLen missing\n" 		unless($frgMinLen);
 warn "--overlapper missing\n" 		unless($overlapper);
 warn "--merCompression missing\n" 	if(!defined($merCompression));
 
@@ -74,32 +86,47 @@ while(<IN>){
 	if($_ =~ m/overlapper=/ && defined($overlapper)){
 		print STDOUT "overlapper=$overlapper\n";
 
-	}elsif($_ =~ m/frgMinLen=/ && defined($minReadSize)){
-		print STDOUT "frgMinLen=$minReadSize\n"; 
+	}elsif($_ =~ m/frgMinLen=/ && defined($frgMinLen)){
+		print STDOUT "frgMinLen=$frgMinLen\n"; 
 
 	}elsif($_ =~ m/merSize=/ && defined($merSize)){
 		print STDOUT "merSize=$merSize\n";
 
-	}elsif($_ =~ m/ovlThreads=/ && defined($num_threads)){
-		print STDOUT "ovlThreads=$num_threads\n";
+	}elsif($_ =~ m/ovlThreads=/ && defined($ovlThreads)){
+		print STDOUT "ovlThreads=$ovlThreads\n";
 
 	}elsif($_ =~ m/merCompression=/ && defined($merCompression)){
 		print STDOUT "merCompression=$merCompression\n";
 
-	}elsif($_ =~ m/frgCorrThreads=/ && defined($num_threads)){
-		print STDOUT "frgCorrThreads=$num_threads\n";
+	}elsif($_ =~ m/frgCorrThreads=/ && defined($frgCorrThreads)){
+		print STDOUT "frgCorrThreads=$frgCorrThreads\n";
 
-	}elsif($_ =~ m/merylThreads=/ && defined($num_threads)){
-		print STDOUT "merylThreads=$num_threads\n";
+	}elsif($_ =~ m/merylThreads=/ && defined($merylThreads)){
+		print STDOUT "merylThreads=$merylThreads\n";
 
-	}elsif($_ =~ m/merOverlapperThreads=/ && defined($num_threads)){
-		print STDOUT "merOverlapperThreads=$num_threads\n";
+	#}elsif($_ =~ m/merOverlapperThreads=/ && defined($)){
+	#	print STDOUT "merOverlapperThreads=$num_threads\n";
+    #
+	}elsif($_ =~ m/cnsConcurrency=/ && defined($cnsConcurrency)){
+		print STDOUT "cnsConcurrency=$cnsConcurrency\n";
 
-	}elsif($_ =~ m/cnsConcurrency=/ && defined($num_threads)){
-		print STDOUT "cnsConcurrency=$num_threads\n";
-
-	}elsif($_ =~ m/merylMemory=/ && defined($num_threads)){
+	}elsif($_ =~ m/merylMemory=/ && defined($merylMemory)){
 		print STDOUT "merylMemory=$merylMemory\n";
+
+	}elsif($_ =~ m/ovlCorrConcurrency=/ && defined($ovlCorrConcurrency)){
+		print STDOUT "ovlCorrConcurrency=$ovlCorrConcurrency\n";
+
+	}elsif($_ =~ m/ovlConcurrency=/ && defined($ovlConcurrency)){
+		print STDOUT "ovlConcurrency=$ovlConcurrency\n";
+
+	}elsif($_ =~ m/ovlStoreMemory=/ && defined($ovlStoreMemory)){
+		print STDOUT "ovlStoreMemory=$ovlStoreMemory\n";
+
+	}elsif($_ =~ m/ovlErrorRate=/ && defined($ovlErrorRate)){
+		print STDOUT "ovlErrorRate=$ovlErrorRate\n";
+
+	}elsif($_ =~ m/ovlMinLen=/ && defined($ovlMinLen)){
+		print STDOUT "ovlMinLen=$ovlMinLen\n";
 
 	}else{ 
 		print STDOUT $_."\n";
