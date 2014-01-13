@@ -211,14 +211,14 @@ sub eachFile{
 	my $run = pop(@path);
 	$run =~ m/(Run\d+)_\d+/;
 	$run = $1;
-	print "RUN:".$run."\n";
+	#print STDERR "[DEBUG] RUN:".$run."\n";
 	
 	if($filename =~ m/qc/ && ( -d $filename)){
 		# Just want to avoid .../qc/... dir.	
 	}elsif( substr($filename, -7) eq ".bas.h5" ){
 		
 		if($fullpath =~ m/\/((\w\d{2,3})_\d)\//){
-			print STDERR "run:$run\n\$1:$1\n";
+			#print STDERR "[DEBUG] run:$run\n\$1:$1\n";
 			print STDOUT $hash{$run}{$1}{sampleName}."\t".$1."\t".$fullpath."\t".$hash{$run}{$1}{protocol}."\n"; 	
 			#$hash{$1} = $fullpath; 
 			exit;
