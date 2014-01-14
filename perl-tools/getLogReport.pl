@@ -34,16 +34,20 @@ use File::Basename;
 use File::Spec;
 use Getopt::Long;
 
-my $usage=<<'ENDHERE';
+my $scriptName = basename($0);
+
+my $usage=<<END;
 NAME:
-getLogReport.pl
+$scriptName
 
 USAGE:
-getLogReport.pl [options] <joblist file>
+$scriptName [options] <job_list_file>
 
 OPTIONS:
---memtime: Output also memtime values if present in job output files.
---success: Show successful jobs only.
+  -m,   --memtime       Output also memtime values if present in job output files
+  -s,   --success       Show successful jobs only
+  -nos, --nosuccess     Show unsuccessful jobs only i.e. failed or uncompleted jobs
+  -h,   --help          Show this help
 
 OUTPUT:
 STDOUT
@@ -53,20 +57,19 @@ NOTES:
 BUGS/LIMITATIONS:
  
 AUTHOR/SUPPORT:
-Joel Fillon - joel.fillon@mcgill.ca
+Joel Fillon - joel.fillon\@mcgill.ca
 
-ENDHERE
+END
 
 # Check and assign the parameters
 my ($memtimeOption, $successOption, $help);
 GetOptions( 
   "memtime" => \$memtimeOption,
-  "success" => \$successOption,
+  "success!" => \$successOption,
   "help"    => \$help
 );
-if ($help) { print $usage; exit; }
+if ($help or not($ARGV[0])) {die $usage}
 
-#my $jobLogList = unshift @ARGV;
 my $jobLogList = $ARGV[0];
 
 print getLogTextReport($jobLogList);
@@ -81,7 +84,7 @@ sub readJobLogListFile {
   my $rAoH_jobLogList = shift;
 
   # Read the global list of log files
-  open(JOB_LOG_LIST_FILE, $jobLogListPath) or die "Cannot open $jobLogListPath\n";
+  open(JOB_LOG_LIST_FILE, $jobLogListPath) or die "Error: cannot open file $jobLogListPath\n" . $usage;
   while (my $line = <JOB_LOG_LIST_FILE>) {
     chomp($line);
 
@@ -165,8 +168,14 @@ sub readJobLogListFile {
         }
         close(CLUSTER_JOB_LOG_FILE);
       }
-      # If --success option is specified, keep successful jobs only
-      if (not($successOption) or (exists($jobLog{'MUGQICexitStatus'}) and $jobLog{'MUGQICexitStatus'} == "0")) {
+
+      # Filter jobs according to --success/--nosuccess option if any
+      if (not(defined($successOption)) or    # Keep all jobs
+          (defined($successOption) and
+           # Keep successful jobs only
+           ($successOption and exists($jobLog{'MUGQICexitStatus'}) and $jobLog{'MUGQICexitStatus'} == 0) or
+           # Keep unsuccessful jobs only
+           (not($successOption) and (not(exists($jobLog{'MUGQICexitStatus'})) or $jobLog{'MUGQICexitStatus'} != 0)))) {
         push (@$rAoH_jobLogList, \%jobLog);
       }
     }
