@@ -7,7 +7,7 @@ pacBioPlots <- function(infile, outdir) {
 	print(paste0("Infile: ",infile))
 
 	tData <- read.csv(file=infile, header=T)
-	tData2 <- tData[tData[9] == 1,]
+	tData2 <- tData[tData[8] == 1,]
 	readLength <- tData2[,4] 
  
 	outfile1 <- file.path(outdir, "pacBioGraph_readLengthScore.pdf")
