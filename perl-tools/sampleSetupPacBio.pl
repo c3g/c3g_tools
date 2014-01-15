@@ -5,6 +5,8 @@ use warnings;
 
 use Getopt::Long;
 use File::Find;
+use File::Path qw(mkpath);
+use File::Basename;
 
 my $usage=<<'ENDHERE';
 NAME:
@@ -23,6 +25,8 @@ Or
 --sampleSheet <string>   : Path to your sample sheet already downloaded from nanuq.
 
 --nanutAuthFile <string> : File having username and pass on one line.
+--bas                    : Provide arg if you want the .bas files to be included
+                           in output. By default only .bax.h5 are included.
 	
 OUTPUT:
 Sample sheet needed to launch the PacBioi assembly pipeline.
@@ -37,7 +41,7 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile);
+my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile, $bas);
 my $verbose = 0;
 
 GetOptions(
@@ -45,6 +49,7 @@ GetOptions(
 	'projectId=i'     => \$projectId,
 	'sampleSheet=s'   => \$sampleSheet,
 	'nanuqAuthFile=s' => \$nanuqAuthFile,
+	'bas'             => \$bas,
     'verbose' 	      => \$verbose,
     'help' 		      => \$help
 );
@@ -125,6 +130,7 @@ while(<IN>){
 	next if($. == 1);
 	my @row = split(/","/, $_);
 	my $sampleName = $row[0];
+	$sampleName =~ s/-/_/g;
 	my $protocol = $row[4];
 	my $well = $row[17];
 	my $run = $row[16];
@@ -149,6 +155,15 @@ while(<IN>){
 
 close(IN);
 
+mkpath("raw_reads");
+
+my $regEx;
+if($bas){
+	$regEx = "(.*.ba[sx].h5)";
+}else{
+	$regEx = "(.*.bax.h5)";
+}
+
 foreach my $run (%hash){
 	foreach my $well (keys %{ $hash{$run} }) {
 
@@ -163,17 +178,20 @@ foreach my $run (%hash){
 				my $searchString = $run."(_\\d+)";
 				if($key =~ m/$searchString/){
 					$root = "$dirname/$run$1/$well/Analysis_Results/";
-
 					opendir(DIR, $root);
 					@files = readdir(DIR);
 					closedir DIR;
 					foreach $key (@files){
-						my $searchString = "(.*.ba[sx].h5)";
-						if($key =~ m/$searchString/){
-							#$root .= "$1";
+						if($key =~ m/$regEx/){
 							$hash{$run}{$well}{path} = $root."$1";
+	
+							my $h5FullPath = $hash{$run}{$well}{path};
+							my $h5FileName = basename($h5FullPath);
 							
-							print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$hash{$run}{$well}{path}."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
+							my $newPath = "raw_reads/".$h5FileName;
+							symlink($hash{$run}{$well}{path}, $newPath);
+		
+							print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
 						}
 					}
 				}
@@ -193,14 +211,14 @@ sub eachFile{
 	my $run = pop(@path);
 	$run =~ m/(Run\d+)_\d+/;
 	$run = $1;
-	print "RUN:".$run."\n";
+	#print STDERR "[DEBUG] RUN:".$run."\n";
 	
 	if($filename =~ m/qc/ && ( -d $filename)){
 		# Just want to avoid .../qc/... dir.	
 	}elsif( substr($filename, -7) eq ".bas.h5" ){
 		
 		if($fullpath =~ m/\/((\w\d{2,3})_\d)\//){
-			print STDERR "run:$run\n\$1:$1\n";
+			#print STDERR "[DEBUG] run:$run\n\$1:$1\n";
 			print STDOUT $hash{$run}{$1}{sampleName}."\t".$1."\t".$fullpath."\t".$hash{$run}{$1}{protocol}."\n"; 	
 			#$hash{$1} = $fullpath; 
 			exit;

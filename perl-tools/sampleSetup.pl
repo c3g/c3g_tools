@@ -2,7 +2,8 @@
 
 use File::Path qw(mkpath);
 use Cwd;
-use Text::CSV;
+#use Text::CSV;
+use Text::CSV::Encoded;
 use Getopt::Long;
 
 my $version = "1.0";
@@ -178,7 +179,7 @@ sub parseSheet {
   my $readSetIdIdx=-1;
   my $filePrefixIdx=-1;
 
-  my $csv = Text::CSV->new();
+  my $csv = Text::CSV::Encoded->new ({ encoding  => "iso-8859-1" });
   $csv->parse($line);
   my @headers = $csv->fields();
   for(my $idx=0; $idx < @headers; $idx++) {
