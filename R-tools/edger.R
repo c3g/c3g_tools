@@ -124,7 +124,7 @@ genL=cbind(rawcount[,1:2])
 print(design)
 
 name_sample= as.character(as.vector(design[,1]))
-countMatrix = as.integer(round(rawcount[,3:ncol(rawcount)]))
+countMatrix = round(rawcount[,3:ncol(rawcount)])
 
 # Iterate over each design
 
