@@ -71,7 +71,7 @@ function loadModules {
 	# Check if a module is available, matching by the module name, 
 	# return the output of module avail command, extracting the latest version if many versions are available 
 	module use $MUGQIC_INSTALL_HOME/modulefiles
-	for mymodule in "mugqic\/bwa" "mugqic\/samtools" "mugqic\/picard"  "mugqic\/bowtie" "mugqic\/tools";
+	for mymodule in "mugqic\/bwa" "mugqic\/samtools" "mugqic\/picard"  "mugqic\/bowtie" "mugqic\/tools" "mugqic\/exonerate";
 	do
 		moduleLoad=$( isAvailable $mymodule )
 		if  [[ ! -z "$moduleLoad" ]]; then
@@ -159,6 +159,7 @@ function InstallGenome () {
   bwaDir=`echo "bwa"$bwaVersion`
   mkdir -p $INSTALL_PATH/$bowtieDir
   mkdir -p $INSTALL_PATH/$bwaDir
+  mkdir -p $INSTALL_PATH/fasta/byChro
   for fa in $fastaFiles ;
   do
 		rm fasta/$fa;
@@ -178,6 +179,8 @@ function InstallGenome () {
 		# bwa index  reference (already done for iGenomes)
     ln -fs fasta/$fa $INSTALL_PATH/$bwaDir/$fa;
 		bwa index -a bwtsw $INSTALL_PATH/$bwaDir/$fa 
+		# By chromosome fasta files
+		fastaexplode -f fasta/$fa -d $INSTALL_PATH/fasta/byChro/
 	done;
 }
 
