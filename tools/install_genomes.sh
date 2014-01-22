@@ -162,15 +162,15 @@ function InstallGenome () {
   mkdir -p $INSTALL_PATH/fasta/byChro
   for fa in $fastaFiles ;
   do
-		rm fasta/$fa;
-		mv $fa fasta/$fa;	
-		ln -fs fasta/$fa $fa;
+    rm fasta/$fa;
+    mv $fa fasta/$fa;	
+    ln -fs fasta/$fa $fa;
     dictName=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.dict/g'`
     chrsize=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.chromsize\.txt/g'`
     # bowtie-build Index reference (already done for iGenomes)    
     ln -fs fasta/$fa $INSTALL_PATH/$bowtieDir/$fa;
-		bowtie2-build $INSTALL_PATH/$bowtieDir/$fa $INSTALL_PATH/$bowtieDir/$fa
-		# Index reference with samtools faidx reference (already done for iGenomes)
+    bowtie2-build $INSTALL_PATH/$bowtieDir/$fa $INSTALL_PATH/$bowtieDir/$fa
+    # Index reference with samtools faidx reference (already done for iGenomes)
 		samtools faidx fasta/$fa 	
 		# reference dictionary (already done for iGenomes)
 		java -jar $PICARD_HOME/CreateSequenceDictionary.jar REFERENCE=fasta/$fa OUTPUT=fasta/$dictName 
@@ -185,16 +185,18 @@ function InstallGenome () {
 }
 
 function InstallGenomes () {
-	curDir=`pwd`;
+  IFS=$' \t\n'; 
+  curDir=`pwd`;
   prologue
   loadModules  
-	sourceFile=$1
-	while read line
-	do
-		echo "Installing" $line;
-		InstallGenome $line
-	  cd $curDir
-	done < $sourceFile;
+  sourceFile=$1
+  while read line
+  do
+  	echo "Installing" $line;
+  	InstallGenome $line
+    cd $curDir
+  done < $sourceFile;
+  unset IFS;	
 }
 
 main $1;
