@@ -67,12 +67,12 @@ sub eachFile{
 	#so you can call open with just $_
 
 	if (-e $filename) { 
-		if($fullpath =~ m/\d+percent\/merSize\d+\/polishing\/data\/consensus\.fasta$/){
-			if($fullpath =~ m/(\d+percent).*(merSize\d+)/){
-				print STDERR "[DEBUG] $fullpath\t$1\t$2\n" if($verbose);
-				$hQcPolished{"$1_$2"} = $fullpath;
+		if($fullpath =~ m/\d+percent\/merSize\d+\/polishing\d+\/data\/consensus\.fasta$/){
+			if($fullpath =~ m/(\d+percent).*(merSize\d+).*(polishing\d+)/){
+				print STDERR "[DEBUG] $fullpath\t$1\t$2\t$3\n" if($verbose);
+				$hQcPolished{"$1_$2_$3"} = $fullpath;
 			}else{
-				die "Can't find proper nomenclature on .qc files.\n";	
+				die "Can't find proper nomenclature on .fasta files.\n";	
 			}
 		
 		}elsif($fullpath =~ m/9-terminator\/$sampleName\S+\.qc$/){

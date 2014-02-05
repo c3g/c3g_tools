@@ -18,7 +18,6 @@ Generate relevant plots and table(s) of current PacBio assembly.
 
 INPUT:
 --filteredSummary <string>       : File path (usually /bla/bla/filtered_summary.csv)
---assemblyQc <string>            : Celera assembly QC stats file
 --contigs <string>               : Celera contigs.
 --sampleName <string>            : sample name
 --suffix <string>                : suffix
@@ -37,12 +36,11 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSummary, $assemblyQc, $contigs);
+my ($help, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSummary, $contigs);
 my $verbose = 0;
 
 GetOptions(
 	'filteredSummary=s'       => \$filteredSummary,
-	'assemblyQc=s'            => \$assemblyQc,
 	'contigs=s'               => \$contigs,
     'outdir=s' 	     		  => \$outdir,
 	'sampleName=s'   		  => \$sampleName,
@@ -56,10 +54,8 @@ if ($help) { print $usage; exit; }
 
 ## Validate
 die "--filteredSummary missing\n" unless($filteredSummary);
-die "--assemblyQc missing\n" unless($assemblyQc);
 die "--outdir missing\n" unless($outdir);
 die("--filteredSummary file is empty or does not exists! (Typed wrong filename?)\n") if((!-e $filteredSummary) and (!-s $filteredSummary));	
-die("--assemblyQc file is empty or does not exists! (Typed wrong filename?)\n") if((!-e $assemblyQc) and (!-s $assemblyQc));	
 
 ## MAIN
 
