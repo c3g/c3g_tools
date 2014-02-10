@@ -106,6 +106,7 @@ $coverageFraction = 0.30 unless($coverageFraction);
 my $readCount = 0;
 my %hash;
 my @array;
+my $totalBases=0;
 
 if($infile =~ m/\.fastq|\.fq/){
 	my $ref_fastq_db = Iterator::FastqDb->new($infile) or die("Unable to open Fasta file, $infile\n");
@@ -117,11 +118,14 @@ if($infile =~ m/\.fastq|\.fq/){
 	my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
 	while( my $curr = $ref_fasta_db->next_seq() ) {
 		$hash{length($curr->seq())}++;
+		$totalBases += length($curr->seq());
 		push(@array, length($curr->seq()));
 	}
 }else{
 	die "Couldn't determine if file was fastq or fasta.\n";
 }
+
+$coverage = sprintf "%0.2f", $totalBases / $genomeSize;
 
 my $cutoff=0;
 if($coverageCutoff){
@@ -134,7 +138,14 @@ if($coverageCutoff){
 			last;
 		}
 	}
-	
+
+	my $cov = sprintf "%0.2f", $totalBases / $genomeSize;
+	my $X = sprintf "%0.2f", $sum / $genomeSize;
+
+	print STDERR "Estimated coverage with filtered reads only: ".$cov."X\n";
+	print STDERR "Estmated coverage cutoff value: ".$X."X\n";
+	print STDERR "Read length cutoff value: ".$cutoff." bp\n";	
+
 	print STDOUT $cutoff."\n";
 
 }elsif($hgapCutoff){
