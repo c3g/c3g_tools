@@ -190,7 +190,7 @@ if (sampleNum == length(listFile)) {
 			ccdsbase50[nameLoc]=statsValue[[1]][9]
 			ccdsbase75[nameLoc]=statsValue[[1]][10]
 			ccdsbase100[nameLoc]=statsValue[[1]][11]
-			ccdswgbase500[nameLoc]=statsValue[[1]][12]
+			ccdsbase500[nameLoc]=statsValue[[1]][12]
 			
 		} else {
 			sampleNum=sampleNum+1
