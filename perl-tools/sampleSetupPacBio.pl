@@ -168,30 +168,40 @@ foreach my $run (%hash){
 	foreach my $well (keys %{ $hash{$run} }) {
 
 		# Hack to add _\d+ at the end of $root
-		my $dirname = "/lb/robot/pacbioSequencer/pacbioRuns";
-		opendir(DIR, $dirname);
-		my @files = readdir(DIR);
-		closedir DIR;
-
-		foreach my $key (@files){
-			if(-d "$dirname/$key"){
-				my $searchString = $run."(_\\d+)";
-				if($key =~ m/$searchString/){
-					$root = "$dirname/$run$1/$well/Analysis_Results/";
-					opendir(DIR, $root);
-					@files = readdir(DIR);
-					closedir DIR;
-					foreach $key (@files){
-						if($key =~ m/$regEx/){
-							$hash{$run}{$well}{path} = $root."$1";
-	
-							my $h5FullPath = $hash{$run}{$well}{path};
-							my $h5FileName = basename($h5FullPath);
-							
-							my $newPath = "raw_reads/".$h5FileName;
-							symlink($hash{$run}{$well}{path}, $newPath);
+		my @dirname;
+		push(@dirname, "/lb/robot/pacbioSequencer/pacbioRuns");
+		push(@dirname, "/lb/robot/pacbioSequencer/pacbioRuns/2013");
+		push(@dirname, "/lb/robot/pacbioSequencer/pacbioRuns/2014");
+		push(@dirname, "/lb/robot/pacbioSequencer/pacbioRuns/2015");
 		
-							print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
+		foreach my $dirname (@dirname){
+		
+			next if(!-d $dirname);
+	
+			opendir(DIR, $dirname);
+			my @files = readdir(DIR);
+			closedir DIR;
+	
+			foreach my $key (@files){
+				if(-d "$dirname/$key"){
+					my $searchString = $run."(_\\d+)";
+					if($key =~ m/$searchString/){
+						$root = "$dirname/$run$1/$well/Analysis_Results/";
+						opendir(DIR, $root);
+						@files = readdir(DIR);
+						closedir DIR;
+						foreach $key (@files){
+							if($key =~ m/$regEx/){
+								$hash{$run}{$well}{path} = $root."$1";
+		
+								my $h5FullPath = $hash{$run}{$well}{path};
+								my $h5FileName = basename($h5FullPath);
+								
+								my $newPath = "raw_reads/".$h5FileName;
+								symlink($hash{$run}{$well}{path}, $newPath);
+			
+								print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
+							}
 						}
 					}
 				}

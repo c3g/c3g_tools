@@ -9,12 +9,13 @@ design.file<-args[1]
 output_dir<-args[2]
 designs<-read.table(design.file, header=F, sep="\t", check.names=F)
 
-
+narrow.peaks=FALSE;
 
 for(i in 2:ncol(designs[1,])) {
 
 	design<-unlist(strsplit(as.character(designs[1,i]),","))
 	if(design[2] == "N") {
+	  narrow.peaks=TRUE;
 		designName<-design[1]
 
 		# TSS categories stats
@@ -74,6 +75,7 @@ toPrint<-rbind(c("design", "group" , "number of peaks", "percent near tss", "med
 for(i in 2:ncol(designs[1,])) {
     design<-unlist(strsplit(as.character(designs[1,i]),","))
     if(design[2] == "N") {
+      narrow.peaks=TRUE;
       designName<-design[1]
       fileDir=file.path(output_dir,"peak_call")
       annotationDir=file.path(output_dir,"annotation")
@@ -111,5 +113,6 @@ for(i in 2:ncol(designs[1,])) {
      }    
    }
 }
-
-write.table(toPrint, paste(output_dir, "/annotation/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
+if (narrow.peaks){
+  write.table(toPrint, paste(output_dir, "/annotation/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
+}

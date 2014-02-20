@@ -196,7 +196,11 @@ sub getLogTextReport {
 
   $logTextReport .= "# Number of jobs: " . ($#AoH_jobLogList + 1) . "\n#\n";
 
-  # Retrieve first job start date, last job end date, shortest/longest jobs, lowest/highest memory jobs
+  # Retrieve job status, first job start date, last job end date, shortest/longest jobs, lowest/highest memory jobs
+  my $successfulJobCount = 0;
+  my $activeJobCount = 0;
+  my $inactiveJobCount = 0;
+  my $failedJobCount = 0;
   my $firstStartSecondsSinceEpoch;
   my $lastEndSecondsSinceEpoch;
   my $shortestJob;
@@ -205,12 +209,25 @@ sub getLogTextReport {
   my $highestMemoryJob;
 
   for my $jobLog (@AoH_jobLogList) {
+    if (exists $jobLog->{'MUGQICexitStatus'} and $jobLog->{'MUGQICexitStatus'} eq 0) {
+      $successfulJobCount++;
+    } elsif (exists $jobLog->{'endSecondsSinceEpoch'}) {
+      # If job end date exists and MUGQICexitStatus != 0, job failed
+      $failedJobCount++;
+    } elsif (exists $jobLog->{'startSecondsSinceEpoch'}) {
+      # If job start date exists but job end date does not, job is still running
+      $activeJobCount++;
+    } else {
+      $inactiveJobCount++;
+    }
+
     if (exists $jobLog->{'startSecondsSinceEpoch'} and (not defined $firstStartSecondsSinceEpoch or $firstStartSecondsSinceEpoch > $jobLog->{'startSecondsSinceEpoch'})) {
       $firstStartSecondsSinceEpoch = $jobLog->{'startSecondsSinceEpoch'};
     }
     if (exists $jobLog->{'endSecondsSinceEpoch'} and (not defined $lastEndSecondsSinceEpoch or $lastEndSecondsSinceEpoch < $jobLog->{'endSecondsSinceEpoch'})) {
       $lastEndSecondsSinceEpoch = $jobLog->{'endSecondsSinceEpoch'};
     }
+
     if (exists $jobLog->{'duration'}) {
       if (not defined $shortestJob or $shortestJob->{'duration'} > $jobLog->{'duration'}) {
         $shortestJob = $jobLog;
@@ -219,6 +236,7 @@ sub getLogTextReport {
         $longestJob = $jobLog;
       }
     }
+
     if (exists $jobLog->{'mem'}) {
       if (not defined $lowestMemoryJob or kiBToNum($lowestMemoryJob->{'mem'}) > kiBToNum($jobLog->{'mem'})) {
         $lowestMemoryJob = $jobLog;
@@ -228,6 +246,12 @@ sub getLogTextReport {
       }
     }
   }
+
+  # Print out job status counts
+  $logTextReport .= "# Number of successful jobs: " . $successfulJobCount . "\n";
+  $logTextReport .= "# Number of active jobs: " . $activeJobCount . "\n";
+  $logTextReport .= "# Number of inactive jobs: " . $inactiveJobCount . "\n";
+  $logTextReport .= "# Number of failed jobs: " . $failedJobCount . "\n#\n";
 
   # Print out execution time
   my $executionTime = (defined $firstStartSecondsSinceEpoch and defined $lastEndSecondsSinceEpoch) ? formatDuration($lastEndSecondsSinceEpoch - $firstStartSecondsSinceEpoch) : "N/A";
