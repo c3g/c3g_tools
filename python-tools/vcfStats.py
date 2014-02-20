@@ -42,12 +42,6 @@ def getarg(argument):
 
 
 def usage():
-	print "\n---------------------------------------------------------------------------------"
-	print "vcfStats.py will generate SNV statistics from a vcf file "
-	print "if no dico is given vcfStats will proceed for every chromosome "
-	print "This program was written by Mathieu BOURGEY"
-	print "For more information, contact: mbourgey@genomequebec.com"
-	print "----------------------------------------------------------------------------------\n"
 	print "USAGE : getRefBinedGC.py [option] "
 	print "       -v :        vcf file"
 	print "       -d :        dictionary file (optional)"
@@ -106,6 +100,12 @@ def getRegion(x,r):
 	#plt.savefig(out+"_SampleMutationRate.pdf", format='pdf')
 
 def main():
+	print "\n---------------------------------------------------------------------------------"
+	print "vcfStats.py will generate SNV statistics from a vcf file "
+	print "if no dico is given vcfStats will proceed for every chromosome "
+	print "This program was written by Mathieu BOURGEY"
+	print "For more information, contact: mbourgey@genomequebec.com"
+	print "----------------------------------------------------------------------------------\n"
 	vcfF, dicF, outB, fil = getarg(sys.argv)
 	vcf_reader = vcf.Reader(open(vcfF,'r'))
 	if dicF != "null" and os.path.exists(dicF) :
@@ -147,7 +147,12 @@ def main():
 	f=open(fil,'a')
 	f.write(outB+"\n")
 	f.close()
-	### generate the graph (png and pdf) for the report
+	f=open(fil,'r')
+	lis=f.readlines()
+	lastF=lis[-1].split()
+	if lastF != outB :
+		exit(1)
+	### glastFenerate the graph (png and pdf) for the report
 	#generateGraphs(region,samples,outB)
 
 main()
