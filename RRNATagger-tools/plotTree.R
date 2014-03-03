@@ -11,11 +11,11 @@ makeplots <- function(treeFile, outdir, prefix) {
   tree = read.tree(treeFile)
   
   jpeg(file=outfileJpeg, height=11, width=8, units="in", res=500)
-  plot(tree, cex=1)
+  plot(tree, cex=0.8)
   dev.off() 
 
   pdf(file=outfilePdf, height=16, width=8)
-  plot(tree, cex=1)
+  plot(tree, cex=0.8)
   dev.off() 
 } 
 
