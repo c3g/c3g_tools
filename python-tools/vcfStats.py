@@ -146,12 +146,8 @@ def main():
 	out.close()
 	f=open(fil,'a',0)
 	f.write(outB+"\n")
+	f.flush()
 	f.close()
-	f=open(fil,'r')
-	lis=f.readlines()
-	lastF=lis[-1].split()
-	if lastF != outB :
-		sys.exit("Error - missing the lastest value in:\n"+fil)
 	### glastFenerate the graph (png and pdf) for the report
 	#generateGraphs(region,samples,outB)
 
