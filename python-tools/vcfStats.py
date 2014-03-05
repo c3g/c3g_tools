@@ -144,14 +144,10 @@ def main():
 				region[i][j]=str(int(round(clen/int(region[i][j]))))
 		out.write(i+"\t"+"\t".join(region[i].values())+"\n")
 	out.close()
-	f=open(fil,'a')
+	f=open(fil,'a',0)
 	f.write(outB+"\n")
+	f.flush()
 	f.close()
-	f=open(fil,'r')
-	lis=f.readlines()
-	lastF=lis[-1].split()
-	if lastF != outB :
-		exit(1)
 	### glastFenerate the graph (png and pdf) for the report
 	#generateGraphs(region,samples,outB)
 
