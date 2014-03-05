@@ -117,7 +117,7 @@ function InstallGenome () {
        			#if [ ! -f $genomeAlias.zip ]; then
 			eval wget ${genomeSource} -O ${genomeAlias}.zip
 			#fi;
-			fastaFiles=`unzip -l $genomeAlias.zip | grep -v zip | grep "\.fa[s]*[t]*[a]*" | awk '{print $NF}'`
+			fastaFiles=`unzip -l $genomeAlias.zip | grep -v zip | grep "\.fa[s]*[t]*[a]*" | awk '{print $NF}' | tr '\n' '\t'`
 			unzip -o $genomeAlias.zip
 			cat $fastaFiles > $genomeAlias.fasta
 			fastaFiles=`echo $fastaFiles $genomeAlias.fasta`
@@ -126,7 +126,7 @@ function InstallGenome () {
 			#if [ ! -f $genomeAlias.tar.gz ]; then
 				eval wget -O ${genomeAlias}.tar.gz ${genomeSource}
 			#fi;
-			fastaFiles=`tar -ztvf $genomeAlias.tar.gz | grep "\.fa[s]*[t]*[a]*" | awk '{print $NF}'`
+			fastaFiles=`tar -ztvf $genomeAlias.tar.gz | grep "\.fa[s]*[t]*[a]*" | awk '{print $NF}' | tr '\n' '\t'`
 			tar -xzvf $genomeAlias.tar.gz
 			# merge all fasta files in a general fasta and add it too the list files to index/faidx,etc
 			cat $fastaFiles > $genomeAlias.fasta
@@ -143,7 +143,7 @@ function InstallGenome () {
 			fastaFiles=`echo $fastaFiles $genomeAlias.fasta`
 			;;
       "fasta") 
-			cp $genomeSource $genomeAlias.fasta
+			cp -rf $genomeSource $genomeAlias.fasta
 			fastaFiles=$genomeAlias.fasta
         ;;
      "gi")  
@@ -164,20 +164,20 @@ function InstallGenome () {
   # bowtie and bwa version
   bowtieVersion=`bowtie2 --version | grep version | awk 'NR==1 {print $NF}'`
   bwaVersion=`bwa 2>&1 | grep Version | sed -e 's/.*Version\: \([0-9a-zA-Z\.\-]*\).*/\1/1'`
-  bowtieDir=`echo "bowtie"$bowtieVersion`
-  bwaDir=`echo "bwa"$bwaVersion`
+  bowtieDir=`echo "fasta/bowtie"$bowtieVersion`
+  bwaDir=`echo "fasta/bwa"$bwaVersion`
   mkdir -p $INSTALL_PATH/$bowtieDir
   mkdir -p $INSTALL_PATH/$bwaDir
   mkdir -p $INSTALL_PATH/fasta/byChro
   for fa in $fastaFiles ;
   do
-    rm fasta/$fa;
-    mv $fa fasta/$fa;	
-    ln -fs fasta/$fa $fa;
+    rm -f fasta/$fa;
+    mv $fa fasta/$fa;
+    ln -s $INSTALL_PATH/fasta/$fa $fa;
     dictName=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.dict/g'`
     chrsize=`echo $fa | sed -e 's/\.fasta/\.dict/g' | sed -e 's/\.fa/\.chromsize\.txt/g'`
     # bowtie-build Index reference (already done for iGenomes)    
-    ln -fs fasta/$fa $INSTALL_PATH/$bowtieDir/$fa;
+    ln -s $INSTALL_PATH/fasta/$fa $INSTALL_PATH/$bowtieDir/$fa;
     bowtie2-build $INSTALL_PATH/$bowtieDir/$fa $INSTALL_PATH/$bowtieDir/$fa
     # Index reference with samtools faidx reference (already done for iGenomes)
     samtools faidx fasta/$fa 	
@@ -186,7 +186,7 @@ function InstallGenome () {
     # Generate tab delimited chromosome size file
     sed 1d fasta/$dictName | awk '{print $2"\t"$3}' | sed -e 's/SN://g' | sed -e 's/LN://g' > $chrsize
     # bwa index  reference (already done for iGenomes)
-    ln -fs fasta/$fa $INSTALL_PATH/$bwaDir/$fa;
+    ln -s $INSTALL_PATH/fasta/$fa $INSTALL_PATH/$bwaDir/$fa;
     bwa index -a bwtsw $INSTALL_PATH/$bwaDir/$fa 
     # By chromosome fasta files
     fastaexplode -f fasta/$fa -d $INSTALL_PATH/fasta/byChro/
