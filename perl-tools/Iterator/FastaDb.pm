@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 =head1 NAME
 
 Fasta - Simple object for Fasta sequence

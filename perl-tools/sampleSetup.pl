@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use Cwd;
 use File::Basename;
@@ -57,11 +57,11 @@ sub main {
   }
 
   my $errMsg = "";
-  if (!defined($nanuqAuthFile) or !-e $nanuqAuthFile) {
-    $errMsg .= "Error: missing nanuqAuthFile!\n";
-  }
   if (defined($projectId) and defined($sampleSheet)) {
     $errMsg .= "Error: --projectId and --useSheet options cannot be used together!\n";
+  }
+  if (defined($projectId) and (!defined($nanuqAuthFile) or !(-e $nanuqAuthFile))) {
+    $errMsg .= "Error: missing nanuqAuthFile!\n";
   }
   if ((!defined($projectId) or length($projectId) == 0) and (!defined($sampleSheet) or length($sampleSheet) == 0)) {
     $errMsg .= "Error: missing --projectId or --useSheet option!\n";
@@ -294,6 +294,8 @@ sub createLinks {
   my $rA_sampleInfos = shift;
 
   for my $rH_sample (@$rA_sampleInfos) {
+
+    # Create base raw read directory
     my $rawReadDir = 'raw_reads/' . $rH_sample->{'name'} . "/run" . $rH_sample->{'runId'} . "_" . $rH_sample->{'lane'};
     mkpath($rawReadDir);
 

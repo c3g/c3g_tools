@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Outputs statistics for samples
 # Louis Letourneau, Maxime Caron Jan 2012

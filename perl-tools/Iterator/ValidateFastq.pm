@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 =head1 NAME
 
 Iterator::ValidateFastq - Simple object for Fastq sequence
