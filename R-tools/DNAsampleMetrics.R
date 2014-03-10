@@ -10,7 +10,7 @@ type=args[3]
 name=NULL
 align=NULL
 duplicate=NULL
-paternFile=c(".flagstat",".insert_size_metrics",".all.coverage.sample_summary",".CCDS.coverage.sample_summary")
+paternFile=c(".sorted.dup.metrics",".insert_size_metrics",".all.coverage.sample_summary",".CCDS.coverage.sample_summary")
 ## get flagstat metrics
 listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[1],"$",sep=""),recursive=T))
 sampleNum=length(listFile)
@@ -18,8 +18,13 @@ nameSample=strsplit(basename(listFile),".",fixed=T)
 for(i in 1:length(listFile)) {
 	name=c(name,nameSample[[i]][1])
 	stats=scan(file=listFile[i],what="character",sep="\n")
-	align=c(align,strsplit(stats[grep("mapped (",stats,fixed=T)]," + ",fixed=T)[[1]][1])
-	duplicate=c(duplicate,strsplit(stats[grep("duplicates",stats,fixed=T)]," + ",fixed=T)[[1]][1])
+	infoP=grep("^LIBRARY", stats)
+	info=strsplit(stats[infoP],"\t")
+	pair=strsplit(stats[infoP+1],"\t")
+	readExa=as.numeric(pair[[1]][grep("_EXAMINED",info[[1]])])
+	align=c(align,readExa[1]+(2*readExa[2]))
+	readDup=as.numeric(pair[[1]][grep("_DUPLICATES",info[[1]])])
+	duplicate=c(duplicate,readDup[1]+(2*readDup[2])+(2*readDup[3]))
 }
 pairOrient=rep("NA",sampleNum)
 medianInsS=rep("NA",sampleNum)
