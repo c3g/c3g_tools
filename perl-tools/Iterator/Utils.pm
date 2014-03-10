@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 =head1 NAME
 
 Iterator::Utils - Simple object for Fastq sequence
