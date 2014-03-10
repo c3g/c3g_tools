@@ -1,3 +1,5 @@
+#!/usr/bin/env perl
+
 =head1 NAME
 
 Iterator::Utils - Simple object for Fastq sequence
@@ -57,7 +59,7 @@ sub check_qual
 
 	my $counter = 0;
 	
-	while( $counter < 1000 ) {
+	while( $counter < 5000 ) {
 		my @lines = map scalar( <$FASTQ> ), 1 .. 4;
 		last unless defined $lines[3];
 		chomp @lines;
