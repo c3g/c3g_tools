@@ -118,7 +118,7 @@ sub readJobLogListFile {
           } elsif ($jobLine =~ /^Job ID:\s+(\S+)/) {
             $jobLog{'jobFullId'} = $1;
           # Job MUGQIC exit status
-          } elsif ($jobLine =~ /MUGQICexitStatus:(\d+)/) {
+          } elsif ($jobLine =~ /MUGQICexitStatus:(\S+)/) {
             $jobLog{'MUGQICexitStatus'} = $1;
           # Username
           } elsif ($jobLine =~ /^Username:\s+(\S+)/) {
@@ -148,7 +148,7 @@ sub readJobLogListFile {
             $jobLog{'account'} = $1;
           # Job exit status (should be the same as MUGQIC exit status unless MUGQIC exit status is skipped)
           # abacus syntax: "Exit_status", guillimin phase 2 syntax: "Exit code"
-          } elsif ($jobLine =~ /^Exit(_status| code):\s+(\d+)/) {
+          } elsif ($jobLine =~ /^Exit(_status| code):\s+(\S+)/) {
             $jobLog{'exitStatus'} = $2;
           # Nodes
           } elsif ($jobLine =~ /^Nodes:\s+(\S+)/) {
