@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 use LWP::Simple;
 #$gi_list = '24475906,224465210,50978625,9507198';

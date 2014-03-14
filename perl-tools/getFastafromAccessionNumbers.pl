@@ -1,4 +1,4 @@
-#!/usr/bin/perl  
+#!/usr/bin/env perl
 
 use LWP::Simple;
 $acc_list=@ARGV[0];

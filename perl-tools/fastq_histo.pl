@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 # count_fasta.pl
 # AUTHOR: Joseph Fass (modified from script by Brad Sickler)
 # LAST REVISED: November 2010

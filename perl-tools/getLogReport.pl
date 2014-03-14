@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/env perl
 
 =head1 NAME
 
@@ -118,7 +118,7 @@ sub readJobLogListFile {
           } elsif ($jobLine =~ /^Job ID:\s+(\S+)/) {
             $jobLog{'jobFullId'} = $1;
           # Job MUGQIC exit status
-          } elsif ($jobLine =~ /MUGQICexitStatus:(\d+)/) {
+          } elsif ($jobLine =~ /MUGQICexitStatus:(\S+)/) {
             $jobLog{'MUGQICexitStatus'} = $1;
           # Username
           } elsif ($jobLine =~ /^Username:\s+(\S+)/) {
@@ -147,8 +147,9 @@ sub readJobLogListFile {
           } elsif ($jobLine =~ /^Account:\s+(\S+)/) {
             $jobLog{'account'} = $1;
           # Job exit status (should be the same as MUGQIC exit status unless MUGQIC exit status is skipped)
-          } elsif ($jobLine =~ /^Exit_status:\s+(\d+)/) {
-            $jobLog{'exitStatus'} = $1;
+          # abacus syntax: "Exit_status", guillimin phase 2 syntax: "Exit code"
+          } elsif ($jobLine =~ /^Exit(_status| code):\s+(\S+)/) {
+            $jobLog{'exitStatus'} = $2;
           # Nodes
           } elsif ($jobLine =~ /^Nodes:\s+(\S+)/) {
             $jobLog{'nodes'} = $1;
@@ -211,14 +212,18 @@ sub getLogTextReport {
   for my $jobLog (@AoH_jobLogList) {
     if (exists $jobLog->{'MUGQICexitStatus'} and $jobLog->{'MUGQICexitStatus'} eq 0) {
       $successfulJobCount++;
+      $jobLog->{'status'} = "SUCCESS";
     } elsif (exists $jobLog->{'endSecondsSinceEpoch'}) {
       # If job end date exists and MUGQICexitStatus != 0, job failed
       $failedJobCount++;
+      $jobLog->{'status'} = "FAILED";
     } elsif (exists $jobLog->{'startSecondsSinceEpoch'}) {
       # If job start date exists but job end date does not, job is still running
       $activeJobCount++;
+      $jobLog->{'status'} = "ACTIVE";
     } else {
       $inactiveJobCount++;
+      $jobLog->{'status'} = "INACTIVE";
     }
 
     if (exists $jobLog->{'startSecondsSinceEpoch'} and (not defined $firstStartSecondsSinceEpoch or $firstStartSecondsSinceEpoch > $jobLog->{'startSecondsSinceEpoch'})) {
@@ -274,6 +279,7 @@ sub getLogTextReport {
     "JOB_FULL_ID",
     "JOB_NAME",
     "JOB_DEPENDENCIES",
+    "STATUS",
     "JOB_EXIT_CODE",
     "CMD_EXIT_CODE",
     "REAL_TIME",
@@ -311,6 +317,7 @@ sub getLogTextReport {
       exists $jobLog->{'jobFullId'} ? $jobLog->{'jobFullId'} : "N/A",
       exists $jobLog->{'jobName'} ? $jobLog->{'jobName'} : "N/A",
       exists $jobLog->{'jobDependencies'} ? $jobLog->{'jobDependencies'} : "N/A",
+      exists $jobLog->{'status'} ? $jobLog->{'status'} : "N/A",
       exists $jobLog->{'exitStatus'} ? $jobLog->{'exitStatus'} : "N/A",
       exists $jobLog->{'MUGQICexitStatus'} ? $jobLog->{'MUGQICexitStatus'} : "N/A",
       exists $jobLog->{'walltime'} ? $jobLog->{'walltime'} . " (" . formatDuration($jobLog->{'duration'}) . ")" : "N/A",
