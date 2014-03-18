@@ -18,6 +18,9 @@ Generate relevant plots and table(s) of current PacBio assembly.
 
 INPUT:
 --filteredSummary <string>       : File path (usually /bla/bla/filtered_summary.csv)
+--shortReads <string>            : File path to short reads
+--longReads <string>             : File path to long reads.
+--correctedReads <string>        : File path to corrected reads.
 --contigs <string>               : Celera contigs.
 --sampleName <string>            : sample name
 --suffix <string>                : suffix
@@ -36,19 +39,22 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSummary, $contigs);
+my ($help, $outdir, $sampleName, $suffix, $estimatedGenomeSize, $smrtCells, $filteredSummary, $contigs, $shortReads, $longReads, $correctedReads);
 my $verbose = 0;
 
 GetOptions(
-	'filteredSummary=s'       => \$filteredSummary,
-	'contigs=s'               => \$contigs,
-    'outdir=s' 	     		  => \$outdir,
-	'sampleName=s'   		  => \$sampleName,
-	'suffix=s'			 	  => \$suffix,
-	'estimatedGenomeSize=i'   => \$estimatedGenomeSize,
-	'smrtCells=i'			  => \$smrtCells,
-    'verbose' 	     		  => \$verbose,
-    'help' 		     		  => \$help
+	'filteredSummary=s'     => \$filteredSummary,
+  'shortReads=s'          => \$shortReads,
+  'longReads=s'           => \$longReads,
+  'correctedReads=s'      => \$correctedReads,
+	'contigs=s'             => \$contigs,
+  'outdir=s' 	     		    => \$outdir,
+	'sampleName=s'   		    => \$sampleName,
+	'suffix=s'			 	      => \$suffix,
+	'estimatedGenomeSize=i' => \$estimatedGenomeSize,
+	'smrtCells=i'			      => \$smrtCells,
+  'verbose' 	     		    => \$verbose,
+  'help' 		     	        => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -56,6 +62,9 @@ if ($help) { print $usage; exit; }
 die "--filteredSummary missing\n" unless($filteredSummary);
 die "--outdir missing\n" unless($outdir);
 die("--filteredSummary file is empty or does not exists! (Typed wrong filename?)\n") if((!-e $filteredSummary) and (!-s $filteredSummary));	
+die "--shortReads missing\n" unless($shortReads);
+die "--longReads missing\n" unless($longReads);
+die "--correctedReads missing\n" unless($correctedReads);
 
 ## MAIN
 
@@ -77,38 +86,7 @@ my $contigCoverage;  #		$contigCoverage = ContigsOnly
 my $gcContent;       #		Content
 my $totalSequencedBases = 0;
 
-#my $contigStats = "$indir/$suffix/assembly/9-terminator/$sampleName.qc";
-#my $contigStats = $assemblyQc;
-#open(IN, '<'.$contigStats) or die "Can't open $contigStats\n";
-#while(<IN>){
-#	chomp;
-#	if($_ =~ m/TotalContigsInScaffolds=(.*)$/){
-#		$totalContigs = $1;	
-#	}
-#	if($_ =~ m/TotalBasesInScaffolds=(.*)$/){
-#		 $totalBases = $1;
-#	}
-#	if($_ =~ m/MinContigLength=(.*)$/){
-#		$minContigLength = $1;
-#	}
-#	if($_ =~ m/MaxContigLength=(.*)$/){
-#		$maxContigLength = $1;
-#	}
-#	if($_ =~ m/N50ContigBases=(.*)$/){
-#		$N50Bases = $1;
-#	}
-#	if($_ =~ m/ContigsOnly=(.*)$/){
-#		$contigCoverage = $1;
-#	}
-#	#if($_ =~ m/Content=(.*)$/){
-#	#	$gcContent = $1;
-#	#}
-#}
-#close(IN);
-
-
 # Print to file relevant values from raw reads.
-
 if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	open(OUT, '>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
 	print OUT "\"Description\"\t\"Value\"\n";
@@ -118,6 +96,11 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	my $totalReads = 0;
 	my $passedReads = 0;
 	my $failedReads = 0;
+  my $ge3Kb = 0;
+  my $ge6Kb = 0;
+  my $ge9Kb = 0;
+  my $ge12Kb = 0;
+  my $ge15Kb = 0;
 	my @readLength;
 	my @passedReads;
 
@@ -129,8 +112,13 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 		my $readLength = $row[3];
 		push(@row, $readLength);
 		if($row[7] == 1){
-			$passedReads++;
-            $totalSequencedBases += $readLength;					
+      $passedReads++;
+      $totalSequencedBases += $readLength;
+      $ge3Kb++ if($readLength >= 3000);
+      $ge6Kb++ if($readLength >= 6000);
+      $ge9Kb++ if($readLength >= 9000);
+      $ge12Kb++ if($readLength >= 12000);
+      $ge15Kb++ if($readLength >= 15000);
 			push(@passedReads, $readLength);
 		}
 		$failedReads++ if($row[7] == 0);
@@ -154,11 +142,20 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	print OUT "\"Average subread length that passed QC\"\t\"".$averageReadLengthQCpassed."\"\n";
 	print OUT "\"Shortest subread length that passed QC\"\t\"".$shortestRead."\"\n";
 	print OUT "\"Longest subread length that passed QC\"\t\"".$longestRead."\"\n";
+	print OUT "\"Number of reads greater than 3 Kb that passed QC\"\t\"".$ge3Kb."\"\n";
+	print OUT "\"Number of reads greater than 6 Kb that passed QC\"\t\"".$ge6Kb."\"\n";
+	print OUT "\"Number of reads greater than 9 Kb that passed QC\"\t\"".$ge9Kb."\"\n";
+	print OUT "\"Number of reads greater than 12 Kb that passed QC\"\t\"".$ge12Kb."\"\n";
+	print OUT "\"Number of reads greater than 15 Kb that passed QC\"\t\"".$ge15Kb."\"\n";
 	close(IN);
 	close(OUT);
 }
 
-# Compute N25, N50, N75 and display length of each contig.
+getReadsStats($shortReads, "short reads");
+getReadsStats($longReads, "long reads");
+getReadsStats($correctedReads, "corrected reads");
+
+# Compute N25, N50, N75 and display length of each contig for final contigs.
 $totalBases = 0;
 my $counter = 1;
 my %hash;	
@@ -176,7 +173,7 @@ while( my $curr = $ref_fasta_db->next_seq() ) {
 	my $length = length($curr->seq);
 	my $header = $curr->header;
 	$header =~ s/>//;
-    push(@length, $length);
+  push(@length, $length);
 
 	###################
 	push @seqLengths, $length; # record length for N50 calc's 
@@ -267,7 +264,128 @@ print OUT "\"N90 contigs bases\"\t\"$N90\"\n";
 print OUT "\"GC content (%)\"\t\"$gcContent\"\n";
 close(OUT);
 
+# Compute N25, N50, N75 and display length of each contig for short reads (before correction).
+sub getReadsStats{
+  
+  my $infile = shift;
+  my $prefix = shift;
+	
+  open(OUT, '>>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
 
+	$totalBases = 0;
+	my $counter = 1;
+	my %hash;	
+	my $gcCount=0;
+	my @seqLengths;
+	my $opt_i = 100;
+	my %len= ();
+	my $n = 0;
+	my $int;
+	my $totalLength = 0;
+	my @length;
+	my $totalReads = 0;
+	my $passedReads = 0;
+	my $failedReads = 0;
+	my $ge3Kb = 0;
+	my $ge6Kb = 0;
+	my $ge9Kb = 0;
+	my $ge12Kb = 0;
+	my $ge15Kb = 0;
+	my @readLength;
+	my @passedReads;
+	
+	my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+	while( my $curr = $ref_fasta_db->next_seq() ) {
+		my $length = length($curr->seq);
+		my $header = $curr->header;
+		$header =~ s/>//;
+	  push(@length, $length);
+	  $ge3Kb++ if($length >= 3000);
+	  $ge6Kb++ if($length >= 6000);
+	  $ge9Kb++ if($length >= 9000);
+	  $ge12Kb++ if($length >= 12000);
+	  $ge15Kb++ if($length >= 15000);
+	
+		###################
+		push @seqLengths, $length; # record length for N50 calc's 
+		$n++; 
+		$int = floor( $length/$opt_i );  
+		$totalLength += $length; 
+		if( !defined($len{$int}) ) { 
+			$len{$int} = 1;  
+		} else { 
+			$len{$int}++; 
+		}   
+		$gcCount += ($curr->seq()  =~ tr/gGcC/gGcC/);
+		###################
+	
+		#print STDOUT "Sequence: ".$header."\t".$length." bp\n";
+		$totalBases += $length;
+		$hash{$header} = $length;
+	
+		$counter++;
+	}
+	
+	$maxContigLength = max @length;
+	$minContigLength = min @length;
+	$gcContent = sprintf "%.2f", ($gcCount/$totalBases * 100);
+	$counter = ($counter - 1);
+	print STDOUT "Total of ".$counter." sequences\n";
+	$totalContigs = $counter;
+	
+	my $shortestRead = min(@length);
+	my $longestRead = max(@length);
+	my $averageReadLength = sprintf "%.2f", sum(@length)/@length;
+  #$averageReadLength = sprintf "%.2f", ($averageReadLength);
+		
+	# Calculate N25, N50, N75, and N90 and counts 
+	my $N25; my $N50; my $N75; my $N90; 
+	my $N25count=0; my $N50count=0; my $N75count=0; my $N90count=0; 
+	my $frac_covered = $totalLength; 
+	@seqLengths = reverse sort { $a <=> $b } @seqLengths; 
+	$N25 = $seqLengths[0]; 
+	while ($frac_covered > $totalLength*3/4) { 
+		$N25 = shift(@seqLengths); 
+		$N25count++; $N50count++; $N75count++; $N90count++; 
+		$frac_covered -= $N25; 
+	} 
+	$N50 = $N25; 
+	while ($frac_covered > $totalLength/2) { 
+		$N50 = shift(@seqLengths); 
+		$N50count++; $N75count++; $N90count++; 
+		$frac_covered -= $N50; 
+	} 
+	$N75 = $N50; 
+	while ($frac_covered > $totalLength/4) { 
+		$N75 = shift(@seqLengths); 
+		$N75count++; $N90count++; 
+		$frac_covered -= $N75; 
+	} 
+	$N90 = $N75; 
+	while ($frac_covered > $totalLength/10) { 
+		$N90 = shift(@seqLengths); 
+		$N90count++; 
+		$frac_covered -= $N90; 
+	}
+	
+	print OUT "\"Total number of $prefix\"\t\"".$counter."\"\n";
+	print OUT "\"Total bases in $prefix\"\t\"".$totalBases."\"\n";
+	print OUT "\"Average $prefix lenth\"\t\"".$averageReadLength."\"\n";
+	print OUT "\"Number of $prefix greater than 3 Kb\"\t\"".$ge3Kb."\"\n";
+	print OUT "\"Number of $prefix greater than 6 Kb\"\t\"".$ge6Kb."\"\n";
+	print OUT "\"Number of $prefix greater than 9 Kb\"\t\"".$ge9Kb."\"\n";
+	print OUT "\"Number of $prefix greater than 12 Kb\"\t\"".$ge12Kb."\"\n";
+	print OUT "\"Number of $prefix greater than 15 Kb\"\t\"".$ge15Kb."\"\n";
+	print OUT "\"N25 - 25% of total $prefix sequence length is contained in the ".$N25count." sequence(s) having a length >= \"\t\"".$N25." bp\"\n";
+	print OUT "\"N50 - 50% of total $prefix sequence length is contained in the ".$N50count." sequence(s) having a length >= \"\t\"".$N50." bp\"\n";
+	print OUT "\"N75 - 75% of total $prefix sequence length is contained in the ".$N75count." sequence(s) having a length >= \"\t\"".$N75." bp\"\n";
+	print OUT "\"N90 - 90% of total $prefix sequence length is contained in the ".$N90count." sequence(s) having a length >= \"\t\"".$N90." bp\"\n";
+  close(OUT);
+}
+
+exit;
+
+### OLD CODE TO DELETE...
 #foreach my $key (sort {$hash{$b} <=> $hash{$a}} (keys %hash)){
 #	#print STDOUT $key . "\t" .$hash{$key}."\n";	
 #}
@@ -292,7 +410,71 @@ close(OUT);
 #	}
 #	$counter++;
 #}
+#my $contigStats = "$indir/$suffix/assembly/9-terminator/$sampleName.qc";
+#my $contigStats = $assemblyQc;
+#open(IN, '<'.$contigStats) or die "Can't open $contigStats\n";
+#while(<IN>){
+#	chomp;
+#	if($_ =~ m/TotalContigsInScaffolds=(.*)$/){
+#		$totalContigs = $1;	
+#	}
+#	if($_ =~ m/TotalBasesInScaffolds=(.*)$/){
+#		 $totalBases = $1;
+#	}
+#	if($_ =~ m/MinContigLength=(.*)$/){
+#		$minContigLength = $1;
+#	}
+#	if($_ =~ m/MaxContigLength=(.*)$/){
+#		$maxContigLength = $1;
+#	}
+#	if($_ =~ m/N50ContigBases=(.*)$/){
+#		$N50Bases = $1;
+#	}
+#	if($_ =~ m/ContigsOnly=(.*)$/){
+#		$contigCoverage = $1;
+#	}
+#	#if($_ =~ m/Content=(.*)$/){
+#	#	$gcContent = $1;
+#	#}
+#}
+#close(IN);
 
-exit;
 
+#Filtered sequence (total) total length (bp), 306232954
+#Filtered sequence (total) Coverage on 2100000bp (X), 145.825
+#Filtered sequence (total) average length, 3841.45
+#Filtered sequence (total) N50, 4879
+#Filtered sequence (total) number, 79718
+#Filtered sequence (total) number greater than 3Kb, 40780
+#Filtered sequence (total) number greater than 6Kb, 13893
+#Long sequences (into corr) total length (bp), 63003917
+#Long sequences (into corr) Coverage on 2100000bp (X), 30.001
+#Long sequences (into corr) Minimum Long Readlength (bp), 8961
+#Long sequences (into corr) average length, 11285
+#Long sequences (into corr) N50, 11178
+#Long sequences (into corr) number, 5583
+#Long sequences (into corr) number greater than 3Kb, 5583
+#Long sequences (into corr) number greater than 6Kb, 5583
+#Short sequences (into corr) total length (bp), 243229037
+#Short sequences (into corr) Coverage on 2100000bp (X), 115.823
+#Short sequences (into corr) average length, 3280.89
+#Short sequences (into corr) N50, 4070
+#Short sequences (into corr) number, 74135
+#Short sequences (into corr) number greater than 3Kb, 35197
+#Short sequences (into corr) number greater than 6Kb, 8310
+#Corrected sequences (total) total length (bp), 46392459
+#Corrected sequences (total) Coverage on 2100000bp (X), 22.091
+#Corrected sequences (total) average length, 7919.5
+#Corrected sequences (total) N50, 9844
+#Corrected sequences (total) number, 5858
+#Corrected sequences (total) number greater than 3Kb, 4993
+#Corrected sequences (total) number greater than 6Kb, 4118
+#Corrected sequence (intoasm) total length (bp), 46392459
+#Corrected sequence (intoasm) Coverage on 2100000bp (X), 22.091
+#Corrected sequence (intoasm) Minimum Readlength (bp), 500
+#Corrected sequence (intoasm) average length, 7919.5
+#Corrected sequence (intoasm) N50, 9844
+#Corrected sequence (intoasm)s, 5858
+#Corrected sequence (intoasm)s greater than 3Kb, 4993
+#Corrected sequence (intoasm)s greater than 6Kb, 4118
 
