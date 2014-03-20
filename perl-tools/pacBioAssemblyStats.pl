@@ -76,6 +76,8 @@ print STDERR "[DEBUG] ".$cmd."\n";
 system($cmd);
 die "Command failed: $!\n" if($? != 0);
 
+my %hashSummary;
+
 # Get assembly stats
 my $totalContigs;    #		TotalContigsInScaffolds
 my $totalBases;      #  	TotalBasesInScaffolds
@@ -85,6 +87,9 @@ my $N50Bases;        #		N50ContigBases
 my $contigCoverage;  #		$contigCoverage = ContigsOnly
 my $gcContent;       #		Content
 my $totalSequencedBases = 0;
+my $totalSequencedBasesRaw = 0;
+
+open(OUT_TABLE_2, '>'.$outdir."/summaryTableReads2.tsv") or die "Can't open ".$outdir."/summaryTableReads2.tsv";
 
 # Print to file relevant values from raw reads.
 if( (-e $filteredSummary) and (-s $filteredSummary) ){
@@ -101,8 +106,15 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
   my $ge9Kb = 0;
   my $ge12Kb = 0;
   my $ge15Kb = 0;
+  my $ge3KbRaw = 0;
+  my $ge6KbRaw = 0;
+  my $ge9KbRaw = 0;
+  my $ge12KbRaw = 0;
+  my $ge15KbRaw = 0;
 	my @readLength;
 	my @passedReads;
+  #my $shortestReadRaw = 0;
+  #my $longestReadRaw = 0;
 
 	open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
 	while(<IN>){
@@ -110,7 +122,8 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 		next if($. == 1);
 		my @row = split(/,/, $_);
 		my $readLength = $row[3];
-		push(@row, $readLength);
+    next if($readLength == 0);
+		#push(@row, $readLength);
 		if($row[7] == 1){
       $passedReads++;
       $totalSequencedBases += $readLength;
@@ -120,14 +133,25 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
       $ge12Kb++ if($readLength >= 12000);
       $ge15Kb++ if($readLength >= 15000);
 			push(@passedReads, $readLength);
-		}
+		}else{
+
+    }
+    $ge3KbRaw++ if($readLength >= 3000);
+    $ge6KbRaw++ if($readLength >= 6000);
+    $ge9KbRaw++ if($readLength >= 9000);
+    $ge12KbRaw++ if($readLength >= 12000);
+    $ge15KbRaw++ if($readLength >= 15000);
+
 		$failedReads++ if($row[7] == 0);
 		$totalReads++;
+    $totalSequencedBasesRaw += $readLength;
 		push(@readLength, $readLength);
 	}
 		
 	my $shortestRead = min(@passedReads);
 	my $longestRead = max(@passedReads);
+	my $shortestReadRaw = min(@readLength);
+	my $longestReadRaw = max(@readLength);
 	my $averageReadLength = sum(@readLength)/@readLength;
 	my $averageReadLengthQCpassed = sum(@passedReads)/@passedReads;
 	
@@ -149,11 +173,36 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	print OUT "\"Number of reads greater than 15 Kb that passed QC\"\t\"".$ge15Kb."\"\n";
 	close(IN);
 	close(OUT);
+
+  # Fill hash for alternate table
+  $hashSummary{'1- raw'}{'1- totalReads'}         = $totalReads;
+  $hashSummary{'1- raw'}{'2- sequencedBases'}     = $totalSequencedBasesRaw;
+  $hashSummary{'1- raw'}{'3- averageReadLength'}  = $averageReadLength;
+  #$hashSummary{'1- raw'}{'failedReads'}       = $failedReads;
+  #$hashSummary{'1- raw'}{'passedReads'}       = $passedReads;
+  $hashSummary{'1- raw'}{'4- shortestRead'}       = $shortestReadRaw;
+  $hashSummary{'1- raw'}{'5- longestRead'}        = $longestReadRaw;
+  $hashSummary{'1- raw'}{'6- >=3Kb'}              = $ge3KbRaw; 
+  $hashSummary{'1- raw'}{'7- >=6Kb'}              = $ge6KbRaw; 
+  $hashSummary{'1- raw'}{'8- >=9Kb'}              = $ge9KbRaw; 
+  $hashSummary{'1- raw'}{'9- >=12Kb'}             = $ge12KbRaw;
+  $hashSummary{'1- raw'}{'91- >=15Kb'}             = $ge15KbRaw;
+ 
+  $hashSummary{'2- filtered'}{'1- totalReads'}        = $passedReads;
+  $hashSummary{'2- filtered'}{'2- sequencedBases'}    = $totalSequencedBases;
+  $hashSummary{'2- filtered'}{'3- averageReadLength'} = $averageReadLengthQCpassed;
+  $hashSummary{'2- filtered'}{'4- shortestRead'}      = $shortestRead;
+  $hashSummary{'2- filtered'}{'5- longestRead'}       = $longestRead;
+  $hashSummary{'2- filtered'}{'6- >=3Kb'}             = $ge3Kb;
+  $hashSummary{'2- filtered'}{'7- >=6Kb'}             = $ge6Kb;
+  $hashSummary{'2- filtered'}{'8- >=9Kb'}             = $ge9Kb;
+  $hashSummary{'2- filtered'}{'9- >=12Kb'}            = $ge12Kb;
+  $hashSummary{'2- filtered'}{'91- >=15Kb'}            = $ge15Kb;
 }
 
-getReadsStats($shortReads, "short reads");
-getReadsStats($longReads, "long reads");
-getReadsStats($correctedReads, "corrected reads");
+getReadsStats($shortReads, "short reads", "3-");
+getReadsStats($longReads, "long reads", "4-");
+getReadsStats($correctedReads, "corrected reads", "5-");
 
 # Compute N25, N50, N75 and display length of each contig for final contigs.
 $totalBases = 0;
@@ -230,11 +279,6 @@ while ($frac_covered > $totalLength/10) {
 	$frac_covered -= $N90; 
 }
 
-print STDOUT "N25 - 25% of total sequence length is contained in the ".$N25count." sequence(s) having a length >= ".$N25." bp\n";
-print STDOUT "N50 - 50% of total sequence length is contained in the ".$N50count." sequence(s) having a length >= ".$N50." bp\n";
-print STDOUT "N75 - 75% of total sequence length is contained in the ".$N75count." sequence(s) having a length >= ".$N75." bp\n";
-print STDOUT "N90 - 90% of total sequence length is contained in the ".$N90count." sequence(s) having a length >= ".$N90." bp\n";
-
 # Compute X coverage value used by hgap.
 my $percent;
 if($suffix =~ m/(\d+)percent/){
@@ -256,12 +300,16 @@ print OUT "\"Total contigs\"\t\"$totalContigs\"\n";
 print OUT "\"Total bases in contigs (bp)\"\t\"$totalBases\"\n";
 print OUT "\"Minimum contig length (bp)\"\t\"$minContigLength\"\n";
 print OUT "\"Maximum contig length (bp)\"\t\"$maxContigLength\"\n";
-print OUT "\"N25 contigs bases\"\t\"$N25\"\n";
-print OUT "\"N50 contigs bases\"\t\"$N50\"\n";
-print OUT "\"N75 contigs bases\"\t\"$N75\"\n";
-print OUT "\"N90 contigs bases\"\t\"$N90\"\n";
+#print OUT "\"N25 contigs bases\"\t\"$N25\"\n";
+#print OUT "\"N50 contigs bases\"\t\"$N50\"\n";
+#print OUT "\"N75 contigs bases\"\t\"$N75\"\n";
+#print OUT "\"N90 contigs bases\"\t\"$N90\"\n";
 #print OUT "\"Contigs coverage (X)\"\t\"$contigCoverage\"\n";
 print OUT "\"GC content (%)\"\t\"$gcContent\"\n";
+print OUT "\"N25 - 25% of total sequence length is contained in the ".$N25count." sequence(s) having a length >= \"\t".$N25."\" bp\"\n";
+print OUT "\"N50 - 50% of total sequence length is contained in the ".$N50count." sequence(s) having a length >= \"\t".$N50."\" bp\"\n";
+print OUT "\"N75 - 75% of total sequence length is contained in the ".$N75count." sequence(s) having a length >= \"\t".$N75."\" bp\"\n";
+print OUT "\"N90 - 90% of total sequence length is contained in the ".$N90count." sequence(s) having a length >= \"\t".$N90."\" bp\"\n";
 close(OUT);
 
 # Compute N25, N50, N75 and display length of each contig for short reads (before correction).
@@ -269,7 +317,8 @@ sub getReadsStats{
   
   my $infile = shift;
   my $prefix = shift;
-	
+  my $indice = shift;	
+
   open(OUT, '>>'.$outdir."/summaryTableReads.tsv") or die "Can't open ".$outdir."/summaryTableReads.tsv";
 
 	$totalBases = 0;
@@ -381,7 +430,41 @@ sub getReadsStats{
 	print OUT "\"N75 - 75% of total $prefix sequence length is contained in the ".$N75count." sequence(s) having a length >= \"\t\"".$N75." bp\"\n";
 	print OUT "\"N90 - 90% of total $prefix sequence length is contained in the ".$N90count." sequence(s) having a length >= \"\t\"".$N90." bp\"\n";
   close(OUT);
+  
+  $hashSummary{"$indice $prefix"}{'1- totalReads'}        = $counter;
+  $hashSummary{"$indice $prefix"}{'2- sequencedBases'}    = $totalBases;
+  $hashSummary{"$indice $prefix"}{'3- averageReadLength'} = $averageReadLength;
+  $hashSummary{"$indice $prefix"}{'4- shortestRead'}      = $shortestRead;
+  $hashSummary{"$indice $prefix"}{'5- longestRead'}       = $longestRead;
+  $hashSummary{"$indice $prefix"}{'6- >=3Kb'}             = $ge3Kb;
+  $hashSummary{"$indice $prefix"}{'7- >=6Kb'}             = $ge6Kb;
+  $hashSummary{"$indice $prefix"}{'8- >=9Kb'}             = $ge9Kb;
+  $hashSummary{"$indice $prefix"}{'9- >=12Kb'}            = $ge12Kb;
+  $hashSummary{"$indice $prefix"}{'91- >=15Kb'}           = $ge15Kb;
 }
+
+my @string = 1;
+$string[0] = "#PacBio assembly summary count table";
+# Then loop through hashSummary hash and print results in a table
+my $i = 1;
+foreach my $prefix (sort{$a cmp $b} keys %hashSummary) {
+  $string[$i] = $prefix;	
+
+  foreach my $field (sort{$a cmp $b} keys %{ $hashSummary{$prefix} }) {
+    if($i == 1){
+      $string[0] .= "\t".$field;
+    }
+    $string[$i] .= "\t".$hashSummary{$prefix}{$field};
+	}
+	$i++;
+}
+
+foreach(@string){
+  my $line = $_;
+  $line =~ s/\d{1,2}\- //g;
+  print OUT_TABLE_2 $line."\n";
+}
+close(OUT_TABLE_2);
 
 exit;
 
