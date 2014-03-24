@@ -6,7 +6,7 @@ args=commandArgs(TRUE)
 paternFile=args[1]
 fileDir=args[2]
 outputFile=args[3]
-dir.create(dirname(outputFile), recursive =T)
+dir.create(dirname(outputFile), recursive = T, showWarnings = FALSE)
 type=args[4]
 
 listFile=list.files(fileDir,pattern=paste(paternFile,"$",sep=""),recursive=T)

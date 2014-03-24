@@ -27,9 +27,12 @@ Or
 --nanutAuthFile <string> : File having username and pass on one line.
 --bas                    : Provide arg if you want the .bas files to be included
                            in output. By default only .bax.h5 are included.
+--ccs                    : If path of CCS and not ba(sx).h5 files are to be written 
+                           in output.
 	
 OUTPUT:
-Sample sheet needed to launch the PacBioi assembly pipeline.
+Sample sheet needed to launch the PacBio assembly pipeline. Can also be used
+with RRNATagger pipeline (16S/18S/ITS amplicons).
 
 NOTES:
 
@@ -41,17 +44,18 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile, $bas);
+my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile, $bas, $ccs);
 my $verbose = 0;
 
 GetOptions(
-    'runName=s'	      => \$runName,
-	'projectId=i'     => \$projectId,
-	'sampleSheet=s'   => \$sampleSheet,
-	'nanuqAuthFile=s' => \$nanuqAuthFile,
-	'bas'             => \$bas,
-    'verbose' 	      => \$verbose,
-    'help' 		      => \$help
+  'runName=s'	      => \$runName,
+  'projectId=i'     => \$projectId,
+  'sampleSheet=s'   => \$sampleSheet,
+  'nanuqAuthFile=s' => \$nanuqAuthFile,
+  'bas'             => \$bas,
+  'ccs'             => \$ccs,
+  'verbose' 	      => \$verbose,
+  'help'            => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -164,6 +168,10 @@ if($bas){
 	$regEx = "(.*.bax.h5)";
 }
 
+if($ccs){
+  $regEx = "(.*ccs\.fastq\.zip\$)";
+}
+
 foreach my $run (%hash){
 	foreach my $well (keys %{ $hash{$run} }) {
 
@@ -187,6 +195,7 @@ foreach my $run (%hash){
 					my $searchString = $run."(_\\d+)";
 					if($key =~ m/$searchString/){
 						$root = "$dirname/$run$1/$well/Analysis_Results/";
+						$root = "$dirname/$run$1/qc/$well/" if($ccs);
 						opendir(DIR, $root);
 						@files = readdir(DIR);
 						closedir DIR;
@@ -196,6 +205,8 @@ foreach my $run (%hash){
 		
 								my $h5FullPath = $hash{$run}{$well}{path};
 								my $h5FileName = basename($h5FullPath);
+
+                #print STDERR $h5FullPath."\n";
 								
 								my $newPath = "raw_reads/".$h5FileName;
 								symlink($hash{$run}{$well}{path}, $newPath);
