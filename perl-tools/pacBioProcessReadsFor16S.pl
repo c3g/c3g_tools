@@ -107,12 +107,14 @@ foreach my $fastq (@mergedFastqs){
   my $currBarcode = shift(@new_barcodes);
   
   print INDEX "$fastq\t$currBarcode\n";
-  my $barcodeHeader = $fastq;
+  my $barcodeHeader = basename($fastq);
   $barcodeHeader =~ s/\.fastq//;
-  $barcodeHeader =~ s/\///;
+  $barcodeHeader =~ s/\///g;
+  $barcodeHeader =~ s/\.//g;
   print BARCODES ">".$barcodeHeader."\n".$currBarcode."\n";
   print STDERR "[DEBUG] Processing ".$fastq."\n" if($verbose);
   print STDERR "[DEBUG] Processing ".$currBarcode."\n" if($verbose);
+  print STDERR "[DEBUG] Processing ".$barcodeHeader."\n" if($verbose);
   
   my $outfile = $fastq;
   $outfile =~ s/\.fastq/_withBarcodes\.fastq/;
