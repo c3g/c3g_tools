@@ -73,7 +73,7 @@ while(<IN>){
 
   #print STDERR "[DEBUG] ".$file."\n";
   $hash{$sampleName}{$well} = $file;
-  print STDERR "[DEBUG] ".$hash{$sampleName}{$well}."\n";
+  print STDERR "[DEBUG] ".$hash{$sampleName}{$well}."\n" if($verbose);
 }
 close(IN);
 
@@ -84,13 +84,13 @@ foreach my $sampleName (keys %hash){
 
   my $cmd = "cat ";
   foreach my $well (keys %{ $hash{$sampleName} }){ 
-    print STDERR "[DEBUG]\t ".$well."\n";  
-    print STDERR "[DEBUG] ".$hash{$sampleName}{$well}."\n";
+    print STDERR "[DEBUG]\t ".$well."\n" if($verbose);  
+    print STDERR "[DEBUG] ".$hash{$sampleName}{$well}."\n" if($verbose);
       
     $cmd .= $hash{$sampleName}{$well}." ";
   }
   $cmd .= "> $outdir/$sampleName.fastq";
-  print STDERR "[DEBUG] ".$cmd."\n";
+  print STDERR "[DEBUG] ".$cmd."\n" if($verbose);
   system($cmd);
   push(@mergedFastqs, "$outdir/$sampleName.fastq");
 }
@@ -107,17 +107,30 @@ foreach my $fastq (@mergedFastqs){
   my $currBarcode = shift(@new_barcodes);
   
   print INDEX "$fastq\t$currBarcode\n";
-  print BARCODES ">".$fastq."\n".$currBarcode."\n";
-  print STDERR "[DEBUG] Processing ".$fastq."\n";
-  print STDERR "[DEBUG] Processing ".$currBarcode."\n";
+  my $barcodeHeader = $fastq;
+  $barcodeHeader =~ s/\.fastq//;
+  $barcodeHeader =~ s/\///;
+  print BARCODES ">".$barcodeHeader."\n".$currBarcode."\n";
+  print STDERR "[DEBUG] Processing ".$fastq."\n" if($verbose);
+  print STDERR "[DEBUG] Processing ".$currBarcode."\n" if($verbose);
   
   my $outfile = $fastq;
   $outfile =~ s/\.fastq/_withBarcodes\.fastq/;
   open(OUT, ">".$outfile) or die "Can't open $outfile\n";
 
+  # Here cut reads at a maximum of 2000 bp. Because fastx is gonna crash. And also 16S amplicons of more than 2000 does not make sense.
   my $ref_fastq_db = Iterator::FastqDb->new($fastq) or die("Unable to open Fasta file, $fastq\n");
   while( my $curr = $ref_fastq_db->next_seq() ) {
-    print OUT $curr->header."#".$currBarcode."\n".$curr->seq."\n+\n".$curr->qual."\n"; 
+    my $header = $curr->header;
+    $header =~ s/\//-/g;
+    my $seq = $curr->seq;
+    my $qual = $curr->qual;
+    if(length($seq) > 2000 && length($qual) > 2000){
+      $seq = substr($seq, 0, 2000);
+      $qual = substr($qual, 0, 2000);
+    }  
+
+    print OUT $header."#".$currBarcode."/1\n".$seq."\n+\n".$qual."\n"; 
   }
   close(OUT);
   push(@mergedFastqsWithBarcodes, $outfile);
