@@ -198,7 +198,7 @@ sourceFile=$1
 OLDIFS=$IFS
 IFS=$'\t'
 curDir=`pwd`
-prologue
+# prologue 
 loadModules  
 while read genomeName genomeGroup genomeSource gType genomeAlias
 do
