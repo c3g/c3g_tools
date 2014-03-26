@@ -102,6 +102,10 @@ sub commify {
 find (\&eachFile, $indir);
 
 my $totalSequencedBases = 0;
+my $totalReads = 0;
+my $reads7kbPlus = 0;
+my $reads12kbPlus = 0;
+my $reads18kbPlus = 0;
 open(IN, '<'.$readsStats) or die "Can't open ".$readsStats."\n";
 while(<IN>){
 	chomp;
@@ -110,7 +114,11 @@ while(<IN>){
 	my $readLength = $row[3];
 	push(@row, $readLength);
 	if($row[7] == 1){
-        $totalSequencedBases += $readLength;					
+        $totalSequencedBases += $readLength;
+        $totalReads++; 
+        $reads7kbPlus++ if($readLength >= 7000); 
+        $reads12kbPlus++ if($readLength >= 12000); 
+        $reads18kbPlus++ if($readLength >= 18000); 
 	}
 }
 close(IN);
@@ -182,6 +190,10 @@ foreach my $key (sort{$a cmp $b} keys %hQcPolished){
 	$hResultsPolished{$key}{'minContigLength'}         = commify($minContigLength);
 	$hResultsPolished{$key}{'maxContigLength'}         = commify($maxContigLength);
 	$hResultsPolished{$key}{'HGAP_cutoff(X)'}          = commify($covCutoff) if($estimatedGenomeSize);
+  $hResultsPolished{$key}{'TotalQCpassedSubreads'}      = commify($totalReads);
+  $hResultsPolished{$key}{'7kb+QCpassedSubreads'}       = commify($reads7kbPlus);
+  $hResultsPolished{$key}{'12kb+QCpassedSubreads'}      = commify($reads12kbPlus);
+  $hResultsPolished{$key}{'18kb+QCpassedSubreads'}      = commify($reads18kbPlus);
 	
 	print STDOUT "Total of ".$counter." sequences\n" if($verbose);
 		
@@ -295,6 +307,10 @@ foreach my $key (sort{$a cmp $b} keys %hQc){
 	$hResults{$key}{'N75'}                     = $N75BasesCelera;
 	$hResults{$key}{'contigs coverage'}        = $contigCoverageCelera;
 	$hResults{$key}{'gc%'}                     = $gcContentCelera;	
+  $hResults{$key}{'TotalQCpassedSubreads'}      = commify($totalReads);
+  $hResults{$key}{'7kb+QCpassedsSubreads'}       = commify($reads7kbPlus);
+  $hResults{$key}{'12kb+QCpassedSubreads'}      = commify($reads12kbPlus);
+  $hResults{$key}{'18kb+QCpassedSubreads'}      = commify($reads18kbPlus);
 }	
 
 print STDOUT "Stats for sample: ".$sampleName."\n";
