@@ -102,12 +102,12 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	my $passedReads = 0;
 	my $failedReads = 0;
   my $ge3Kb = 0;
-  my $ge6Kb = 0;
+  my $ge7Kb = 0;
   my $ge9Kb = 0;
   my $ge12Kb = 0;
   my $ge15Kb = 0;
   my $ge3KbRaw = 0;
-  my $ge6KbRaw = 0;
+  my $ge7KbRaw = 0;
   my $ge9KbRaw = 0;
   my $ge12KbRaw = 0;
   my $ge15KbRaw = 0;
@@ -128,7 +128,7 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
       $passedReads++;
       $totalSequencedBases += $readLength;
       $ge3Kb++ if($readLength >= 3000);
-      $ge6Kb++ if($readLength >= 6000);
+      $ge7Kb++ if($readLength >= 7000);
       $ge9Kb++ if($readLength >= 9000);
       $ge12Kb++ if($readLength >= 12000);
       $ge15Kb++ if($readLength >= 15000);
@@ -137,7 +137,7 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 
     }
     $ge3KbRaw++ if($readLength >= 3000);
-    $ge6KbRaw++ if($readLength >= 6000);
+    $ge7KbRaw++ if($readLength >= 7000);
     $ge9KbRaw++ if($readLength >= 9000);
     $ge12KbRaw++ if($readLength >= 12000);
     $ge15KbRaw++ if($readLength >= 15000);
@@ -167,7 +167,7 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	print OUT "\"Shortest subread length that passed QC\"\t\"".$shortestRead."\"\n";
 	print OUT "\"Longest subread length that passed QC\"\t\"".$longestRead."\"\n";
 	print OUT "\"Number of reads greater than 3 Kb that passed QC\"\t\"".$ge3Kb."\"\n";
-	print OUT "\"Number of reads greater than 6 Kb that passed QC\"\t\"".$ge6Kb."\"\n";
+	print OUT "\"Number of reads greater than 7 Kb that passed QC\"\t\"".$ge7Kb."\"\n";
 	print OUT "\"Number of reads greater than 9 Kb that passed QC\"\t\"".$ge9Kb."\"\n";
 	print OUT "\"Number of reads greater than 12 Kb that passed QC\"\t\"".$ge12Kb."\"\n";
 	print OUT "\"Number of reads greater than 15 Kb that passed QC\"\t\"".$ge15Kb."\"\n";
@@ -178,15 +178,15 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
   $hashSummary{'1- raw'}{'1- totalReads'}         = $totalReads;
   $hashSummary{'1- raw'}{'2- sequencedBases'}     = $totalSequencedBasesRaw;
   $hashSummary{'1- raw'}{'3- averageReadLength'}  = $averageReadLength;
-  #$hashSummary{'1- raw'}{'failedReads'}       = $failedReads;
-  #$hashSummary{'1- raw'}{'passedReads'}       = $passedReads;
+  #$hashSummary{'1- raw'}{'failedReads'}          = $failedReads;
+  #$hashSummary{'1- raw'}{'passedReads'}          = $passedReads;
   $hashSummary{'1- raw'}{'4- shortestRead'}       = $shortestReadRaw;
   $hashSummary{'1- raw'}{'5- longestRead'}        = $longestReadRaw;
   $hashSummary{'1- raw'}{'6- >=3Kb'}              = $ge3KbRaw; 
-  $hashSummary{'1- raw'}{'7- >=6Kb'}              = $ge6KbRaw; 
+  $hashSummary{'1- raw'}{'7- >=7Kb'}              = $ge7KbRaw; 
   $hashSummary{'1- raw'}{'8- >=9Kb'}              = $ge9KbRaw; 
   $hashSummary{'1- raw'}{'9- >=12Kb'}             = $ge12KbRaw;
-  $hashSummary{'1- raw'}{'91- >=15Kb'}             = $ge15KbRaw;
+  $hashSummary{'1- raw'}{'91- >=15Kb'}            = $ge15KbRaw;
  
   $hashSummary{'2- filtered'}{'1- totalReads'}        = $passedReads;
   $hashSummary{'2- filtered'}{'2- sequencedBases'}    = $totalSequencedBases;
@@ -194,10 +194,10 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
   $hashSummary{'2- filtered'}{'4- shortestRead'}      = $shortestRead;
   $hashSummary{'2- filtered'}{'5- longestRead'}       = $longestRead;
   $hashSummary{'2- filtered'}{'6- >=3Kb'}             = $ge3Kb;
-  $hashSummary{'2- filtered'}{'7- >=6Kb'}             = $ge6Kb;
+  $hashSummary{'2- filtered'}{'7- >=7Kb'}             = $ge7Kb;
   $hashSummary{'2- filtered'}{'8- >=9Kb'}             = $ge9Kb;
   $hashSummary{'2- filtered'}{'9- >=12Kb'}            = $ge12Kb;
-  $hashSummary{'2- filtered'}{'91- >=15Kb'}            = $ge15Kb;
+  $hashSummary{'2- filtered'}{'91- >=15Kb'}           = $ge15Kb;
 }
 
 getReadsStats($shortReads, "short reads", "3-");
@@ -287,7 +287,9 @@ if($suffix =~ m/(\d+)percent/){
 	die "Something wrong with assembly name...\n";
 }
 my $estimatedCov = ($totalSequencedBases / $estimatedGenomeSize);
+my $estimatedCovRaw = ($totalSequencedBasesRaw / $estimatedGenomeSize);
 my $covCutoff = sprintf "%.2f", ($estimatedCov * $percent / 100);
+$estimatedCov = sprintf "%.0f", $estimatedCov;
 
 # Print to file relevant values of the assembly process.
 open(OUT, '>'.$outdir."/summaryTableAssembly.tsv") or die "Can't open ".$outdir."/summaryTableAssembly.tsv";
@@ -296,6 +298,7 @@ print OUT "\"Sample name\"\t\"$sampleName\"\n";
 print OUT "\"Assembly name\"\t\"$sampleName-$suffix\"\n";
 print OUT "\"HGAP cutoff (X)\"\t\"$covCutoff\"\n";
 print OUT "\"Estimated genome size (bp)\"\t\"$estimatedGenomeSize\"\n";
+print OUT "\"Estimated coverage (X)\"\t\"$estimatedCov\"\n";
 print OUT "\"Total contigs\"\t\"$totalContigs\"\n";
 print OUT "\"Total bases in contigs (bp)\"\t\"$totalBases\"\n";
 print OUT "\"Minimum contig length (bp)\"\t\"$minContigLength\"\n";
@@ -336,7 +339,7 @@ sub getReadsStats{
 	my $passedReads = 0;
 	my $failedReads = 0;
 	my $ge3Kb = 0;
-	my $ge6Kb = 0;
+	my $ge7Kb = 0;
 	my $ge9Kb = 0;
 	my $ge12Kb = 0;
 	my $ge15Kb = 0;
@@ -350,7 +353,7 @@ sub getReadsStats{
 		$header =~ s/>//;
 	  push(@length, $length);
 	  $ge3Kb++ if($length >= 3000);
-	  $ge6Kb++ if($length >= 6000);
+	  $ge7Kb++ if($length >= 6000);
 	  $ge9Kb++ if($length >= 9000);
 	  $ge12Kb++ if($length >= 12000);
 	  $ge15Kb++ if($length >= 15000);
@@ -421,7 +424,7 @@ sub getReadsStats{
 	print OUT "\"Total bases in $prefix\"\t\"".$totalBases."\"\n";
 	print OUT "\"Average $prefix lenth\"\t\"".$averageReadLength."\"\n";
 	print OUT "\"Number of $prefix greater than 3 Kb\"\t\"".$ge3Kb."\"\n";
-	print OUT "\"Number of $prefix greater than 6 Kb\"\t\"".$ge6Kb."\"\n";
+	print OUT "\"Number of $prefix greater than 7 Kb\"\t\"".$ge7Kb."\"\n";
 	print OUT "\"Number of $prefix greater than 9 Kb\"\t\"".$ge9Kb."\"\n";
 	print OUT "\"Number of $prefix greater than 12 Kb\"\t\"".$ge12Kb."\"\n";
 	print OUT "\"Number of $prefix greater than 15 Kb\"\t\"".$ge15Kb."\"\n";
@@ -437,7 +440,7 @@ sub getReadsStats{
   $hashSummary{"$indice $prefix"}{'4- shortestRead'}      = $shortestRead;
   $hashSummary{"$indice $prefix"}{'5- longestRead'}       = $longestRead;
   $hashSummary{"$indice $prefix"}{'6- >=3Kb'}             = $ge3Kb;
-  $hashSummary{"$indice $prefix"}{'7- >=6Kb'}             = $ge6Kb;
+  $hashSummary{"$indice $prefix"}{'7- >=7Kb'}             = $ge7Kb;
   $hashSummary{"$indice $prefix"}{'8- >=9Kb'}             = $ge9Kb;
   $hashSummary{"$indice $prefix"}{'9- >=12Kb'}            = $ge12Kb;
   $hashSummary{"$indice $prefix"}{'91- >=15Kb'}           = $ge15Kb;
@@ -529,7 +532,7 @@ exit;
 #Filtered sequence (total) N50, 4879
 #Filtered sequence (total) number, 79718
 #Filtered sequence (total) number greater than 3Kb, 40780
-#Filtered sequence (total) number greater than 6Kb, 13893
+#Filtered sequence (total) number greater than 7Kb, 13893
 #Long sequences (into corr) total length (bp), 63003917
 #Long sequences (into corr) Coverage on 2100000bp (X), 30.001
 #Long sequences (into corr) Minimum Long Readlength (bp), 8961
@@ -537,21 +540,21 @@ exit;
 #Long sequences (into corr) N50, 11178
 #Long sequences (into corr) number, 5583
 #Long sequences (into corr) number greater than 3Kb, 5583
-#Long sequences (into corr) number greater than 6Kb, 5583
+#Long sequences (into corr) number greater than 7Kb, 5583
 #Short sequences (into corr) total length (bp), 243229037
 #Short sequences (into corr) Coverage on 2100000bp (X), 115.823
 #Short sequences (into corr) average length, 3280.89
 #Short sequences (into corr) N50, 4070
 #Short sequences (into corr) number, 74135
 #Short sequences (into corr) number greater than 3Kb, 35197
-#Short sequences (into corr) number greater than 6Kb, 8310
+#Short sequences (into corr) number greater than 7Kb, 8310
 #Corrected sequences (total) total length (bp), 46392459
 #Corrected sequences (total) Coverage on 2100000bp (X), 22.091
 #Corrected sequences (total) average length, 7919.5
 #Corrected sequences (total) N50, 9844
 #Corrected sequences (total) number, 5858
 #Corrected sequences (total) number greater than 3Kb, 4993
-#Corrected sequences (total) number greater than 6Kb, 4118
+#Corrected sequences (total) number greater than 7Kb, 4118
 #Corrected sequence (intoasm) total length (bp), 46392459
 #Corrected sequence (intoasm) Coverage on 2100000bp (X), 22.091
 #Corrected sequence (intoasm) Minimum Readlength (bp), 500
@@ -559,5 +562,5 @@ exit;
 #Corrected sequence (intoasm) N50, 9844
 #Corrected sequence (intoasm)s, 5858
 #Corrected sequence (intoasm)s greater than 3Kb, 4993
-#Corrected sequence (intoasm)s greater than 6Kb, 4118
+#Corrected sequence (intoasm)s greater than 7Kb, 4118
 
