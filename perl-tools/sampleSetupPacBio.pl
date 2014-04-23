@@ -29,6 +29,7 @@ Or
                            in output. By default only .bax.h5 are included.
 --ccs                    : If path of CCS and not ba(sx).h5 files are to be written 
                            in output.
+--outputRunId            : if run id is to be written in output.
 	
 OUTPUT:
 Sample sheet needed to launch the PacBio assembly pipeline. Can also be used
@@ -44,7 +45,7 @@ Julien Tremblay - julien.tremblay@mail.mcgill.ca
 ENDHERE
 
 ## OPTIONS
-my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile, $bas, $ccs);
+my ($help, $runName, $projectId, $sampleSheet, $nanuqAuthFile, $bas, $ccs, $outputRunId);
 my $verbose = 0;
 
 GetOptions(
@@ -54,6 +55,7 @@ GetOptions(
   'nanuqAuthFile=s' => \$nanuqAuthFile,
   'bas'             => \$bas,
   'ccs'             => \$ccs,
+  'outputRunId'     => \$outputRunId,
   'verbose' 	      => \$verbose,
   'help'            => \$help
 );
@@ -210,8 +212,11 @@ foreach my $run (%hash){
 								
 								my $newPath = "raw_reads/".$h5FileName;
 								symlink($hash{$run}{$well}{path}, $newPath);
-			
-								print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n"; 	
+		            if($outputRunId){
+  								print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\t".$run."\n";
+                }else{
+  								print STDOUT $hash{$run}{$well}{sampleName}."\t".$well."\t".$newPath."\t".$hash{$run}{$well}{protocol}."\t".$hash{$run}{$well}{bp}."\n";
+                }
 							}
 						}
 					}
