@@ -234,7 +234,12 @@ sub parseSampleSheet {
         $sampleInfo{'bam'} = $rootDir . $values[$bamIdx];
       }
 
-      push(@retVal, \%sampleInfo);
+      if(!$values[$bamIdx] && !$values[$fastq1Idx]) {
+        warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
+      }
+      else {
+        push(@retVal, \%sampleInfo);
+     }
     }
   }
 
@@ -257,8 +262,7 @@ sub createLinks {
     # List all links to create
     if ($rH_sample->{'bam'}) {
       push(@symlinks, [$rH_sample->{'bam'}, $rawReadPrefix . "bam"]);
-    }
-    if ($rH_sample->{'fastq1'}) {
+    } elsif ($rH_sample->{'fastq1'}) {
       my $runType = $rH_sample->{'runType'};
       if ($runType eq "SINGLE_END") {
         push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "single.fastq.gz"]);
