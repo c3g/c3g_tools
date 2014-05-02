@@ -234,11 +234,11 @@ sub parseSampleSheet {
         $sampleInfo{'bam'} = $rootDir . $values[$bamIdx];
       }
 
-      if(!$values[$bamIdx] && !$values[$fastq1Idx]) {
-        warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
-      }
-      else {
+      # Readsets must have at least one BAM or FASTQ file defined to be selected, otherwise warning is raised
+      if ($values[$bamIdx] or $values[$fastq1Idx]) {
         push(@retVal, \%sampleInfo);
+      } else {
+        warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
      }
     }
   }
