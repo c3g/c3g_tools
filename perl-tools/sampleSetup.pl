@@ -202,8 +202,8 @@ sub parseSampleSheet {
   while ($line = <SAMPLE_SHEET>) {
     $csv->parse($line);
     my @values = $csv->fields();
-    if ($values[$statusIdx] =~ /invalid/) {
-      warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] data is invalid!\n";
+    if ($values[$statusIdx] ne 'Data is valid') {
+      warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] data is not in valid state!\n";
     } else {
       my %sampleInfo;
       $sampleInfo{'name'} = $values[$nameIdx];
