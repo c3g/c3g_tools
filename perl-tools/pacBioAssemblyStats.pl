@@ -280,15 +280,16 @@ while ($frac_covered > $totalLength/10) {
 }
 
 # Compute X coverage value used by hgap.
-my $percent;
-if($suffix =~ m/(\d+)percent/){
-	$percent = $1;
+#my $percent;
+my $covCutoff;
+if($suffix =~ m/(\d+)X/){
+	$covCutoff = $1;
 }else{
 	die "Something wrong with assembly name...\n";
 }
 my $estimatedCov = ($totalSequencedBases / $estimatedGenomeSize);
 my $estimatedCovRaw = ($totalSequencedBasesRaw / $estimatedGenomeSize);
-my $covCutoff = sprintf "%.2f", ($estimatedCov * $percent / 100);
+#my $covCutoff = sprintf "%.2f", ($estimatedCov * $percent / 100);
 $estimatedCov = sprintf "%.0f", $estimatedCov;
 
 # Print to file relevant values of the assembly process.

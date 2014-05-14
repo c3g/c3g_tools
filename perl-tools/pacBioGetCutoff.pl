@@ -30,7 +30,7 @@ INPUT:
 --coverageFraction <float> : At what cutoff of the estimated coverage you 
                              want the cutoff value. Default: 0.30
 
---coverageCutoff           : To get cutoff based on cummulative length
+--coverageCutoff <int>     : To get cutoff based on cummulative length
                              of sequences up until a (Coverage * 
                              Genome size) * coverageFraction.
 --xml <string>             : XML file to parse.
@@ -40,7 +40,7 @@ INPUT:
 TODO
 --hgapCutoff               : To get cutoff based on a more 
                              sophisticated algorithm.
-			
+      
 OUTPUT:
 STDOUT
 
@@ -58,16 +58,16 @@ my ($help, $infile, $coverage, $genomeSize, $coverageFraction, $coverageCutoff, 
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 	   		 => \$infile,
-	'xml=s'				 => \$xml,
-	'xmlOut=s'			 => \$xmlOut,
-	'genomeSize=i' 		 => \$genomeSize,
-	'coverageCutoff' 	 => \$coverageCutoff,
-	'coverageFraction=f' => \$coverageFraction,
-	'hgapCutoff'		 => \$hgapCutoff,
-	'coverage=i'   		 => \$coverage,
-    'verbose' 	   		 => \$verbose,
-    'help' 		   		 => \$help
+  'infile=s'            => \$infile,
+  'xml=s'               => \$xml,
+  'xmlOut=s'            => \$xmlOut,
+  'genomeSize=i'        => \$genomeSize,
+  'coverageCutoff=i'    => \$coverageCutoff,
+  #'coverageFraction=f'  => \$coverageFraction,
+  'hgapCutoff'          => \$hgapCutoff,
+  'coverage=i'          => \$coverage,
+  'verbose'             => \$verbose,
+  'help'                => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -76,13 +76,13 @@ die "--infile missing\n" unless($infile);
 die "--genomeSize missing\n" unless($genomeSize);
 die "--coverageCutoff or --hgapCutoff missing\n" unless($coverageCutoff || $hgapCutoff);
 if($xml){
-	#die "--xmlOut missing\n" unless($xmlOut);
+  #die "--xmlOut missing\n" unless($xmlOut);
 }
 if($xmlOut){
-	#die "--xml missing\n" unless($xml);
+  #die "--xml missing\n" unless($xml);
 }
 
-$coverageFraction = 0.30 unless($coverageFraction);
+#$coverageFraction = 0.30 unless($coverageFraction);
 
 ## MAIN
 
@@ -109,111 +109,113 @@ my @array;
 my $totalBases=0;
 
 if($infile =~ m/\.fastq|\.fq/){
-	my $ref_fastq_db = Iterator::FastqDb->new($infile) or die("Unable to open Fasta file, $infile\n");
-	while( my $curr = $ref_fastq_db->next_seq() ) {
-		$hash{length($curr->seq())}++;
-		push(@array, length($curr->seq()));
-	}
+  my $ref_fastq_db = Iterator::FastqDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+  while( my $curr = $ref_fastq_db->next_seq() ) {
+    $hash{length($curr->seq())}++;
+    push(@array, length($curr->seq()));
+  }
 }elsif($infile =~ m/\.fasta|\.fa|\.fsa|\.fna/){
-	my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
-	while( my $curr = $ref_fasta_db->next_seq() ) {
-		$hash{length($curr->seq())}++;
-		$totalBases += length($curr->seq());
-		push(@array, length($curr->seq()));
-	}
+  my $ref_fasta_db = Iterator::FastaDb->new($infile) or die("Unable to open Fasta file, $infile\n");
+  while( my $curr = $ref_fasta_db->next_seq() ) {
+    $hash{length($curr->seq())}++;
+    $totalBases += length($curr->seq());
+    push(@array, length($curr->seq()));
+  }
 }else{
-	die "Couldn't determine if file was fastq or fasta.\n";
+  die "Couldn't determine if file was fastq or fasta.\n";
 }
 
 $coverage = sprintf "%0.2f", $totalBases / $genomeSize;
+my $Xcutoff = $genomeSize * $coverageCutoff;
 
 my $cutoff=0;
 if($coverageCutoff){
-	@array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
-	my $sum=0;
-	for (my $i=0;$i<@array;$i++){
-		$sum = $sum + $array[$i];
-		if($sum > ( ($coverage * $genomeSize) * $coverageFraction )){ # Coult be refined... this cutoff depends on the read length distribution.
-			$cutoff = $array[$i]; 
-			last;
-		}
-	}
+  @array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
+  my $sum=0;
+  for (my $i=0;$i<@array;$i++){
+    $sum = $sum + $array[$i];
+    #if($sum > ( ($coverage * $genomeSize) * $coverageFraction )){ # old fraction method.
+    if($sum >  $Xcutoff ){                                         # X cov. method.
+      $cutoff = $array[$i]; 
+      last;
+    }
+  }
 
-	my $cov = sprintf "%0.2f", $totalBases / $genomeSize;
-	my $X = sprintf "%0.2f", $sum / $genomeSize;
+  my $cov = sprintf "%0.2f", $totalBases / $genomeSize;
+  my $X = sprintf "%0.2f", $sum / $genomeSize;
 
-	print STDERR "Estimated coverage with filtered reads only: ".$cov."X\n";
-	print STDERR "Estmated coverage cutoff value: ".$X."X\n";
-	print STDERR "Read length cutoff value: ".$cutoff." bp\n";	
+  print STDERR "Estimated coverage with filtered reads only: ".$cov."X\n";
+  print STDERR "Estmated coverage cutoff value: ".$X."X\n";
+  print STDERR "Read length cutoff value: ".$cutoff." bp\n";  
 
-	print STDOUT $cutoff."\n";
+  print STDOUT $cutoff."\n";
 
 }elsif($hgapCutoff){
 
-	@array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
-	my $total = sum(@array);
-	my @coverageArray;
+  @array = sort {$b <=> $a} @array; # Descending order. First reads in the array (before to be found cutoff) will be seeding reads.
+  my $total = sum(@array);
+  my @coverageArray;
 
-	my @x = (500,100,6000);
-	foreach my $x (@x){
-		my @y;
-		foreach my $seqLength (@array){
-			push(@y, $seqLength) if($seqLength > $x);
-		}
-		my $psum = sum(@y);
-		
-		my $coverage = 0.5 * $psum / $genomeSize / $x * exp( $coverage *-1 );
-		my $contigCount = $coverage * $genomeSize / $x * exp ($coverage * -1);
-		my $contigLength = (exp($coverage) -1) * $x / $coverage;
+  my @x = (500,100,6000);
+  foreach my $x (@x){
+    my @y;
+    foreach my $seqLength (@array){
+      push(@y, $seqLength) if($seqLength > $x);
+    }
+    my $psum = sum(@y);
+    
+    my $coverage = 0.5 * $psum / $genomeSize / $x * exp( $coverage *-1 );
+    my $contigCount = $coverage * $genomeSize / $x * exp ($coverage * -1);
+    my $contigLength = (exp($coverage) -1) * $x / $coverage;
 
-		my @el = ($x, $psum, $total / $psum, $coverage, $contigCount, $contigLength / $genomeSize);
-		push @coverageArray, [ @el ];
-	}
-		
-	#seq_lengths = sort(seq_lengths,'descend');
-	#% coverage = sum(seq_lengths(seq_lengths>=lencut))/estimatedgenomesize;
-	#
-	#total = sum(seq_lengths)
-	#coverage_array = []
-	#
-	#for x=500:100:6000,
-	#	psum = sum(seq_lengths(seq_lengths>x));
-	#    coverage = 0.5 * psum / estimatedgenomesize; % we loss 50% bases after the pre-assembly step
-	#    contig_count = coverage * estimatedgenomesize / x * exp( -coverage );
-	#    contig_length = (exp(coverage) - 1) * x /coverage;
-	#	el=[ x, psum, 1.0*total/psum, coverage,  contig_count,  contig_length/estimatedgenomesize];
-	#    disp(sprintf('%i, %i, %f, %0.2f, %f, %f', x, psum, 1.0*total/psum, coverage,  contig_count,  contig_length/estimatedgenomesize))
-	#	coverage_array = [coverage_array; el];
-	#end
-	#
-	#% 1. The ratio of the total number bases to the long read bases is larger than 3.
-	#% 2. Estimated Lander-Waterman contig number less than 0.25. 
-	#% 3. The estimated Lander-Waterman contig size is larger than 0.25x of the genome size.
-	#
-	#answer = coverage_array(coverage_array(:,3)>3 & coverage_array(:,5)<0.25 & coverage_array(:,6)>0.25,:);
-	#if(~isempty(answer))
-	#	cutoff = answer(1);
-	#	disp([ 'Longest start at,' num2str(cutoff) ]);
-	#else
-	#	% [v,i] = min(sum([abs(coverage_array(:,3)-3)/mean(coverage_array(:,3)) abs(coverage_array(:,5)-0.25)/mean(coverage_array(:,5)) abs(coverage_array(:,6)-0.25)/mean(coverage_array(:,6))],2));
-	#	[v,i] = min(abs(coverage_array(:,3)-3));
-	#	%
-	#	% coverage_array(:,3) - 3 >0
-	#	% 0.25 - coverage_array(:,5) >0
-	#	% coverage_array(:,6) - 0.25x >0
-	#	% 
-	#	cutoff = coverage_array(i,1);
-	#	disp([ 'Longest start at,' num2str(cutoff) ]);
-	#end
+    my @el = ($x, $psum, $total / $psum, $coverage, $contigCount, $contigLength / $genomeSize);
+    push @coverageArray, [ @el ];
+  }
+    
+  #seq_lengths = sort(seq_lengths,'descend');
+  #% coverage = sum(seq_lengths(seq_lengths>=lencut))/estimatedgenomesize;
+  #
+  #total = sum(seq_lengths)
+  #coverage_array = []
+  #
+  #for x=500:100:6000,
+  #  psum = sum(seq_lengths(seq_lengths>x));
+  #    coverage = 0.5 * psum / estimatedgenomesize; % we loss 50% bases after the pre-assembly step
+  #    contig_count = coverage * estimatedgenomesize / x * exp( -coverage );
+  #    contig_length = (exp(coverage) - 1) * x /coverage;
+  #  el=[ x, psum, 1.0*total/psum, coverage,  contig_count,  contig_length/estimatedgenomesize];
+  #    disp(sprintf('%i, %i, %f, %0.2f, %f, %f', x, psum, 1.0*total/psum, coverage,  contig_count,  contig_length/estimatedgenomesize))
+  #  coverage_array = [coverage_array; el];
+  #end
+  #
+  #% 1. The ratio of the total number bases to the long read bases is larger than 3.
+  #% 2. Estimated Lander-Waterman contig number less than 0.25. 
+  #% 3. The estimated Lander-Waterman contig size is larger than 0.25x of the genome size.
+  #
+  #answer = coverage_array(coverage_array(:,3)>3 & coverage_array(:,5)<0.25 & coverage_array(:,6)>0.25,:);
+  #if(~isempty(answer))
+  #  cutoff = answer(1);
+  #  disp([ 'Longest start at,' num2str(cutoff) ]);
+  #else
+  #  % [v,i] = min(sum([abs(coverage_array(:,3)-3)/mean(coverage_array(:,3)) abs(coverage_array(:,5)-0.25)/mean(coverage_array(:,5)) abs(coverage_array(:,6)-0.25)/mean(coverage_array(:,6))],2));
+  #  [v,i] = min(abs(coverage_array(:,3)-3));
+  #  %
+  #  % coverage_array(:,3) - 3 >0
+  #  % 0.25 - coverage_array(:,5) >0
+  #  % coverage_array(:,6) - 0.25x >0
+  #  % 
+  #  cutoff = coverage_array(i,1);
+  #  disp([ 'Longest start at,' num2str(cutoff) ]);
+  #end
 }
 
 if($xml && $xmlOut){
-	my $text = read_file( $xml );
-	$text =~ s/(<param name=\"minLongReadLength\">\n.*<value>)(.*)(<\/value>\n.*<\/param>)/$1$cutoff$3/;
-	$text =~ s/(<title>Compute \"Minimum Seed Read Length\"<\/title>\n.*<value>)True(<\/value>\n.*<input type=\"checkbox\" \/>)/$1False$2/;
-	open(XMLOUT, '>'.$xmlOut) or die "Can't open $xmlOut\n";
-	print XMLOUT $text;
-	close(XMLOUT);
+  my $text = read_file( $xml );
+  $text =~ s/(<param name=\"minLongReadLength\">\n.*<value>)(.*)(<\/value>\n.*<\/param>)/$1$cutoff$3/;
+  $text =~ s/(<title>Compute \"Minimum Seed Read Length\"<\/title>\n.*<value>)True(<\/value>\n.*<input type=\"checkbox\" \/>)/$1False$2/;
+  open(XMLOUT, '>'.$xmlOut) or die "Can't open $xmlOut\n";
+  print XMLOUT $text;
+  close(XMLOUT);
 }
 
 exit;
