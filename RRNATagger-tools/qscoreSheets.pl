@@ -80,19 +80,19 @@ die "fastx_quality_stats executable not found!\n" unless $qscore_tool;
 die "barcodes binning tool not on path (Barcodes.pl)\n" unless $barcodes_splitter_tool;
 
 GetOptions(
-    'fastq=s'		=> \$illumina_infile,
-    'barcodes=s' 	=> \$barcodes_infile,
-	'prefix=s' 		=> \$prefix,
-	'suffix=s' 		=> \$suffix,
-	'outfile=s' 	=> \$outfile,
-	'outdir=s' 		=> \$outdir,
-	'phred=i' 		=> \$phred,
-	'num_threads=i' => \$num_threads,
-    'verbose' 		=> \$verbose,
-	'log=s' 		=> \$log,
-	'tmp=s' 		=> \$tmp,
-    'help' 			=> \$help,
-	'debug' 		=> \$debug
+  'fastq=s'       => \$illumina_infile,
+  'barcodes=s'    => \$barcodes_infile,
+  'prefix=s'      => \$prefix,
+  'suffix=s'      => \$suffix,
+  'outfile=s'     => \$outfile,
+  'outdir=s'      => \$outdir,
+  'phred=i'       => \$phred,
+  'num_threads=i' => \$num_threads,
+  'verbose'       => \$verbose,
+  'log=s'         => \$log,
+  'tmp=s'         => \$tmp,
+  'help'          => \$help,
+  'debug'         => \$debug
 );
 if ($help) { print $usage; exit; }
 

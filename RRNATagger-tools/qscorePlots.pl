@@ -57,19 +57,19 @@ my ($help, $infile_1, $infile_2, $row, $col, $pdf, $single, $paired, $separate, 
 my $verbose = 0;
 
 GetOptions(
-    'infile_1=s'	=> \$infile_1,
-	'infile_2=s' 	=> \$infile_2,
-	'infile=s'		=> \@infile,
-	'name=s' 		=> \@name,
-    'pdf=s' 		=> \$pdf,
-	'rows=s' 		=> \$row,
-	'col=s' 		=> \$col,
-    'verbose' 		=> \$verbose,
-	'single' 		=> \$single,
-	'paired' 		=> \$paired,
-	'separate' 		=> \$separate,
-	'display=s' 	=> \$display,
-    'help' 			=> \$help
+  'infile_1=s' => \$infile_1,
+  'infile_2=s' => \$infile_2,
+  'infile=s'   => \@infile,
+  'name=s'     => \@name,
+  'pdf=s'      => \$pdf,
+  'rows=s'     => \$row,
+  'col=s'      => \$col,
+  'verbose'    => \$verbose,
+  'single'     => \$single,
+  'paired'     => \$paired,
+  'separate'   => \$separate,
+  'display=s'  => \$display,
+  'help'       => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -98,19 +98,6 @@ if($single){
 no warnings 'numeric';
 no warnings 'redefine';
 
-my $cex;
-my $format;
-if($display == 1){
-	$row = 2;
-	$col = 2;
-	$cex = 0.7;
-	$format = "c(1,10,20,30,40)";
-}elsif($display == 2){
-	$row = 4;
-	$col = 2;
-	$cex = 0.65;
-	$format = "c(1,20,40)";
-}
 
 ## TEMP DIR
 my $tmpdir = File::Temp->newdir(
@@ -126,6 +113,7 @@ my $hist_string= "";
 my @array;
 my $counter = 0;
 my $id;
+my $max = 0;
 
 #LOOP THROUGH FILE 1, AND STORE STRINGS IN ARRAY OR HASH
 my %hash_1=();
@@ -147,9 +135,31 @@ if($single or $paired){
 			next;
 		}else{#Body
 			$hash_1{$id} .= $_."\n";
+      #  Find max value.
+      my @row = split(/\t/, $_);
+      #print "[DEBUG] row[8]".$row[8]."\n";
+      if($row[11] > $max){
+        $max = $row[11];
+      }
 		}	
 	}
 	close(IN_1);
+}
+
+my $cex;
+my $format;
+if($display == 1){
+	$row = 2;
+	$col = 2;
+	$cex = 0.7;
+	$format = "c(1,10,20,30,40)";
+	$format = "c(1,10,20,30,40,50,60,70,80)" if($max > 70);
+}elsif($display == 2){
+	$row = 4;
+	$col = 2;
+	$cex = 0.65;
+	$format = "c(1,20,40)";
+	$format = "c(1,10,20,30,40,50,60,70,80)" if($max > 70);
 }
 
 #LOOP THROUGH FILE 2, AND STORE STRINGS IN ARRAY OR HASH
@@ -172,10 +182,18 @@ if($paired){
 			next;
 		}else{#Body
 			$hash_2{$id} .= $_."\n";
+      #  Find max value.
+      my @row = split(/\t/, $_);
+      #print "[DEBUG] row[8]".$row[8]."\n";
+      if($row[11] > $max){
+        $max = $row[11];
+      }
 		}	
 	}
 	close(IN_2);
 }
+
+print "[DEBUG] max value: ".$max."\n";
 
 #LOOP THROUGH HASHES AND CONSTRUCT R STRINGS.
 my $number_of_files;
@@ -262,7 +280,7 @@ if($paired or $single){
 				    outl= FALSE,
 				    main="",
 				    axes=FALSE,
-					ylim=c(0,40),
+					ylim=c(0,'.$max.'),
 				)
 				box(lwd='.$cex.')
 				axis(side=1, lwd = 0.5, las=1, cex.axis='.$cex.')
@@ -332,7 +350,7 @@ if($separate){
 			    outl= FALSE,
 			    main="",
 			    axes=FALSE,
-				ylim=c(0,40),
+					ylim=c(0,'.$max.'),
 			)
 			box(lwd='.$cex.')
 			axis(side=1, lwd = 0.5, las=1, cex.axis='.$cex.')
@@ -352,7 +370,7 @@ $R->run('pdf("'.$pdf.'" , width=7, height=7)');
 $R->run('par(mfrow=c('.$row.','.$col.'))'); 
 foreach my $cmd (@array){
 	$R->run($cmd);
-	#print $cmd."\n";
+	print $cmd."\n" if($verbose);
 }
 $R->run('dev.off()');
 

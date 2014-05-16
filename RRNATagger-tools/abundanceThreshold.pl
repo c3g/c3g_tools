@@ -20,7 +20,7 @@ abundance threshold values.
 
 INPUT:
 --infile <string> : OTU table in Qiime format (qiime.org)
-				
+        
 OUTPUT:
 --outdir <string> : OTU table in Qiime format having OTUs above a certain threshold.
                     Will also contain a spreadsheet with alpha diversity values
@@ -42,10 +42,10 @@ my ($help, $infile, $outdir);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 	=> \$infile,
-	'outdir=s'	=> \$outdir,
-    'verbose' 	=> \$verbose,
-    'help' 		=> \$help
+  'infile=s'  => \$infile,
+  'outdir=s'  => \$outdir,
+   'verbose'  => \$verbose,
+   'help'     => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -65,54 +65,54 @@ my $header = "";
 my $prefix = basename($infile);
 open(IN, $infile) or die "Can't open file ".$infile."\n";
 while(<IN>){
-	chomp;
-	if($_ =~ m/#/){
-		$header .= $_."\n";
-		next; 
-	}
-	my @row = split(/\t/, $_);
-	my $id = shift(@row);
-	my $lineage = pop(@row);
-	my $curr_sum = 0;
-	foreach my $el(@row){
-		$curr_sum += $el;	
-	}
-	$hash{$_} = $curr_sum;
-	$sum = $sum + $curr_sum;
+  chomp;
+  if($_ =~ m/#/){
+    $header .= $_."\n";
+    next; 
+  }
+  my @row = split(/\t/, $_);
+  my $id = shift(@row);
+  my $lineage = pop(@row);
+  my $curr_sum = 0;
+  foreach my $el(@row){
+    $curr_sum += $el;  
+  }
+  $hash{$_} = $curr_sum;
+  $sum = $sum + $curr_sum;
 }
 
 ## Generates new OTU tables based on abundance thresholds
 ## I.e. Just keep OTUs having abundance higher than xx%
 my @new_otu_tables;
 foreach my $threshold (@thresholds){
-	open(OUT, ">".$outdir_data."/".$prefix."_".$threshold) or die "Can't open file ".$outdir_data."/".$prefix."_".$threshold."\n";
-	push(@new_otu_tables, $outdir_data."/".$prefix."_".$threshold);
-	
-	my $new_header = "";
+  open(OUT, ">".$outdir_data."/".$prefix."_".$threshold) or die "Can't open file ".$outdir_data."/".$prefix."_".$threshold."\n";
+  push(@new_otu_tables, $outdir_data."/".$prefix."_".$threshold);
+  
+  my $new_header = "";
 
-	#$new_header =~ s/OTU ID\t(\S+)/OTU ID\t$1_$threshold/;
-	my @header = split(/\t/, $header);
-	my $first = shift(@header);
-	$new_header .= $first."\t";
-	my $last = pop(@header);
-	foreach my $el(@header){
-		$new_header .= $el."_".$threshold."\t";
-	}
-	$new_header .= $last;
+  #$new_header =~ s/OTU ID\t(\S+)/OTU ID\t$1_$threshold/;
+  my @header = split(/\t/, $header);
+  my $first = shift(@header);
+  $new_header .= $first."\t";
+  my $last = pop(@header);
+  foreach my $el(@header){
+    $new_header .= $el."_".$threshold."\t";
+  }
+  $new_header .= $last;
 
-	print OUT $new_header;
+  print OUT $new_header;
 
-	# For each rows, calculate if abundance
-	for my $key (keys %hash){
-		my $fraction = ($hash{$key} / $sum);
-		#print "VALUE:\t".$hash{$key}."\n";
-		#print "SUM:\t".$sum."\n";
-		#print "FRACTION:\t".$fraction."\n";
-		#print "THRESHOLD:\t".$threshold."\n";
-		print OUT $key."\n" if($fraction > $threshold);
-	}
+  # For each rows, calculate if abundance
+  for my $key (keys %hash){
+    my $fraction = ($hash{$key} / $sum);
+    #print "VALUE:\t".$hash{$key}."\n";
+    #print "SUM:\t".$sum."\n";
+    #print "FRACTION:\t".$fraction."\n";
+    #print "THRESHOLD:\t".$threshold."\n";
+    print OUT $key."\n" if($fraction > $threshold);
+  }
 
-	close(OUT);
+  close(OUT);
 }
 
 ## With these new OTU tables, generate alpha diversity tables.
@@ -123,22 +123,22 @@ my @alpha_div_tables;
 
 foreach(@new_otu_tables){
 
-	## Check if OTU table is empty.
-	open(CHECK, $_) or die "Can't open file ".$_."\n";
-	my @fh = <CHECK>;
-	next if @fh < 3; #Header in OTU tables are on 2 lines.
-	close(CHECK);	
+  ## Check if OTU table is empty.
+  open(CHECK, $_) or die "Can't open file ".$_."\n";
+  my @fh = <CHECK>;
+  next if @fh < 3; #Header in OTU tables are on 2 lines.
+  close(CHECK);  
 
-	my $prefix = basename($_);
-	my $alpha_div_string = $alpha_diversity." ";
-	$alpha_div_string .= "-i ".$_." ";
-	$alpha_div_string .= "-o ".$outdir_data."/alpha_div/".$prefix." ";
-	$alpha_div_string .= "-m chao1,observed_species,shannon,simpson ";
-	#print"Computing alpha diversity metrics: ".$alpha_div_string."\n";
-	#`$alpha_div_string >/dev/null 2>&1`;
-	system($alpha_div_string);
-	#$? != 0 ? die "command failed: $!\n" :  print "Command ".$alpha_div_string." successfuly executed\n";
-	push(@alpha_div_tables, $outdir_data."/alpha_div/".$prefix);
+  my $prefix = basename($_);
+  my $alpha_div_string = $alpha_diversity." ";
+  $alpha_div_string .= "-i ".$_." ";
+  $alpha_div_string .= "-o ".$outdir_data."/alpha_div/".$prefix." ";
+  $alpha_div_string .= "-m chao1,observed_species,shannon,simpson ";
+  #print"Computing alpha diversity metrics: ".$alpha_div_string."\n";
+  #`$alpha_div_string >/dev/null 2>&1`;
+  system($alpha_div_string);
+  #$? != 0 ? die "command failed: $!\n" :  print "Command ".$alpha_div_string." successfuly executed\n";
+  push(@alpha_div_tables, $outdir_data."/alpha_div/".$prefix);
 }
 
 ## Finally, generate one single file for all diversity metrics
@@ -147,14 +147,14 @@ foreach(@new_otu_tables){
 open(OUT, ">".$outdir."/abundance_thresholds.tab") or die "Can't open file ".$outdir."/abundance_thresholds.tab";
 print OUT "#Sample\tchao1\tobserved_species\tshannon\tsimpson\n";
 foreach(@alpha_div_tables){
-	open(ALPHA, $_) or die "Can't open file ".$_."\n";
-	my @fh = <ALPHA>;
-	my $i=0;
-	foreach my $el (@fh){
-		print OUT $el  if($i != 0);
-		$i++;
-	}
-	print OUT "\n";
+  open(ALPHA, $_) or die "Can't open file ".$_."\n";
+  my @fh = <ALPHA>;
+  my $i=0;
+  foreach my $el (@fh){
+    print OUT $el  if($i != 0);
+    $i++;
+  }
+  print OUT "\n";
 }
 close(OUT);
 exit;

@@ -46,14 +46,14 @@ my ($help, @infile, @outfile, $begin, $end, $threshold, $n);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 		=> \@infile,
-	'outfile=s' 	=> \@outfile,
-	'threshold=f' 	=> \$threshold,
-	'begin=s' 		=> \$begin,
-	'end=s' 		=> \$end,
-	'n=i'			=> \$n,
-    'verbose' 		=> \$verbose,
-    'help' 			=> \$help
+  'infile=s'    => \@infile,
+  'outfile=s'   => \@outfile,
+  'threshold=f' => \$threshold,
+  'begin=s'     => \$begin,
+  'end=s'       => \$end,
+  'n=i'         => \$n,
+  'verbose'     => \$verbose,
+  'help'        => \$help
 );
 if ($help) { print $usage; exit; }
 

@@ -33,7 +33,7 @@ INPUT:
 --kmer <int>                 : Default = 21
 --step <int>                 : Default = 1
 --cutoff <int>               : Default = 1
-	
+  
 OUTPUT:
 --outfile_matched <string>   : Matched sequences
 --outfile_unmatched <string> : Unmatched sequences
@@ -53,17 +53,17 @@ my ($help, $debug, $infile, $matched, $unmatched, $db, $num_threads, $log, $kmer
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 				=> \$infile,
-	'num_threads=i' 		=> \$num_threads,
-	'log=s'					=> \$log,
-	'db=s'					=> \$db,
-    'outfile_matched=s'		=> \$matched,
-    'outfile_unmatched=s'	=> \$unmatched,
-	'kmer=i'				=> \$kmer,
-	'step=i'				=> \$step,
-	'cutoff=i'				=> \$cutoff,
-    'verbose' 				=> \$verbose,
-    'help' 					=> \$help
+  'infile=s'            => \$infile,
+  'num_threads=i'       => \$num_threads,
+  'log=s'               => \$log,
+  'db=s'                => \$db,
+  'outfile_matched=s'   => \$matched,
+  'outfile_unmatched=s' => \$unmatched,
+  'kmer=i'              => \$kmer,
+  'step=i'              => \$step,
+  'cutoff=i'            => \$cutoff,
+  'verbose'             => \$verbose,
+  'help'                => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -104,9 +104,9 @@ my @out_fhs_failed;
 my @out_log;
 
 for(my $i=0; $i < $num_threads; $i++){
-	push(@out_fhs, $matched."_".$i);
-	push(@out_fhs_failed, $unmatched."_".$i);
-	push(@out_log, $log."_".$i);
+  push(@out_fhs, $matched."_".$i);
+  push(@out_fhs_failed, $unmatched."_".$i);
+  push(@out_log, $log."_".$i);
 }
 
 ## Calculate each threads start posn
@@ -123,7 +123,7 @@ $_->join for map
 ## Concatenate file parts.
 my $cat = "cat ";
 foreach(@out_fhs){
-	$cat .= $_. " ";
+  $cat .= $_. " ";
 }
 $cat .= "> ".$matched;
 print $cat."\n" if($verbose);
@@ -133,7 +133,7 @@ system("rm ".$_) foreach(@out_fhs);
 ## Concat failed
 $cat = "cat ";
 foreach(@out_fhs_failed){
-	$cat .= $_. " ";
+  $cat .= $_. " ";
 }
 $cat .= "> ".$unmatched;
 print $cat."\n" if($verbose);
@@ -143,7 +143,7 @@ system("rm ".$_) foreach(@out_fhs_failed);
 ## Concat logs
 $cat = "cat ";
 foreach(@out_log){
-	$cat .= $_. " ";
+  $cat .= $_. " ";
 }
 $cat .= "> ".$log;
 print $cat."\n" if($verbose);
@@ -168,7 +168,7 @@ sub twarn{ lock $semStderr; print STDERR @_; }
 sub findNextRecStart {
     ## filehandle, calculated start byte, thread id (for tracing
     my( $fh, $start, $tid ) = @_;
-	#twarn "[$tid] $start";
+  #twarn "[$tid] $start";
 
     ## seek to the start byte -1; Just incase the calculated posn hits bang on
     seek $fh, $start-1, 0;
@@ -183,14 +183,14 @@ sub findNextRecStart {
     ## Remember the offset into the buffer where we found it.
     my $startFound = $-[1];
 
-	my @ASCII = unpack("C*", substr( $buffer, 0, $startFound )); #Added fix when what is separating header's '@' char from previous line is equal to \n only (ASCII 10).
+  my @ASCII = unpack("C*", substr( $buffer, 0, $startFound )); #Added fix when what is separating header's '@' char from previous line is equal to \n only (ASCII 10).
     ## Now count the lines between the start of the buffer and that po int.
     my $previousLines = substr( $buffer, 0, $startFound ) =~ tr[\n][\n];
-	if( @ASCII == 1 && $ASCII[0] == 10 ){ #Added fix: so when only a line feed is separating header's '@' char from previous line, put $previous line to 0 instead of 1.
-		$previousLines = 0;
-	}elsif(@ASCII > 1 && $ASCII[0] == 10){
-		$previousLines = $previousLines - 1;
-	}
+  if( @ASCII == 1 && $ASCII[0] == 10 ){ #Added fix: so when only a line feed is separating header's '@' char from previous line, put $previous line to 0 instead of 1.
+    $previousLines = 0;
+  }elsif(@ASCII > 1 && $ASCII[0] == 10){
+    $previousLines = $previousLines - 1;
+  }
 
     ## And calulate our way back to the first full record after the calculated start posn.
     my $skipLines = ( $previousLines - 1) % 4 +1;
@@ -198,12 +198,12 @@ sub findNextRecStart {
 
     ## Seek bck to that calculated start posn.
     seek $fh, $start, 0;
-	#print "Start/End after found:\t".$startFound."\n";
+  #print "Start/End after found:\t".$startFound."\n";
 
     ## Then skip forward th calculate dnumber of lines.
     scalar <$fh> for 1 .. $skipLines;
-	#twarn "[$tid] ", tell $fh;
-		
+  #twarn "[$tid] ", tell $fh;
+    
     return;
 }
 
@@ -213,12 +213,12 @@ sub worker {
     ## to start and end processing at
     my( $file, $start, $end, $outfile, $outfile_failed, $log, $tmpdir) = @_;
 
-	print $outfile."\n" if($verbose);
+  print $outfile."\n" if($verbose);
     open my $FASTQ, '<', $file or die $!;
-	open my $FASTQ_TEMP, '>', $tmpdir."/duk_temp_".$tid or die $!;
+  open my $FASTQ_TEMP, '>', $tmpdir."/duk_temp_".$tid or die $!;
 
     ## If a no-zero start posns, find the start of the next full record.
-	## Here the $FASTQ file handler will be modified in the findNextRecStart (implicit return).
+  ## Here the $FASTQ file handler will be modified in the findNextRecStart (implicit return).
     findNextRecStart( $FASTQ, $start, $tid ) if $start;
 
     ## process records until the end of this threads section.
@@ -226,42 +226,42 @@ sub worker {
         my @lines = map scalar( <$FASTQ> ), 1 .. 4;
         chomp @lines;
 
-		## Validate header
-		my $validate = new Iterator::ValidateFastq($lines[0], $lines[3], $phred);
-		my $base = "@".$validate->base;	
-		my $barcode = $validate->barcode;	
-		my $pair = $validate->pair;
-		my $header = $lines[0];
-		my $seq = $lines[1];
-		#my $qual = $lines[3];	
-		my $qual = $validate->qual;
+    ## Validate header
+    my $validate = new Iterator::ValidateFastq($lines[0], $lines[3], $phred);
+    my $base = "@".$validate->base;  
+    my $barcode = $validate->barcode;  
+    my $pair = $validate->pair;
+    my $header = $lines[0];
+    my $seq = $lines[1];
+    #my $qual = $lines[3];  
+    my $qual = $validate->qual;
 
-		if ( defined($pair) && defined($barcode) ) {
-        	print $FASTQ_TEMP $base."#".$barcode."/".$pair."\n".$seq."\n+\n".$qual."\n";
-	    } elsif ( defined($pair) && !defined($barcode) ) {
-        	print $FASTQ_TEMP $base."/".$pair."\n".$seq."\n+\n".$qual."\n";	
-	    }else{
-        	print $FASTQ_TEMP $base."#".$barcode."\n".$seq."\n+\n".$qual."\n";
-		} 			
+    if ( defined($pair) && defined($barcode) ) {
+          print $FASTQ_TEMP $base."#".$barcode."/".$pair."\n".$seq."\n+\n".$qual."\n";
+      } elsif ( defined($pair) && !defined($barcode) ) {
+          print $FASTQ_TEMP $base."/".$pair."\n".$seq."\n+\n".$qual."\n";  
+      }else{
+          print $FASTQ_TEMP $base."#".$barcode."\n".$seq."\n+\n".$qual."\n";
+    }       
     }
-	close $FASTQ_TEMP;
+  close $FASTQ_TEMP;
 
-	## Execute duk
-	my $cmd = "duk";
-	$cmd .= " -o ".$log;
-	$cmd .= " -n ".$outfile_failed;
-	$cmd .= " -m ".$outfile;
-	$cmd .= " -k ".$kmer;
-	$cmd .= " -s ".$step;
-	$cmd .= " -c ".$cutoff;
-	$cmd .= " ".$db;
-	$cmd .= " ".$tmpdir."/duk_temp_".$tid;
-	system($cmd);
-	die "command failed: $!\n" if($? != 0);
+  ## Execute duk
+  my $cmd = "duk";
+  $cmd .= " -o ".$log;
+  $cmd .= " -n ".$outfile_failed;
+  $cmd .= " -m ".$outfile;
+  $cmd .= " -k ".$kmer;
+  $cmd .= " -s ".$step;
+  $cmd .= " -c ".$cutoff;
+  $cmd .= " ".$db;
+  $cmd .= " ".$tmpdir."/duk_temp_".$tid;
+  system($cmd);
+  die "command failed: $!\n" if($? != 0);
 }
 
 ## REMOVE TEMP FILES
 sub END{
-	local $?;
-	system("rm ".$tmpdir." -rf");
+  local $?;
+  system("rm ".$tmpdir." -rf");
 }

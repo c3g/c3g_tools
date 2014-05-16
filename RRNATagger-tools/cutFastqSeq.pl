@@ -41,19 +41,19 @@ my $verbose = 0;
 
 ## SCRIPTS
 GetOptions(
-    'infile=s' 		=> \$infile,
-	'outfile=s' 	=> \$outfile,
-	'begin=s' 		=> \$begin,
-	'end=s' 		=> \$end,
-    'verbose' 		=> \$verbose,
-    'help' 			=> \$help
+  'infile=s'    => \$infile,
+  'outfile=s'   => \$outfile,
+  'begin=s'     => \$begin,
+  'end=s'       => \$end,
+  'verbose'     => \$verbose,
+  'help'        => \$help
 );
 if ($help) { print $usage; exit; }
 
 ## VALIDATE
-die("--fastq fastq file required\n") 			unless $infile;
-die("--begin or --end int value required\n") 	unless(defined($begin) or defined($end));
-die("--outfile outfile required\n") 			unless $outfile;
+die("--fastq fastq file required\n")          unless $infile;
+die("--begin or --end int value required\n")  unless(defined($begin) or defined($end));
+die("--outfile outfile required\n")           unless $outfile;
 
 ## MAIN
 open(OUT, ">".$outfile) or die "Can't open file ".$!."\n";
@@ -61,17 +61,17 @@ open(OUT, ">".$outfile) or die "Can't open file ".$!."\n";
 my $in = new Iterator::FastqDb($infile) or die("Unable to open Fastq file, $infile\n");
 
 if(!$begin){
-	$begin = 0;
+  $begin = 0;
 }
 if(!$end){
-	$end = 0;
+  $end = 0;
 }
 
 while( my $curr = $in->next_seq() ){
-	my $length = length($curr->seq()) - $end - $begin;
-	die "First nucleotides to cut must be higher or equal than/to read length.\n" if($begin >= length($curr->seq()));
+  my $length = length($curr->seq()) - $end - $begin;
+  die "First nucleotides to cut must be higher or equal than/to read length.\n" if($begin >= length($curr->seq()));
 
-	print OUT $curr->header."\n".substr($curr->seq, $begin, $length)."\n+\n".substr($curr->qual, $begin, $length)."\n";
+  print OUT $curr->header."\n".substr($curr->seq, $begin, $length)."\n+\n".substr($curr->qual, $begin, $length)."\n";
 }
 close(OUT);
 

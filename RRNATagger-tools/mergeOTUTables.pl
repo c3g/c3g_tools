@@ -47,12 +47,12 @@ my ($help, @infile_otu_table, @infile_fasta, $outfile_otu_table, $outfile_fasta)
 my $verbose = 0;
 
 GetOptions(
-    'infile_otu_table=s' 	=> \@infile_otu_table,
-	'infile_fasta=s'		=> \@infile_fasta,
-	'outfile_otu_table=s' 	=> \$outfile_otu_table,
-	'outfile_fasta=s'		=> \$outfile_fasta,
-    'verbose' 				=> \$verbose,
-    'help' 					=> \$help
+  'infile_otu_table=s'  => \@infile_otu_table,
+  'infile_fasta=s'      => \@infile_fasta,
+  'outfile_otu_table=s' => \$outfile_otu_table,
+  'outfile_fasta=s'     => \$outfile_fasta,
+  'verbose'             => \$verbose,
+  'help'                => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -83,47 +83,47 @@ my %hash;
 
 # Loop through each infile_fasta and infile_otu_table and assign new $i number as OTU ids.
 foreach my $infile_otu_table (@infile_otu_table){
-	my $infile_fasta = shift(@infile_fasta);
+  my $infile_fasta = shift(@infile_fasta);
 
-	# Then deal with the otu table.
-	my $curr_otu_table = $tmpdir."/otu_table_".$temp_file_counter; 
-	push(@otu_tables, $curr_otu_table);
-	open(CURR_OTU, ">".$curr_otu_table) or die "Can't open file ".$curr_otu_table."\n";
-	$temp_file_counter++;
+  # Then deal with the otu table.
+  my $curr_otu_table = $tmpdir."/otu_table_".$temp_file_counter; 
+  push(@otu_tables, $curr_otu_table);
+  open(CURR_OTU, ">".$curr_otu_table) or die "Can't open file ".$curr_otu_table."\n";
+  $temp_file_counter++;
 
-	open(IN, "<".$infile_otu_table) or die "Can't open file ".$infile_otu_table."\n";
-	while(<IN>){
-		chomp;
-		if($_ =~ m/#/){
-			print CURR_OTU $_."\n";
-		}else{
-			my @row = split(/\t/, $_);					
-			my $old_id = shift(@row);
-			unshift(@row, $i);
-			print CURR_OTU join("\t", @row)."\n";
-			$hash{$old_id} = $i;
-			$i++;
-		}
-	}
-	close(IN);
-	close(CURR_OTU);
-	
-	my $ref_fasta_db = Iterator::FastaDb->new($infile_fasta) or die("Unable to open Fasta file, $infile_fasta\n");
-	while( my $curr = $ref_fasta_db->next_seq() ) {
-		my $header = $curr->header();
-		my $old_id;
-		if($header =~ m/^>(\d+)/){
-			$old_id = $1;
-		}else{
-			die "Can't find regex...\n";
-		}
+  open(IN, "<".$infile_otu_table) or die "Can't open file ".$infile_otu_table."\n";
+  while(<IN>){
+    chomp;
+    if($_ =~ m/#/){
+      print CURR_OTU $_."\n";
+    }else{
+      my @row = split(/\t/, $_);          
+      my $old_id = shift(@row);
+      unshift(@row, $i);
+      print CURR_OTU join("\t", @row)."\n";
+      $hash{$old_id} = $i;
+      $i++;
+    }
+  }
+  close(IN);
+  close(CURR_OTU);
+  
+  my $ref_fasta_db = Iterator::FastaDb->new($infile_fasta) or die("Unable to open Fasta file, $infile_fasta\n");
+  while( my $curr = $ref_fasta_db->next_seq() ) {
+    my $header = $curr->header();
+    my $old_id;
+    if($header =~ m/^>(\d+)/){
+      $old_id = $1;
+    }else{
+      die "Can't find regex...\n";
+    }
 
-		if(exists $hash{$old_id}){
-			#print STDERR $old_id."\t".$hash{$old_id}."\n";
-			print FASTA ">".$hash{$old_id}."\n".$curr->seq."\n";
-			delete $hash{$old_id};
-		}
-	}
+    if(exists $hash{$old_id}){
+      #print STDERR $old_id."\t".$hash{$old_id}."\n";
+      print FASTA ">".$hash{$old_id}."\n".$curr->seq."\n";
+      delete $hash{$old_id};
+    }
+  }
 }
 close(FASTA);
 
@@ -131,14 +131,14 @@ close(FASTA);
 my $first_otu_table = shift(@otu_tables);
 my $cmd = "merge_otu_tables.py -i ".$first_otu_table;
 foreach (@otu_tables){
-	$cmd .= ",".$_;
+  $cmd .= ",".$_;
 }
 $cmd .= " -o ".$outfile_otu_table;
 system($cmd);
 
 ## REMOVE TEMP FILES
 sub END{
-	#system("rm ".$tmpdir." -rf");
+  #system("rm ".$tmpdir." -rf");
 }
 
 exit;

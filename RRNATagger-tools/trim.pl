@@ -52,15 +52,15 @@ my ($help, $infile, $outfile, $num_threads, $meanq, $winsize, $minlen, $maxn);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 			=> \$infile,
-	'outfile=s' 		=> \$outfile,
-	'meanq=i' 			=> \$meanq,
-	'winsize=i' 		=> \$winsize, 
-	'minlen=i' 			=> \$minlen,
-	'maxn=i' 			=> \$maxn,
-	'num_threads=i' 	=> \$num_threads,
-    'verbose' 			=> \$verbose,
-    'help' 				=> \$help
+  'infile=s'      => \$infile,
+  'outfile=s'     => \$outfile,
+  'meanq=i'       => \$meanq,
+  'winsize=i'     => \$winsize, 
+  'minlen=i'      => \$minlen,
+  'maxn=i'        => \$maxn,
+  'num_threads=i' => \$num_threads,
+  'verbose'       => \$verbose,
+  'help'          => \$help
 );
 if ($help) { print $usage; exit; }
 

@@ -74,36 +74,36 @@ my ($help, $debug, $infile, $outfile, $outfile_failed, $num_threads,
     $primer_5_prime, $primer_3_prime, $length_5_prime, $length_3_prime,
     $primer_mismatch, $cut_first, $cut_last, $qscore_1, $N, $lq_threshold,
     $qscore_2, $max_length, $min_length, $qual, $noqc, $reject_unmatched,
-	$remove_N
+  $remove_N
 );
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 			=> \$infile,
-	'outfile=s' 		=> \$outfile,
-	'num_threads=i' 	=> \$num_threads,
-    'infile=s' 			=> \$infile,
-    'primer_5_prime=s' 	=> \$primer_5_prime,
-    'primer_3_prime=s' 	=> \$primer_3_prime,
-    'length_5_prime=i' 	=> \$length_5_prime,
-    'length_3_prime=i' 	=> \$length_3_prime,
-    'primer_mismatch=i' => \$primer_mismatch,
-	'remove_1st_N'		=> \$remove_N,
-    'cut_last=i' 		=> \$cut_last,
-    'cut_first=i' 		=> \$cut_first,
-    'qscore_1=i' 		=> \$qscore_1,
-    'N=i' 				=> \$N,
-    'lq_threshold=i' 	=> \$lq_threshold,
-    'qscore_2=i' 		=> \$qscore_2,
-    'max_length=i' 		=> \$max_length,
-    'min_length=i' 		=> \$min_length,
-    'qual=i' 			=> \$qual,
-    'outfile_failed=s' 	=> \$outfile_failed,
-    'reject_unmatched' 	=> \$reject_unmatched,
-    'noqc' 				=> \$noqc,
-    'debug' 			=> \$debug,
-    'verbose' 			=> \$verbose,
-    'help' 				=> \$help
+  'infile=s'            => \$infile,
+  'outfile=s'           => \$outfile,
+  'num_threads=i'       => \$num_threads,
+  'infile=s'            => \$infile,
+  'primer_5_prime=s'    => \$primer_5_prime,
+  'primer_3_prime=s'    => \$primer_3_prime,
+  'length_5_prime=i'    => \$length_5_prime,
+  'length_3_prime=i'    => \$length_3_prime,
+  'primer_mismatch=i'   => \$primer_mismatch,
+  'remove_1st_N'        => \$remove_N,
+  'cut_last=i'          => \$cut_last,
+  'cut_first=i'         => \$cut_first,
+  'qscore_1=i'          => \$qscore_1,
+  'N=i'                 => \$N,
+  'lq_threshold=i'      => \$lq_threshold,
+  'qscore_2=i'          => \$qscore_2,
+  'max_length=i'        => \$max_length,
+  'min_length=i'        => \$min_length,
+  'qual=i'              => \$qual,
+  'outfile_failed=s'    => \$outfile_failed,
+  'reject_unmatched'    => \$reject_unmatched,
+  'noqc'                => \$noqc,
+  'debug'               => \$debug,
+  'verbose'             => \$verbose,
+  'help'                => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -212,8 +212,8 @@ my @out_fhs;
 my @out_fhs_failed;
 
 for(my $i=0; $i < $num_threads; $i++){
-	push(@out_fhs, $tmpdir."/_passed_".$i);
-	push(@out_fhs_failed, $tmpdir."/_failed_".$i);
+  push(@out_fhs, $tmpdir."/_passed_".$i);
+  push(@out_fhs_failed, $tmpdir."/_failed_".$i);
 }
 
 ## Calculate each threads start posn
@@ -230,7 +230,7 @@ $_->join for map
 ## Concatenate file parts.
 my $cat = "cat ";
 foreach(@out_fhs){
-	$cat .= $_. " ";
+  $cat .= $_. " ";
 }
 $cat .= "> ".$outfile;
 print $cat."\n" if($verbose);
@@ -239,7 +239,7 @@ system("rm ".$_) foreach(@out_fhs);
 
 $cat = "cat ";
 foreach(@out_fhs_failed){
-	$cat .= $_. " ";
+  $cat .= $_. " ";
 }
 $cat .= "> ".$outfile_failed;
 print $cat."\n" if($verbose);
@@ -264,7 +264,7 @@ sub twarn{ lock $semStderr; print STDERR @_; }
 sub findNextRecStart {
     ## filehandle, calculated start byte, thread id (for tracing
     my( $fh, $start, $tid ) = @_;
-	#twarn "[$tid] $start";
+  #twarn "[$tid] $start";
 
     ## seek to the start byte -1; Just incase the calculated posn hits bang on
     seek $fh, $start-1, 0;
@@ -279,14 +279,14 @@ sub findNextRecStart {
     ## Remember the offset into the buffer where we found it.
     my $startFound = $-[1];
 
-	my @ASCII = unpack("C*", substr( $buffer, 0, $startFound )); #Added fix when what is separating header's '@' char from previous line is equal to \n only (ASCII 10).
+  my @ASCII = unpack("C*", substr( $buffer, 0, $startFound )); #Added fix when what is separating header's '@' char from previous line is equal to \n only (ASCII 10).
     ## Now count the lines between the start of the buffer and that po int.
     my $previousLines = substr( $buffer, 0, $startFound ) =~ tr[\n][\n];
-	if( @ASCII == 1 && $ASCII[0] == 10 ){ #Added fix: so when only a line feed is separating header's '@' char from previous line, put $previous line to 0 instead of 1.
-		$previousLines = 0;
-	}elsif(@ASCII > 1 && $ASCII[0] == 10){
-		$previousLines = $previousLines - 1;
-	}
+  if( @ASCII == 1 && $ASCII[0] == 10 ){ #Added fix: so when only a line feed is separating header's '@' char from previous line, put $previous line to 0 instead of 1.
+    $previousLines = 0;
+  }elsif(@ASCII > 1 && $ASCII[0] == 10){
+    $previousLines = $previousLines - 1;
+  }
 
     ## And calulate our way back to the first full record after the calculated start posn.
     my $skipLines = ( $previousLines - 1) % 4 +1;
@@ -296,7 +296,7 @@ sub findNextRecStart {
 
     ## Then skip forward th calculate dnumber of lines.
     scalar <$fh> for 1 .. $skipLines;
-		
+    
     return;
 }
 
@@ -305,15 +305,15 @@ sub worker {
     ## to start and end processing at
     my( $file, $start, $end, $outfile, $outfile_failed) = @_;
     my $tid = threads->tid;
-	print "Current thread:\t".$tid."\n" if($verbose);
+  print "Current thread:\t".$tid."\n" if($verbose);
 
-	print $outfile."\n" if($verbose);
+  print $outfile."\n" if($verbose);
     open my $FASTQ, '<', $file or die $!;
-	open my $FASTQ_OUT, '>', $outfile or die $!;
-	open my $FASTQ_OUT_FAILED, '>', $outfile_failed or die $!;
+  open my $FASTQ_OUT, '>', $outfile or die $!;
+  open my $FASTQ_OUT_FAILED, '>', $outfile_failed or die $!;
 
     ## If a no-zero start posns, find the start of the next full record.
-	## Here the $FASTQ file handler will be modified in the findNextRecStart (implicit return).
+  ## Here the $FASTQ file handler will be modified in the findNextRecStart (implicit return).
     findNextRecStart( $FASTQ, $start, $tid ) if $start;
 
     ## process records until the end of this threads section.
@@ -321,48 +321,48 @@ sub worker {
         my @lines = map scalar( <$FASTQ> ), 1 .. 4;
         chomp @lines;
 
-		## Validate header
-		my $validate = new Iterator::ValidateFastq($lines[0], $lines[3], $phred);
-		my $base = "@".$validate->base;	
-		my $barcode = $validate->barcode;	
-		my $pair = $validate->pair;
-		my $header = $lines[0];
-		my $seq = $lines[1];
-		#my $qual = $lines[3];	
-		my $qual = $validate->qual;
-		
-		filter($lines[0],$lines[1],$lines[3], $FASTQ_OUT, $FASTQ_OUT_FAILED);
-		#print $lines[0]."\n".$lines[1]."\n+\n".$lines[3]."\n";
-			
+    ## Validate header
+    my $validate = new Iterator::ValidateFastq($lines[0], $lines[3], $phred);
+    my $base = "@".$validate->base;  
+    my $barcode = $validate->barcode;  
+    my $pair = $validate->pair;
+    my $header = $lines[0];
+    my $seq = $lines[1];
+    #my $qual = $lines[3];  
+    my $qual = $validate->qual;
+    
+    filter($lines[0],$lines[1],$lines[3], $FASTQ_OUT, $FASTQ_OUT_FAILED);
+    #print $lines[0]."\n".$lines[1]."\n+\n".$lines[3]."\n";
+      
     }
-	close $FASTQ_OUT;
-	close $FASTQ_OUT_FAILED;
+  close $FASTQ_OUT;
+  close $FASTQ_OUT_FAILED;
 }
 
 ## FILTER SEQUENCE
 ## input : sequence_header_string, dna_string, quality_string, out_filehandler, out_failed_filehandler.
 ## output: null
 sub filter{
-	my($header, $newseq, $newqual, $OUT, $OUT_F) = @_;
-	my %qscore_hash;
-	setQscoreHash(\%qscore_hash);
+  my($header, $newseq, $newqual, $OUT, $OUT_F) = @_;
+  my %qscore_hash;
+  setQscoreHash(\%qscore_hash);
 
     #REMOVE LEFT PRIMER
     if($left_primer == 1){
-		my $string = substr($newseq, 0, $length_5_prime);
+    my $string = substr($newseq, 0, $length_5_prime);
         my $matched = 0;
         my $lowest_length = 1000; #Arbitrary unrealistic high value.
 
         foreach(@left_primer){
             my @index = aslice($_, ["i ".$primer_mismatch."%"] , $string);
             if(defined $index[0][0]){
-    	            my $length_from_0 = $index[0][0] + $index[0][1];
+                  my $length_from_0 = $index[0][0] + $index[0][1];
                 $lowest_length = $length_from_0 if($length_from_0 < $lowest_length);
-    	            $matched = 1;
-        	    }
+                  $matched = 1;
+              }
         }
 
-		if($matched == 1 and $lowest_length < 1000){
+    if($matched == 1 and $lowest_length < 1000){
             $newseq = substr($newseq, $lowest_length);
             $newqual = substr($newqual,$lowest_length);
         }else{
@@ -381,15 +381,15 @@ sub filter{
         my $string = substr($newseq, 0, $length_3_prime);
         my $matched = 0;
         my $lowest_length = 1000; #Arbitrary unrealistic high value.
- 	
-		foreach(@right_primer){
-			
-			print "REV Primer:\t".$_."\n" if($debug);
+   
+    foreach(@right_primer){
+      
+      print "REV Primer:\t".$_."\n" if($debug);
 
             my @index = aslice($_, ["i ".$primer_mismatch."%"] , $string);
 
             if(defined $index[0][0]){
-				my $length_from_0 = $index[0][0] + $index[0][1];
+        my $length_from_0 = $index[0][0] + $index[0][1];
                 $lowest_length = $length_from_0 if($length_from_0 < $lowest_length);
                 $matched = 1;
             }
@@ -397,7 +397,7 @@ sub filter{
 
         if($matched == 1 and $lowest_length < 1000){
             $newseq = substr($newseq, $lowest_length);
-   	        $newqual = substr($newqual,$lowest_length);
+             $newqual = substr($newqual,$lowest_length);
         }else{
             if($reject_unmatched){
                 print $OUT_F $header."\n".$newseq."\n+\n".$newqual."\n";
@@ -405,50 +405,50 @@ sub filter{
             }
         }
         print "Right primer Header:\t".$header."\n" if $debug;
-		#print substr($newseq, 0, 20)."\n";
+    #print substr($newseq, 0, 20)."\n";
 
         $newseq = reverse($newseq);
         $newqual = reverse($newqual);
     }
     
-	#Cut sequences before going into quality threshold.
-	if($cut_first or $cut_last){
-		my $length = (length($newseq)) - $cut_last - $cut_first;
-		die "First nucleotides to cut must be higher or equal than/to read length.\n" if($cut_first >= length($newseq));
-		$newseq  = substr($newseq, $cut_first, $length);
-		$newqual = substr($newqual, $cut_first, $length);
-	}
-	
-	#Remove 1st base if it is a N (typically seen in 5'reads).
-	if($remove_N){
-		if(substr($newseq, 0, 1) eq "N"){
-			$newseq = substr($newseq, 1);	
-			$newqual = substr($newqual, 1);	
-		}
-		
-		# Also remove last base if last base is a N.	
-		if(substr($newseq, -1) eq "N"){
-			$newseq = substr($newseq, 0, -1);	
-			$newqual = substr($newqual, 0, -1);	
-		}
-	
-	}
+  #Cut sequences before going into quality threshold.
+  if($cut_first or $cut_last){
+    my $length = (length($newseq)) - $cut_last - $cut_first;
+    die "First nucleotides to cut must be higher or equal than/to read length.\n" if($cut_first >= length($newseq));
+    $newseq  = substr($newseq, $cut_first, $length);
+    $newqual = substr($newqual, $cut_first, $length);
+  }
+  
+  #Remove 1st base if it is a N (typically seen in 5'reads).
+  if($remove_N){
+    if(substr($newseq, 0, 1) eq "N"){
+      $newseq = substr($newseq, 1);  
+      $newqual = substr($newqual, 1);  
+    }
+    
+    # Also remove last base if last base is a N.  
+    if(substr($newseq, -1) eq "N"){
+      $newseq = substr($newseq, 0, -1);  
+      $newqual = substr($newqual, 0, -1);  
+    }
+  
+  }
 
-	#QUALITY CONTROL (REMOVE READS WITH TOO MUCH Ns AND TOO MUCH NT HAVING LOW QUAL SCORE)
+  #QUALITY CONTROL (REMOVE READS WITH TOO MUCH Ns AND TOO MUCH NT HAVING LOW QUAL SCORE)
     if($noqc == 0){
         my @qual = unpack("C*", $newqual);
-		my $prob_sum = 0;
-		foreach(@qual){
-			print $_ - $qual."\t" if($debug);
-			$prob_sum = $prob_sum + $qscore_hash{$_ - $qual};
-			die "Q score value does not exists in reference hash...".$_ - $qual."\n" if(!exists $qscore_hash{$_ - $qual});
-		}
-		
-		die "Sequence has length of 0 bases. It you supplied the cut_last or cut_last paramters, it is possible that it made the sequence too short. Try to cut shorter...\n" if(@qual <= 0);			
+    my $prob_sum = 0;
+    foreach(@qual){
+      print $_ - $qual."\t" if($debug);
+      $prob_sum = $prob_sum + $qscore_hash{$_ - $qual};
+      die "Q score value does not exists in reference hash...".$_ - $qual."\n" if(!exists $qscore_hash{$_ - $qual});
+    }
+    
+    die "Sequence has length of 0 bases. It you supplied the cut_last or cut_last paramters, it is possible that it made the sequence too short. Try to cut shorter...\n" if(@qual <= 0);      
 
-		my $average = $prob_sum/@qual;
-		print "\nAverage:\t".$average."\n" if($debug);
-		
+    my $average = $prob_sum/@qual;
+    print "\nAverage:\t".$average."\n" if($debug);
+    
         my $Q_count = 0;
         foreach(@qual){
             $Q_count++ if ($_ - $qual) < $qscore_2;
@@ -462,7 +462,7 @@ sub filter{
         }
         print $N_count."\n" if $debug;
 
-        if( 	 $average > $qscore_hash{$qscore_1},
+        if(    $average > $qscore_hash{$qscore_1},
              and $N_count < $N,
              and $Q_count < $lq_threshold ){
 
@@ -475,29 +475,29 @@ sub filter{
                 }else{
                     next;
                 }
-			}elsif($min_length){
+      }elsif($min_length){
                 if( length($newseq) >= $min_length ){
-					print $OUT $header."\n".$newseq."\n+\n".$newqual."\n";
-					print STDERR $header."min_length passed\n" if $debug;
+          print $OUT $header."\n".$newseq."\n+\n".$newqual."\n";
+          print STDERR $header."min_length passed\n" if $debug;
                 }else{
                     #next;
-                }	
+                }  
             }else{
-				print $OUT $header."\n".$newseq."\n+\n".$newqual."\n";
+        print $OUT $header."\n".$newseq."\n+\n".$newqual."\n";
                 print STDERR $header."no min_length and no max_length\n" if $debug;
             }
 
         #Reject read if it does not encounter filtering parameters
         }else{
-			print $OUT_F $header."\n".$newseq."\n+\n".$newqual."\n";
+      print $OUT_F $header."\n".$newseq."\n+\n".$newqual."\n";
         }
 
-	
-	# If no QC is to be done.
+  
+  # If no QC is to be done.
     }else{
         if($cut_first or $cut_last){
-			my $length = (length($newseq)) - $cut_last - $cut_first;
-			print $OUT $header."\n".substr($newseq, $cut_first, $length)."\n+\n".substr($newqual, $cut_first, $length)."\n";
+      my $length = (length($newseq)) - $cut_last - $cut_first;
+      print $OUT $header."\n".substr($newseq, $cut_first, $length)."\n+\n".substr($newqual, $cut_first, $length)."\n";
         }else{
             print $OUT $header."\n".$newseq."\n+\n".$newqual."\n";
         }
@@ -530,96 +530,96 @@ sub generate_primer_combination{
 ## output: null;
 sub setQscoreHash{
     my($hash_ref) = @_;
-#	$hash_ref->{0}=5.00;
-#	$hash_ref->{1}=20.567;
-#	$hash_ref->{2}=36.904;
-#	$hash_ref->{3}=49.881;
-#	$hash_ref->{4}=60.189;
-#	$hash_ref->{5}=68.377;
-#	$hash_ref->{6}=74.881;
-#	$hash_ref->{7}=80.047;
-#	$hash_ref->{8}=84.151;
-#	$hash_ref->{9}=87.411;
-#	$hash_ref->{10}=90.000;
-#	$hash_ref->{11}=92.057;
-#	$hash_ref->{12}=93.690;
-#	$hash_ref->{13}=94.988;
-#	$hash_ref->{14}=96.019;
-#	$hash_ref->{15}=96.838;
-#	$hash_ref->{16}=97.488;
-#	$hash_ref->{17}=98.005;
-#	$hash_ref->{18}=98.415;
-#	$hash_ref->{19}=98.741;
-#	$hash_ref->{20}=99.000;
-#	$hash_ref->{21}=99.206;
-#	$hash_ref->{22}=99.369;
-#	$hash_ref->{23}=99.499;
-#	$hash_ref->{24}=99.602;
-#	$hash_ref->{25}=99.684;
-#	$hash_ref->{26}=99.749;
-#	$hash_ref->{27}=99.800;
-#	$hash_ref->{28}=99.842;
-#	$hash_ref->{29}=99.874;
-#	$hash_ref->{30}=99.900;
-#	$hash_ref->{31}=99.921;
-#	$hash_ref->{32}=99.937;
-#	$hash_ref->{33}=99.950;
-#	$hash_ref->{34}=99.960;
-#	$hash_ref->{35}=99.968;
-#	$hash_ref->{36}=99.975;
-#	$hash_ref->{37}=99.980;
-#	$hash_ref->{38}=99.984;
-#	$hash_ref->{39}=99.987;
-#	$hash_ref->{40}=99.990;
-#	$hash_ref->{41}=99.992;
+#  $hash_ref->{0}=5.00;
+#  $hash_ref->{1}=20.567;
+#  $hash_ref->{2}=36.904;
+#  $hash_ref->{3}=49.881;
+#  $hash_ref->{4}=60.189;
+#  $hash_ref->{5}=68.377;
+#  $hash_ref->{6}=74.881;
+#  $hash_ref->{7}=80.047;
+#  $hash_ref->{8}=84.151;
+#  $hash_ref->{9}=87.411;
+#  $hash_ref->{10}=90.000;
+#  $hash_ref->{11}=92.057;
+#  $hash_ref->{12}=93.690;
+#  $hash_ref->{13}=94.988;
+#  $hash_ref->{14}=96.019;
+#  $hash_ref->{15}=96.838;
+#  $hash_ref->{16}=97.488;
+#  $hash_ref->{17}=98.005;
+#  $hash_ref->{18}=98.415;
+#  $hash_ref->{19}=98.741;
+#  $hash_ref->{20}=99.000;
+#  $hash_ref->{21}=99.206;
+#  $hash_ref->{22}=99.369;
+#  $hash_ref->{23}=99.499;
+#  $hash_ref->{24}=99.602;
+#  $hash_ref->{25}=99.684;
+#  $hash_ref->{26}=99.749;
+#  $hash_ref->{27}=99.800;
+#  $hash_ref->{28}=99.842;
+#  $hash_ref->{29}=99.874;
+#  $hash_ref->{30}=99.900;
+#  $hash_ref->{31}=99.921;
+#  $hash_ref->{32}=99.937;
+#  $hash_ref->{33}=99.950;
+#  $hash_ref->{34}=99.960;
+#  $hash_ref->{35}=99.968;
+#  $hash_ref->{36}=99.975;
+#  $hash_ref->{37}=99.980;
+#  $hash_ref->{38}=99.984;
+#  $hash_ref->{39}=99.987;
+#  $hash_ref->{40}=99.990;
+#  $hash_ref->{41}=99.992;
 
-	$hash_ref->{0}=1;
-	$hash_ref->{1}=1;
-	$hash_ref->{2}=2;
-	$hash_ref->{3}=3;
-	$hash_ref->{4}=4;
-	$hash_ref->{5}=5;
-	$hash_ref->{6}=6;
-	$hash_ref->{7}=7;
-	$hash_ref->{8}=8;
-	$hash_ref->{9}=9;
-	$hash_ref->{10}=10;
-	$hash_ref->{11}=11;
-	$hash_ref->{12}=12;
-	$hash_ref->{13}=13;
-	$hash_ref->{14}=14;
-	$hash_ref->{15}=15;
-	$hash_ref->{16}=16;
-	$hash_ref->{17}=17;
-	$hash_ref->{18}=18;
-	$hash_ref->{19}=19;
-	$hash_ref->{20}=20;
-	$hash_ref->{21}=21;
-	$hash_ref->{22}=22;
-	$hash_ref->{23}=23;
-	$hash_ref->{24}=24;
-	$hash_ref->{25}=25;
-	$hash_ref->{26}=26;
-	$hash_ref->{27}=27;
-	$hash_ref->{28}=28;
-	$hash_ref->{29}=29;
-	$hash_ref->{30}=30;
-	$hash_ref->{31}=31;
-	$hash_ref->{32}=32;
-	$hash_ref->{33}=33;
-	$hash_ref->{34}=34;
-	$hash_ref->{35}=35;
-	$hash_ref->{36}=36;
-	$hash_ref->{37}=37;
-	$hash_ref->{38}=38;
-	$hash_ref->{39}=39;
-	$hash_ref->{40}=40;
-	$hash_ref->{41}=41;
+  $hash_ref->{0}=1;
+  $hash_ref->{1}=1;
+  $hash_ref->{2}=2;
+  $hash_ref->{3}=3;
+  $hash_ref->{4}=4;
+  $hash_ref->{5}=5;
+  $hash_ref->{6}=6;
+  $hash_ref->{7}=7;
+  $hash_ref->{8}=8;
+  $hash_ref->{9}=9;
+  $hash_ref->{10}=10;
+  $hash_ref->{11}=11;
+  $hash_ref->{12}=12;
+  $hash_ref->{13}=13;
+  $hash_ref->{14}=14;
+  $hash_ref->{15}=15;
+  $hash_ref->{16}=16;
+  $hash_ref->{17}=17;
+  $hash_ref->{18}=18;
+  $hash_ref->{19}=19;
+  $hash_ref->{20}=20;
+  $hash_ref->{21}=21;
+  $hash_ref->{22}=22;
+  $hash_ref->{23}=23;
+  $hash_ref->{24}=24;
+  $hash_ref->{25}=25;
+  $hash_ref->{26}=26;
+  $hash_ref->{27}=27;
+  $hash_ref->{28}=28;
+  $hash_ref->{29}=29;
+  $hash_ref->{30}=30;
+  $hash_ref->{31}=31;
+  $hash_ref->{32}=32;
+  $hash_ref->{33}=33;
+  $hash_ref->{34}=34;
+  $hash_ref->{35}=35;
+  $hash_ref->{36}=36;
+  $hash_ref->{37}=37;
+  $hash_ref->{38}=38;
+  $hash_ref->{39}=39;
+  $hash_ref->{40}=40;
+  $hash_ref->{41}=41;
 
 }
 
 ## REMOVE TEMP FILES
 sub END{
-	local $?;
-	system("rm ".$tmpdir." -rf");
+  local $?;
+  system("rm ".$tmpdir." -rf");
 }

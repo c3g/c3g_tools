@@ -38,7 +38,7 @@ Please make sure that the two header lines of the OTU table is
 properly formatted. For instance:
 
 #Full OTU Counts
-#OTU ID 01  03  04  05  06  07  08  09  10  11  Consensus lineage	
+#OTU ID 01  03  04  05  06  07  08  09  10  11  Consensus lineage  
 
 BUGS/LIMITATIONS:
 
@@ -51,16 +51,16 @@ my ($help, $infile, $infileTsv, $outdir, $step, $begin, $end, $threshold, $n, $p
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 		 => \$infile,
-	'infileTsv=s'    => \$infileTsv,
-	'outdir=s' 		 => \$outdir,
-	'threshold=f' 	 => \$threshold,
-	'n=i'			 => \$n,
-	'permutations=i' => \$perm,
-	'num_threads=i'  => \$num_threads,
-	'step=i'		 => \$step,
-    'verbose' 		 => \$verbose,
-    'help' 			 => \$help
+  'infile=s'        => \$infile,
+  'infileTsv=s'     => \$infileTsv,
+  'outdir=s'        => \$outdir,
+  'threshold=f'     => \$threshold,
+  'n=i'             => \$n,
+  'permutations=i'  => \$perm,
+  'num_threads=i'   => \$num_threads,
+  'step=i'          => \$step,
+  'verbose'         => \$verbose,
+  'help'            => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -84,51 +84,51 @@ my $min = 999999999;
 my @final_sums;
 open(IN, "<".$infileTsv) or die "Can't open infile ".$infileTsv."\n";
 my @sums;
-my $counter = 0;	
+my $counter = 0;  
 
 while(<IN>){
-	chomp;
-	if($_ =~ m/#/){
-		next;
-	}
-	
-	my @row = split(/\t/, $_);
-	pop(@row); shift(@row);
+  chomp;
+  if($_ =~ m/#/){
+    next;
+  }
+  
+  my @row = split(/\t/, $_);
+  pop(@row); shift(@row);
 
-	# For first row
-	if($counter == 0){
-		for(my $i=0; $i<@row; $i++){
-			$sums[$i] = $row[$i];
-		}	
-			
-		$counter++;
-		next;
-	}
+  # For first row
+  if($counter == 0){
+    for(my $i=0; $i<@row; $i++){
+      $sums[$i] = $row[$i];
+    }  
+      
+    $counter++;
+    next;
+  }
 
-	for(my $i=0; $i<@row; $i++){
-		if(defined($sums[$i])){
-			$sums[$i] = $sums[$i] + $row[$i];		
-		}else{
-			print "Not defined...at indice ".$i." file: ".$infile." line ".$.."\n";
-			#die ?
-			#$sums[$i] = 0;
-			#$sums[$i] = $sums[$i] + $row[$i];		
-		}
-	}
+  for(my $i=0; $i<@row; $i++){
+    if(defined($sums[$i])){
+      $sums[$i] = $sums[$i] + $row[$i];    
+    }else{
+      print "Not defined...at indice ".$i." file: ".$infile." line ".$.."\n";
+      #die ?
+      #$sums[$i] = 0;
+      #$sums[$i] = $sums[$i] + $row[$i];    
+    }
+  }
 
-	$counter++;
+  $counter++;
 }
 #Push sums of these samples into the final sums array.
 foreach my $sum (@sums){
-#	print $sum."\t";
-	push(@final_sums, $sum);
+#  print $sum."\t";
+  push(@final_sums, $sum);
 }
 #print "========================\n";
 close(IN);
 
 #For Debug...
 foreach(@final_sums){
-	#print STDERR "[DEBUG] ".$_."\n";
+  #print STDERR "[DEBUG] ".$_."\n";
 }
 
 # pick minimal value.
@@ -138,16 +138,16 @@ foreach(@final_sums){
 @final_sums = sort @final_sums;
 my $stat = Statistics::Descriptive::Sparse->new();
 foreach my $value (@final_sums){
-	$stat->add_data($value);
+  $stat->add_data($value);
 }
 my $avg = $stat->mean();
 
 # Then only consider a minimal value to be good if it is above at least 10% of the average sample abundance.
 # This is to reject failed samples.
 foreach my $value (@final_sums){
-	$min = $value if( ($value < $min) && ($value > $avg * $threshold) );
+  $min = $value if( ($value < $min) && ($value > $avg * $threshold) );
 }
-print STDERR "Performing rarefaction at baseline <".$min."> for each tables.\n" if($verbose);		
+print STDERR "Performing rarefaction at baseline <".$min."> for each tables.\n" if($verbose);    
 
 # Then, normalize all tables upon that value.
 # Run single_rarefactions.py 
