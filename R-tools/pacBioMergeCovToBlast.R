@@ -22,7 +22,7 @@ mergeTables <- function(blastFile, coverageFile, outdir) {
   tBlast$V1 = as.character(lapply(strsplit(as.character(tBlast$V1), split="\\|"), "[", 1))
 
   ## Add coverage value to blast table.
-  tBlastMerged = merge(tBlast, tStats)
+  tBlastMerged = merge(tBlast, tStats, sort=FALSE)
   tBlastMerged$sd = NULL
   tBlastMerged$mean = as.numeric(tBlastMerged$mean)
   tBlastMerged$mean = round(tBlastMerged$mean, digits=0)
