@@ -36,7 +36,7 @@ use warnings;
 
 # Dependencies
 #-----------------------
-use LoadConfig;
+#use LoadConfig;
 
 # SUB
 #-----------------------

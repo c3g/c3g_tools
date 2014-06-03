@@ -39,20 +39,20 @@ my $verbose = 0;
 
 ## SCRIPTS
 GetOptions(
-    'infile=s' 	=> \$infile,
-	'outfile=s' => \$outfile,
-	'begin=s' 	=> \$begin,
-	'end=s' 	=> \$end,
-    'verbose' 	=> \$verbose,
-    'help' 		=> \$help
+  'infile=s'  => \$infile,
+  'outfile=s' => \$outfile,
+  'begin=s'   => \$begin,
+  'end=s'     => \$end,
+  'verbose'   => \$verbose,
+  'help'      => \$help
 );
 if ($help) { print $usage; exit; }
 
-#VALIDATE
+## VALIDATE
 die("--infile file required\n") unless $infile;
 die("--outfile outfile required\n") unless $outfile;
 
-#MAIN=====================================================================================================================================================================
+## MAIN
 open(IN, $infile) or die "Can't open file ".$!."\n";
 open(OUT, ">".$outfile) or die "Can't open file ".$!."\n";
 

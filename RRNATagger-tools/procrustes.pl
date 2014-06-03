@@ -41,13 +41,13 @@ my ($help, @infile, @names, $outfile_graph, $outfile_table, $outdir, $start_at);
 my $verbose = 0;
 
 GetOptions(
-	'infile=s' 			=> \@infile,
-	'names=s' 			=> \@names,
-	'outdir=s'			=> \$outdir,
-	'outfile_table=s' 	=> \$outfile_table,
-	'outfile_graph=s' 	=> \$outfile_graph,
-	'start_at=i'		=> \$start_at,
-    'help' 				=> \$help
+  'infile=s'        => \@infile,
+  'names=s'         => \@names,
+  'outdir=s'        => \$outdir,
+  'outfile_table=s' => \$outfile_table,
+  'outfile_graph=s' => \$outfile_graph,
+  'start_at=i'      => \$start_at,
+  'help'            => \$help
 );
 if ($help) { print $usage; exit; }
 

@@ -331,6 +331,9 @@ sub getSnpInformation {
     elsif($info =~ /^MQ=(.*)/){
 	$snp{"MQ"} = $1;
     }
+    elsif($info =~ /^CAF=\[[0-9.]+,([0-9.]+)/) {
+        $snp{"GMAF"} = $1;
+    }
     elsif($info =~ /^GMAF=(.*)/) {
       	$snp{"GMAF"} = $1;
     }

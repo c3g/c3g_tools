@@ -8,7 +8,7 @@ use Iterator::FastqDb;
 
 my $usage=<<'ENDHERE';
 NAME:
-Preprocess454.pl
+preprocess454.pl
 
 PURPOSE:
 
@@ -41,15 +41,15 @@ my ($help, @fasta, $outfile_index, $outfile_fastq, @index, @qual, $outdir, $leng
 my $verbose = 0;
 
 GetOptions(
-    'fasta=s' 			=> \@fasta,
-	'qual=s' 			=> \@qual,
-	'index=s' 			=> \@index,
-	'length=i' 			=> \$length,
-	'outdir=s' 			=> \$outdir,
-    'outfile_index=s' 	=> \$outfile_index,
-    'outfile_fastq=s' 	=> \$outfile_fastq,
-    'verbose' 			=> \$verbose,
-    'help' 				=> \$help
+  'fasta=s'         => \@fasta,
+  'qual=s'          => \@qual,
+  'index=s'         => \@index,
+  'length=i'        => \$length,
+  'outdir=s'        => \$outdir,
+  'outfile_index=s' => \$outfile_index,
+  'outfile_fastq=s' => \$outfile_fastq,
+  'verbose'         => \$verbose,
+  'help'            => \$help
 );
 if ($help) { print $usage; exit; }
 

@@ -42,16 +42,16 @@ my ($help, $infile_tab, $infile_fasta, $singlet_threshold, $doublet_threshold, $
 my $verbose = 0;
 
 GetOptions(
-    'infile_tab=s' 			=> \$infile_tab,
-    'infile_fasta=s' 		=> \$infile_fasta,
-    'outfile_tab=s' 		=> \$outfile_tab,
-    'outfile_fasta=s' 		=> \$outfile_fasta,
-	'min_value=i' 			=> \$min_value,
-	'singlet_threshold=i' 	=> \$singlet_threshold,
-	'doublet_threshold=i' 	=> \$doublet_threshold,
-	'row_sum' 				=> \$row_sum,
-    'verbose' 				=> \$verbose,
-    'help' 					=> \$help
+  'infile_tab=s'        => \$infile_tab,
+  'infile_fasta=s'      => \$infile_fasta,
+  'outfile_tab=s'       => \$outfile_tab,
+  'outfile_fasta=s'     => \$outfile_fasta,
+  'min_value=i'         => \$min_value,
+  'singlet_threshold=i' => \$singlet_threshold,
+  'doublet_threshold=i' => \$doublet_threshold,
+  'row_sum'             => \$row_sum,
+  'verbose'             => \$verbose,
+  'help'                => \$help
 );
 if ($help) { print $usage; exit; }
 ## VALIDATION
@@ -65,96 +65,96 @@ open(OUT_FASTA, ">".$outfile_fasta) or die "Can't open file ".$outfile_fasta." "
 
 if($row_sum){
 
-	my $threshold_value;
-	if($min_value){
-		$threshold_value = $min_value;
-	}else{
-		$threshold_value = 1;
-	}
+  my $threshold_value;
+  if($min_value){
+    $threshold_value = $min_value;
+  }else{
+    $threshold_value = 1;
+  }
 
-	while(<IN_TAB>){
-		my $singlets = 0;
-		my $doublets = 0;
-		my $high_values = 0;
-		my $zero = 0;
-	
-		chomp($_);
-	
-		if($_ =~ m/\#CLUSTER/){
-			print OUT_TAB $_."\n";
-			next;
-		}
-	
-		my @row = split("\t", $_);
-		my $id = shift(@row);
-		my $sum = sum(@row);
-		$id = ">".$id;
-		#print $id."\n";	
-	
-		if($sum >= $threshold_value){
-			print OUT_TAB $_."\n";
-			$hash{$id} = $id;
-		}else{
+  while(<IN_TAB>){
+    my $singlets = 0;
+    my $doublets = 0;
+    my $high_values = 0;
+    my $zero = 0;
+  
+    chomp($_);
+  
+    if($_ =~ m/\#CLUSTER/){
+      print OUT_TAB $_."\n";
+      next;
+    }
+  
+    my @row = split("\t", $_);
+    my $id = shift(@row);
+    my $sum = sum(@row);
+    $id = ">".$id;
+    #print $id."\n";  
+  
+    if($sum >= $threshold_value){
+      print OUT_TAB $_."\n";
+      $hash{$id} = $id;
+    }else{
 
-		}	
-	}
+    }  
+  }
 
 }else{
 
-	my $threshold_value;
-	if($min_value){
-		$threshold_value = $min_value;
-	}else{
-		$threshold_value = 1;
-	}
-	
-	while(<IN_TAB>){
-		my $singlets = 0;
-		my $doublets = 0;
-		my $high_values = 0;
-		my $zero = 0;
-	
-		chomp($_);
-	
-		if($_ =~ m/\#CLUSTER/){
-			print OUT_TAB $_."\n";
-			next;
-		}
-	
-		my @row = split("\t", $_);
-		my $id = shift(@row);
-		$id = ">".$id;
-	
-		foreach my $el (@row){
-			#print $el."\t";
-			if($el < $threshold_value){
-				$zero++;
-			}elsif($el == $threshold_value){
-				$singlets++;
-			}else{
-				$high_values++;
-			}
-		}
-	
-		if($high_values >= 1){
-			print OUT_TAB $_."\n";
-			$hash{$id} = $id;
-		#if singlets higher than threshold value, keep row
-		}elsif($singlets > $singlet_threshold){
-			print OUT_TAB $_."\n";
-			$hash{$id} = $id;
-		#If not, do not keep it.
-		}else{
-	
-		}
-	}
+  my $threshold_value;
+  if($min_value){
+    $threshold_value = $min_value;
+  }else{
+    $threshold_value = 1;
+  }
+  
+  while(<IN_TAB>){
+    my $singlets = 0;
+    my $doublets = 0;
+    my $high_values = 0;
+    my $zero = 0;
+  
+    chomp($_);
+  
+    if($_ =~ m/\#CLUSTER/){
+      print OUT_TAB $_."\n";
+      next;
+    }
+  
+    my @row = split("\t", $_);
+    my $id = shift(@row);
+    $id = ">".$id;
+  
+    foreach my $el (@row){
+      #print $el."\t";
+      if($el < $threshold_value){
+        $zero++;
+      }elsif($el == $threshold_value){
+        $singlets++;
+      }else{
+        $high_values++;
+      }
+    }
+  
+    if($high_values >= 1){
+      print OUT_TAB $_."\n";
+      $hash{$id} = $id;
+    #if singlets higher than threshold value, keep row
+    }elsif($singlets > $singlet_threshold){
+      print OUT_TAB $_."\n";
+      $hash{$id} = $id;
+    #If not, do not keep it.
+    }else{
+  
+    }
+  }
 }
 
 #Generate parsed fasta file
 my $in = Iterator::FastaDb->new($infile_fasta) or die("Unable to open Fasta file, $infile_fasta\n");
 while(my $seq = $in->next_seq()){
-	if(exists $hash{$seq->header()}){
-		print OUT_FASTA $seq->header()."\n".$seq->seq()."\n";
-	}
+  if(exists $hash{$seq->header()}){
+    print OUT_FASTA $seq->header()."\n".$seq->seq()."\n";
+  }
 }
 exit;

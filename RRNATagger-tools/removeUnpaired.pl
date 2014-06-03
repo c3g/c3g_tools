@@ -59,13 +59,13 @@ my ($help, $infile, $outfile_1, $outfile_2, $outfile_paired, $num_threads);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 			=> \$infile,
-	'outfile_1=s' 		=> \$outfile_1,
-	'outfile_2=s' 		=> \$outfile_2,
-	'outfile_paired=s' 	=> \$outfile_paired,
-	'num_threads=i' 	=> \$num_threads,
-    'verbose' 			=> \$verbose,
-    'help' 				=> \$help
+  'infile=s'          => \$infile,
+  'outfile_1=s'       => \$outfile_1,
+  'outfile_2=s'       => \$outfile_2,
+  'outfile_paired=s'  => \$outfile_paired,
+  'num_threads=i'     => \$num_threads,
+  'verbose'           => \$verbose,
+  'help'              => \$help
 );
 if ($help) { print $usage; exit; }
 

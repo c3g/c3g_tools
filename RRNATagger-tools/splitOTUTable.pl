@@ -10,14 +10,14 @@ use Iterator::FastqDb;
 
 my $usage=<<'ENDHERE';
 NAME:
-itaggerSplitOTUTable.pl
+splitOTUTable.pl
 
 PURPOSE:
 
 INPUT:
 --infile <string>     : OTU table in Qiime format (qiime.org)
 --select <string>     : Either 'bactArch' or 'fungi'
-				
+        
 OUTPUT:
 --matched <string>    : OTU table having only Bacteria AND Archeal organisms.
 --unmatched <string>  : OTU table having non-Bacteria and Non-Archeal organisms.
@@ -37,12 +37,12 @@ my ($help, $infile, $matched, $unmatched, $select);
 my $verbose = 0;
 
 GetOptions(
-    'infile=s' 	   => \$infile,
-	'matched=s'    => \$matched,
-	'unmatched=s'  => \$unmatched,
-	'select=s'     => \$select,
-    'verbose' 	   => \$verbose,
-    'help' 		   => \$help
+  'infile=s'     => \$infile,
+  'matched=s'    => \$matched,
+  'unmatched=s'  => \$unmatched,
+  'select=s'     => \$select,
+  'verbose'      => \$verbose,
+  'help'         => \$help
 );
 if ($help) { print $usage; exit; }
 
@@ -67,17 +67,17 @@ $regex = "k__bacteria|k__archaea" if($select eq "bactArch");
 $regex = "k__fungi" if($select eq "fungi");
 
 while(<IN>){
-	chomp;
-	if($_ =~ m/#/){
-		print OUT $_."\n";
-		print OUT_F $_."\n";
-		next;
-	}
-	if($_ =~ m/($regex)/i ){
-		print OUT $_."\n";
-	}else{
-		print OUT_F $_."\n";
-	}
+  chomp;
+  if($_ =~ m/#/){
+    print OUT $_."\n";
+    print OUT_F $_."\n";
+    next;
+  }
+  if($_ =~ m/($regex)/i ){
+    print OUT $_."\n";
+  }else{
+    print OUT_F $_."\n";
+  }
 }
 close(IN);
 close(OUT);

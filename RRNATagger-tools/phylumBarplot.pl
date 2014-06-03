@@ -46,15 +46,15 @@ my ($help, @infile, @names, $outfile_graph, $outfile_table, $bacteria_only, $n, 
 my $verbose = 0;
 
 GetOptions(
-	'infile=s' 			=> \@infile,
-	'names=s' 			=> \@names,
-	'outfile_table=s' 	=> \$outfile_table,
-	'outfile_graph=s' 	=> \$outfile_graph,
-	'bacteria_only' 	=> \$bacteria_only,
-	'n_most_abundant=i' => \$n,
-	'title=s'			=> \$title,
-    'help' 				=> \$help,
-	'verbose'			=> \$verbose
+  'infile=s'          => \@infile,
+  'names=s'           => \@names,
+  'outfile_table=s'   => \$outfile_table,
+  'outfile_graph=s'   => \$outfile_graph,
+  'bacteria_only'     => \$bacteria_only,
+  'n_most_abundant=i' => \$n,
+  'title=s'           => \$title,
+  'help'              => \$help,
+  'verbose'           => \$verbose
 );
 if ($help) { print $usage; exit; }
 

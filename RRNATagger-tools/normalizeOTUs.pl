@@ -42,9 +42,9 @@ my ($help, $infile, $infile_mapping, $outfile);
 my $verbose = 0;
 
 GetOptions(
-	'infile=s'			=> \$infile,
-	'outfile=s'			=> \$outfile,
-    'help' 				=> \$help
+  'infile=s'   => \$infile,
+  'outfile=s'  => \$outfile,
+  'help'       => \$help
 );
 if ($help) { print $usage; exit; }
 

@@ -45,14 +45,14 @@ my ($help, @infile, @prefixes, $outfile_graph, $outfile_table, $bacteria_only, $
 my $verbose = 0;
 
 GetOptions(
-	'infile=s' 			=> \@infile,
-	'prefixes=s' 		=> \@prefixes,
-	'outfile_table=s' 	=> \$outfile_table,
-	'outfile_graph=s' 	=> \$outfile_graph,
-	'same_color'		=> \$same_color,
-	'custom_ymax=i'		=> \$custom_ymax,
-	'title=s'			=> \$title,
-    'help' 				=> \$help
+  'infile=s'          => \@infile,
+  'prefixes=s'        => \@prefixes,
+  'outfile_table=s'   => \$outfile_table,
+  'outfile_graph=s'   => \$outfile_graph,
+  'same_color'        => \$same_color,
+  'custom_ymax=i'     => \$custom_ymax,
+  'title=s'           => \$title,
+  'help'              => \$help
 );
 if ($help) { print $usage; exit; }
 

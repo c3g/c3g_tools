@@ -80,19 +80,19 @@ die "fastx_quality_stats executable not found!\n" unless $qscore_tool;
 die "barcodes binning tool not on path (Barcodes.pl)\n" unless $barcodes_splitter_tool;
 
 GetOptions(
-    'fastq=s'		=> \$illumina_infile,
-    'barcodes=s' 	=> \$barcodes_infile,
-	'prefix=s' 		=> \$prefix,
-	'suffix=s' 		=> \$suffix,
-	'outfile=s' 	=> \$outfile,
-	'outdir=s' 		=> \$outdir,
-	'phred=i' 		=> \$phred,
-	'num_threads=i' => \$num_threads,
-    'verbose' 		=> \$verbose,
-	'log=s' 		=> \$log,
-	'tmp=s' 		=> \$tmp,
-    'help' 			=> \$help,
-	'debug' 		=> \$debug
+  'fastq=s'       => \$illumina_infile,
+  'barcodes=s'    => \$barcodes_infile,
+  'prefix=s'      => \$prefix,
+  'suffix=s'      => \$suffix,
+  'outfile=s'     => \$outfile,
+  'outdir=s'      => \$outdir,
+  'phred=i'       => \$phred,
+  'num_threads=i' => \$num_threads,
+  'verbose'       => \$verbose,
+  'log=s'         => \$log,
+  'tmp=s'         => \$tmp,
+  'help'          => \$help,
+  'debug'         => \$debug
 );
 if ($help) { print $usage; exit; }
 
@@ -173,9 +173,16 @@ if($separate != 2){
 	# Split library according to barcodes
 	print STDERR "Splitting barcodes...\n using ".$barcodes_splitter_tool."\n" if $debug;
 	if($log){
-		system($barcodes_splitter_tool." --infile ".$illumina_infile." --barcodes ".$barcodes_infile." --outdir ".$tmpdir_fastq." --log ".$log." --num_threads ".$num_threads);
+    my $cmd = $barcodes_splitter_tool." --infile ".$illumina_infile." --barcodes ".$barcodes_infile." --outdir ".$tmpdir_fastq." --log ".$log." --num_threads ".$num_threads;
+    print STDERR "Executing: ".$cmd."\n" if($debug);
+		system($cmd);
+    die "command failed: $!\n" if($? != 0);
+
 	}else{
-		system($barcodes_splitter_tool." --infile ".$illumina_infile." --barcodes ".$barcodes_infile." --outdir ".$tmpdir_fastq." --log ".$tmpdir."/.barcodes_log.txt --num_threads ".$num_threads);	
+		my $cmd = $barcodes_splitter_tool." --infile ".$illumina_infile." --barcodes ".$barcodes_infile." --outdir ".$tmpdir_fastq." --log ".$tmpdir."/.barcodes_log.txt --num_threads ".$num_threads;
+    print STDERR "Executing: ".$cmd."\n" if($debug);
+    system($cmd);
+    die "command failed: $!\n" if($? != 0);
 	}
 
 	print $tmpdir_fastq."\n" if($debug);
@@ -229,7 +236,10 @@ if($separate != 2){
 		# Run qscore command, add output to a variable and finally print the content of that variable to a file.
 		print STDERR "Calculate qscores\n" if($debug);
 		print STDERR "Tempdirqscoresubstring:\t".$tmpdir_qscores.$id."\n" if($debug);
-		system($qscore_tool." -Q ".$phred." -i ".$tmpdir_fastq.$_." -o ".$tmpdir_qscores.$id."_qscore.tab");
+		my $cmd = $qscore_tool." -Q ".$phred." -i ".$tmpdir_fastq.$_." -o ".$tmpdir_qscores.$id."_qscore.tab";
+    print STDERR "Executing ".$cmd."\n";
+    system($cmd);
+    die "command failed: $!\n" if($? != 0);
 
 		# Put file names and sample id in memory.
 		my $file_string = $Cache->get('Qscore');
@@ -281,6 +291,7 @@ if($separate != 2){
 # fastx_quality_stats job for the whole undemultiplexed file.
 }elsif($separate == 2){
 	system $qscore_tool." -Q ".$phred." -i ".$illumina_infile." -o ".$outfile;
+  die "command failed: $!\n" if($? != 0);
 }
 
 ## REMOVE TEMP FILES. Cannot place this inside END subroutine

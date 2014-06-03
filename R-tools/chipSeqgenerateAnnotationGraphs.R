@@ -41,7 +41,7 @@ for(i in 2:ncol(designs[1,])) {
       # Exon intron stats
       exons<-paste(prefix, ".exon.stats.csv",sep="")
       print(paste("NOTICE: processing annotation exon stats files: ", paste(exons, collapse=","),sep=" "))
-      if(file.info(exons)$size == 0) {
+      if(file.info(exons)$size == 0 || length(scan(exons)) > 0) {
         d1=data.frame(c(0))
       }
       else {
@@ -50,8 +50,8 @@ for(i in 2:ncol(designs[1,])) {
       hist(d1[,1], breaks=length(levels(as.factor(d1[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within exons\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Exon", ylab="Number of peaks")
       introns=paste(prefix, ".intron.stats.csv",sep="")
       print(paste("NOTICE: processing annotation intron stats files: ", paste(introns, collapse=","),sep=" "))
-      if(file.info(introns)$size == 0) {
-        d1=data.frame(c(0))
+      if(file.info(introns)$size == 0 || length(scan(introns)) == 0) {
+        d2=data.frame(c(0))
       }
       else {
         d2<-read.table(introns, header=F, sep=",", check.names=F)

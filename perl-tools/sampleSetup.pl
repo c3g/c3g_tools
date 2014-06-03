@@ -19,7 +19,6 @@ Usage: perl $0 --nanuqAuthFile \$HOME/.nanuqAuth.txt --usesheet project.nanuq.cs
   --nanuqAuthFile  <FILE>          Path to Nanuq authentication file
   --projectId      <INT>           Nanuq project ID from which to get the sample sheet (can't be used with --usesheet)
   --usesheet       <FILE>          Use the specified sample sheet instead of fecthing it from Nanuq (can't be used with --projectId)
-  --format         [bam|fastq]     Raw reads format (default: bam)
   --links                          Create raw_reads directory and symlinks (default)
   --nolinks                        Do not create raw_reads directory or symlinks
   --tech           [HiSeq|MiSeq]   Sequencing technology
@@ -38,7 +37,6 @@ sub main {
   my $techName;
   my $projectId;
   my $sampleSheet;
-  my $format = "bam";  # Raw reads are in bam format by default, otherwise in fastq format if specified
   my $nanuqAuthFile;
   my $links = 1;  # Create symlinks by default
   my $help;
@@ -46,7 +44,6 @@ sub main {
     "tech=s"          => \$techName,
     "projectId=i"     => \$projectId,
     "usesheet=s"      => \$sampleSheet,
-    "format=s"        => \$format,
     "nanuqAuthFile=s" => \$nanuqAuthFile,
     "links!"          => \$links,
     "help!"           => \$help,
@@ -65,9 +62,6 @@ sub main {
   }
   if ((!defined($projectId) or length($projectId) == 0) and (!defined($sampleSheet) or length($sampleSheet) == 0)) {
     $errMsg .= "Error: missing --projectId or --useSheet option!\n";
-  }
-  if ($format ne "bam" and $format ne "fastq") {
-    $errMsg .= "Error: invalid --format value (should be 'bam' or 'fastq')!\n";
   }
   if (!defined($techName) or length($techName) == 0 or ($techName ne "HiSeq" and $techName ne "MiSeq")) {
     $errMsg .= "Error: missing or invalid --tech value (should be 'HiSeq' or 'MiSeq')!\n";
@@ -88,7 +82,7 @@ sub main {
   }
 
   if ($links) {
-    my $rA_sampleInfos = parseSampleSheet($projectFile, $format, $techName);
+    my $rA_sampleInfos = parseSampleSheet($projectFile, $techName);
     createLinks($rA_sampleInfos);
   }
 }
@@ -119,7 +113,6 @@ sub getSampleSheet {
 
 sub parseSampleSheet {
   my $fileName = shift;
-  my $format = shift;
   my $techName = shift;
 
   my @retVal;
@@ -128,11 +121,15 @@ sub parseSampleSheet {
   my $nameIdx=-1;
   my $libraryBarcodeIdx=-1;
   my $runIdIdx=-1;
+  my $qualOffsetIdx=-1;
   my $laneIdx=-1;
   my $runTypeIdx=-1;
   my $statusIdx=-1;
   my $readSetIdIdx=-1;
   my $filePrefixIdx=-1;
+  my $fastq1Idx=-1;
+  my $fastq2Idx=-1;
+  my $bamIdx=-1;
 
   my $csv = Text::CSV::Encoded->new ({ encoding => "iso-8859-1" });
   $csv->parse($line);
@@ -146,6 +143,8 @@ sub parseSampleSheet {
       $libraryBarcodeIdx = $idx;
     } elsif ($headers[$idx] eq "Run") {
       $runIdIdx = $idx;
+    } elsif ($headers[$idx] eq "Quality Offset") {
+      $qualOffsetIdx = $idx;
     } elsif ($headers[$idx] eq "Region") {
       $laneIdx = $idx;
     } elsif ($headers[$idx] eq "Run Type") {
@@ -156,6 +155,12 @@ sub parseSampleSheet {
       $readSetIdIdx = $idx;
     } elsif ($headers[$idx] eq "Filename Prefix") {
       $filePrefixIdx = $idx;
+    } elsif ($headers[$idx] eq "FASTQ1") {
+      $fastq1Idx = $idx;
+    } elsif ($headers[$idx] eq "FASTQ2") {
+      $fastq2Idx = $idx;
+    } elsif ($headers[$idx] eq "BAM") {
+      $bamIdx = $idx;
     }
   }
 
@@ -168,6 +173,9 @@ sub parseSampleSheet {
   }
   if ($runIdIdx == -1) {
     $sampleSheetErrors .= "Missing Run ID\n";
+  }
+  if ($qualOffsetIdx == -1) {
+    $sampleSheetErrors .= "Missing Quality Offset\n";
   }
   if ($laneIdx == -1) {
     $sampleSheetErrors .= "Missing Lane\n";
@@ -184,6 +192,9 @@ sub parseSampleSheet {
   if ($filePrefixIdx == -1) {
     $sampleSheetErrors .= "Missing Filename Prefix\n";
   }
+  if ($fastq1Idx == -1 and $bamIdx == -1) {
+    $sampleSheetErrors .= "Missing FASTQ1 or BAM\n";
+  }
   if (length($sampleSheetErrors) > 0) {
     die $sampleSheetErrors;
   }
@@ -191,13 +202,14 @@ sub parseSampleSheet {
   while ($line = <SAMPLE_SHEET>) {
     $csv->parse($line);
     my @values = $csv->fields();
-    if ($values[$statusIdx] =~ /invalid/) {
-      warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] data is invalid!\n";
+    if ($values[$statusIdx] ne 'Data is valid') {
+      warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] data is not in valid state!\n";
     } else {
       my %sampleInfo;
       $sampleInfo{'name'} = $values[$nameIdx];
       $sampleInfo{'libraryBarcode'} = $values[$libraryBarcodeIdx];
       $sampleInfo{'runId'} = $values[$runIdIdx];
+      $sampleInfo{'qualOffset'} = $values[$qualOffsetIdx];
       $sampleInfo{'lane'} = $values[$laneIdx];
       $sampleInfo{'runType'} = $values[$runTypeIdx];
       $sampleInfo{'readSetId'} = $values[$readSetIdIdx];
@@ -209,81 +221,25 @@ sub parseSampleSheet {
       } elsif ($techName eq 'MiSeq') {
         $rootDir = "/lb/robot/miSeqSequencer/miSeqRuns/";
       } else {
-        die "Unknown prefix technology type: " . $sampleInfo{'filePrefix'} . "\n";
+        die "Unknown prefix technology type: " . $techName . "\n";
       }
 
-      # Find yearly directories
-      opendir(ROOT_DIR, $rootDir) or die "Couldn't open directory " . $rootDir . "\n";
-      my @roots = grep { /^2\d\d\d/ } readdir(ROOT_DIR);
-      closedir(ROOT_DIR);
-      for (my $i = 0; $i < @roots; $i++) {
-        $roots[$i] = $rootDir . '/' . $roots[$i];
+      if ($values[$fastq1Idx]) {
+        $sampleInfo{'fastq1'} = $rootDir . $values[$fastq1Idx];
       }
-      push(@roots, $rootDir);
-
-      my @rootFiles;
-      my $runPath;
-      for my $rootDir (@roots) {
-        my @tmpPaths;
-        opendir(ROOT_DIR, $rootDir) or die "Couldn't open directory " . $rootDir . "\n";
-        if ($techName eq 'HiSeq') {
-          @tmpPaths = grep { /.*[0-9]+_[^_]+_[^_]+_$sampleInfo{'runId'}/ } readdir(ROOT_DIR);
-        } else {
-          @tmpPaths = grep { /.*[0-9]+_$sampleInfo{'runId'}/ } readdir(ROOT_DIR);
-        }
-
-        if (@tmpPaths > 0) {
-          push(@rootFiles, @tmpPaths);
-          $runPath = $rootDir . '/' . $rootFiles[0];
-        }
+      if ($values[$fastq2Idx]) {
+        $sampleInfo{'fastq2'} = $rootDir . $values[$fastq2Idx];
+      }
+      if ($values[$bamIdx]) {
+        $sampleInfo{'bam'} = $rootDir . $values[$bamIdx];
       }
 
-      if (@rootFiles == 0) {
-        die "Run not found: " . $sampleInfo{'runId'} . "\n";
-      } elsif (@rootFiles > 1) {
-        die "Many runs found: " . $sampleInfo{'runId'} . "\n";
-      }
-
-      my $rawReadDir = `echo $runPath/se*`;
-      chomp($rawReadDir);
-
-      my $rawReadFile1;
-      my $rawReadFile2;
-
-      if ($rawReadDir =~ /\*/) {
-        $rawReadDir = `echo $runPath/Data/In*/B*/G*`;
-        chomp($rawReadDir);
-        if ($rawReadDir =~ /\*/) {
-          die "Couldn't find fastq directory: $rawReadDir\n";
-        }
-
-        $sampleInfo{'qualOffset'} = "64";
-
-        $rawReadFile1 = $rawReadDir . '/s_' . $sampleInfo{'lane'} . '_1_*' . $sampleInfo{'name'} . '*.txt.gz';
-        $rawReadFile2 = $rawReadDir . '/s_' . $sampleInfo{'lane'} . '_2_*' . $sampleInfo{'name'} . '*.txt.gz';
-        $sampleInfo{'filename2'} = `echo $rawReadFile2`;
+      # Readsets must have at least one BAM or FASTQ file defined to be selected, otherwise warning is raised
+      if ($values[$bamIdx] or $values[$fastq1Idx]) {
+        push(@retVal, \%sampleInfo);
       } else {
-        $sampleInfo{'qualOffset'} = "33";
-
-        if ($format eq "fastq") {
-          $rawReadFile1 = $rawReadDir . '/' . $sampleInfo{'filePrefix'} . '_R1.fastq.gz';
-
-          my $runType = $values[$runTypeIdx];
-          if ($runType eq "PAIRED_END") {
-            $rawReadFile2 = $rawReadDir . '/' . $sampleInfo{'filePrefix'} . '_R2.fastq.gz';
-            $sampleInfo{'filename2'} = `echo $rawReadFile2`;
-          }
-        } else {    # Bam format by default
-          $rawReadFile1 = $rawReadDir . '/' . $sampleInfo{'filePrefix'} . '.bam';
-        }
-      }
-
-      $sampleInfo{'filename1'} = `echo $rawReadFile1`;
-      chomp($sampleInfo{'filename1'});
-      if ($values[$runTypeIdx] eq "PAIRED_END") {
-        chomp($sampleInfo{'filename2'});
-      }
-      push(@retVal, \%sampleInfo);
+        warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
+     }
     }
   }
 
@@ -303,16 +259,16 @@ sub createLinks {
 
     my @symlinks;
 
-    # Retrieve target file extension and list all links to create
-    if ($rH_sample->{'filename1'} =~ /\.bam$/) {    # BAM format
-      push(@symlinks, [$rH_sample->{'filename1'}, $rawReadPrefix . "bam"]);
-    } else {    # FASTQ format
+    # List all links to create
+    if ($rH_sample->{'bam'}) {
+      push(@symlinks, [$rH_sample->{'bam'}, $rawReadPrefix . "bam"]);
+    } elsif ($rH_sample->{'fastq1'}) {
       my $runType = $rH_sample->{'runType'};
       if ($runType eq "SINGLE_END") {
-        push(@symlinks, [$rH_sample->{'filename1'}, $rawReadPrefix . "single.fastq.gz"]);
+        push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "single.fastq.gz"]);
       } elsif ($runType eq "PAIRED_END") {
-        push(@symlinks, [$rH_sample->{'filename1'}, $rawReadPrefix . "pair1.fastq.gz"]);
-        push(@symlinks, [$rH_sample->{'filename2'}, $rawReadPrefix . "pair2.fastq.gz"]);
+        push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "pair1.fastq.gz"]);
+        push(@symlinks, [$rH_sample->{'fastq2'}, $rawReadPrefix . "pair2.fastq.gz"]);
       } else {
         die "Error: unknown run type: $runType!";
       }
