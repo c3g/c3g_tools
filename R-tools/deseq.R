@@ -90,7 +90,7 @@ if (tmpOP[[1]][length(tmpOP[[1]])] == "/" ) {
 	out_path=paste(tmpOP[[1]][1:(length(tmpOP[[1]])-1)],collapse="")
 }
 
-design = read.csv2(design_file, header=T, sep = "\t", na.strings = "0", check.names=F)
+design = read.csv2(design_file, header=T, sep = "\t", na.strings = "0", check.names=F, colClasses =c('character',rep('numeric',unique(count.fields(design_file))-1)))
 rawcount = read.csv(rawcount_file, header=T, sep ="\t", check.names=F)
 
 print(design)
