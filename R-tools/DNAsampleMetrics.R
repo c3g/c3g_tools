@@ -165,28 +165,13 @@ if (type == "wholeGenome") {
 }
 ## get CCDS coverage metrics
 listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[4],"$",sep=""),recursive=T))
-nameSample=strsplit(basename(listFile),".",fixed=T)
-if (sampleNum == length(listFile)) {
-	sampleNum=length(listFile)
-	for(i in 1:length(listFile)) {
-		nameLoc=match(nameSample[[i]][1],name)
-		stats=scan(file=listFile[i],what="character",sep="\n", skip=1)	#JT: Skip header, because some samples's name can match header fields...
-		statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
-		statsValue=strsplit(statsLigne,"\t",fixed=T)
-		ccdsMeanCov[nameLoc]=statsValue[[1]][3]
-		ccdsbase10[nameLoc]=statsValue[[1]][7]
-		ccdsbase25[nameLoc]=statsValue[[1]][8]
-		ccdsbase50[nameLoc]=statsValue[[1]][9]
-		ccdsbase75[nameLoc]=statsValue[[1]][10]
-		ccdsbase100[nameLoc]=statsValue[[1]][11]
-		ccdsbase500[nameLoc]=statsValue[[1]][12]
-	}
-} else {
-	sampleNumTmp=length(listFile)
-	for(i in 1:length(listFile)) {
-		if (nameSample[[i]][1] %in% name) {
+if (length(listFile) > 0) {
+	nameSample=strsplit(basename(listFile),".",fixed=T)
+	if (sampleNum == length(listFile)) {
+		sampleNum=length(listFile)
+		for(i in 1:length(listFile)) {
 			nameLoc=match(nameSample[[i]][1],name)
-			stats=scan(file=listFile[i],what="character",sep="\n")
+			stats=scan(file=listFile[i],what="character",sep="\n", skip=1)	#JT: Skip header, because some samples's name can match header fields...
 			statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
 			statsValue=strsplit(statsLigne,"\t",fixed=T)
 			ccdsMeanCov[nameLoc]=statsValue[[1]][3]
@@ -196,37 +181,54 @@ if (sampleNum == length(listFile)) {
 			ccdsbase75[nameLoc]=statsValue[[1]][10]
 			ccdsbase100[nameLoc]=statsValue[[1]][11]
 			ccdsbase500[nameLoc]=statsValue[[1]][12]
-			
-		} else {
-			sampleNum=sampleNum+1
-			stats=scan(file=listFile[i],what="character",sep="\n")
-			name=c(name,nameSample[[i]][1])
-			align=c(align,"NA")
-			duplicate=c(duplicate,"NA")
-			pairOrient=c(pairOrient,"NA")
-			medianInsS=c(medianInsS,"NA")
-			meanInsS=c(meanInsS,"NA")
-			averageDev=c(averageDev,"NA")
-			standD=c(standD,"NA")
-			wgMeanCov=c(wgMeanCov,"NA")
-			wgbase10=c(wgbase10,"NA")
-			wgbase25=c(wgbase25,"NA")
-			wgbase50=c(wgbase50,"NA")
-			wgbase75=c(wgbase75,"NA")
-			wgbase100=c(wgbase100,"NA")
-			wgbase500=c(wgbase500,"NA")
-			statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
-			statsValue=strsplit(statsLigne,"\t",fixed=T)
-			ccdsMeanCov=c(ccdsMeanCov,statsValue[[1]][3])
-			ccdsbase10=c(ccdsbase10,statsValue[[1]][7])
-			ccdsbase25=c(ccdsbase25,statsValue[[1]][8])
-			ccdsbase50=c(ccdsbase50,statsValue[[1]][9])
-			ccdsbase75=c(ccdsbase75,statsValue[[1]][10])
-			ccdsbase100=c(ccdsbase100,statsValue[[1]][11])
-			ccdsbase500=c(ccdsbase500,statsValue[[1]][12])
+		}
+	} else {
+		sampleNumTmp=length(listFile)
+		for(i in 1:length(listFile)) {
+			if (nameSample[[i]][1] %in% name) {
+				nameLoc=match(nameSample[[i]][1],name)
+				stats=scan(file=listFile[i],what="character",sep="\n")
+				statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
+				statsValue=strsplit(statsLigne,"\t",fixed=T)
+				ccdsMeanCov[nameLoc]=statsValue[[1]][3]
+				ccdsbase10[nameLoc]=statsValue[[1]][7]
+				ccdsbase25[nameLoc]=statsValue[[1]][8]
+				ccdsbase50[nameLoc]=statsValue[[1]][9]
+				ccdsbase75[nameLoc]=statsValue[[1]][10]
+				ccdsbase100[nameLoc]=statsValue[[1]][11]
+				ccdsbase500[nameLoc]=statsValue[[1]][12]
+				
+			} else {
+				sampleNum=sampleNum+1
+				stats=scan(file=listFile[i],what="character",sep="\n")
+				name=c(name,nameSample[[i]][1])
+				align=c(align,"NA")
+				duplicate=c(duplicate,"NA")
+				pairOrient=c(pairOrient,"NA")
+				medianInsS=c(medianInsS,"NA")
+				meanInsS=c(meanInsS,"NA")
+				averageDev=c(averageDev,"NA")
+				standD=c(standD,"NA")
+				wgMeanCov=c(wgMeanCov,"NA")
+				wgbase10=c(wgbase10,"NA")
+				wgbase25=c(wgbase25,"NA")
+				wgbase50=c(wgbase50,"NA")
+				wgbase75=c(wgbase75,"NA")
+				wgbase100=c(wgbase100,"NA")
+				wgbase500=c(wgbase500,"NA")
+				statsLigne=stats[grep(nameSample[[i]][1],stats,fixed=T)]
+				statsValue=strsplit(statsLigne,"\t",fixed=T)
+				ccdsMeanCov=c(ccdsMeanCov,statsValue[[1]][3])
+				ccdsbase10=c(ccdsbase10,statsValue[[1]][7])
+				ccdsbase25=c(ccdsbase25,statsValue[[1]][8])
+				ccdsbase50=c(ccdsbase50,statsValue[[1]][9])
+				ccdsbase75=c(ccdsbase75,statsValue[[1]][10])
+				ccdsbase100=c(ccdsbase100,statsValue[[1]][11])
+				ccdsbase500=c(ccdsbase500,statsValue[[1]][12])
+			}
 		}
 	}
-}
+} 
 finalTable=cbind(name,align,duplicate,pairOrient,medianInsS,meanInsS,averageDev,standD,wgMeanCov,wgbase10,wgbase25,wgbase50,wgbase75,wgbase100,wgbase500,ccdsMeanCov,ccdsbase10,ccdsbase25,ccdsbase50,ccdsbase75,ccdsbase100,ccdsbase500)
 #colnames(finalTable)=c("SampleName","Aligned","Duplicates","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","WG Mean Coverage","WG %_bases_above_10","WG %_bases_above_25","WG %_bases_above_50","WG %_bases_above_75","WG %_bases_above_100","WG %_bases_above_500","CCDS Mean Coverage","CCDS %_bases_above_10","CCDS %_bases_above_25","CCDS %_bases_above_50","CCDS %_bases_above_75","CCDS %_bases_above_100","CCDS %_bases_above_500")
 write.table(finalTable,file=outputFile,sep="\t",row.names=F,col.names=T,quote=F)
