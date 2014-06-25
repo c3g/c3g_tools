@@ -21,7 +21,7 @@ Usage: perl $0 --nanuqAuthFile \$HOME/.nanuqAuth.txt --usesheet project.nanuq.cs
   --usesheet       <FILE>          Use the specified sample sheet instead of fecthing it from Nanuq (can't be used with --projectId)
   --links                          Create raw_reads directory and symlinks (default)
   --nolinks                        Do not create raw_reads directory or symlinks
-  --tech           [HiSeq|MiSeq]   Sequencing technology
+  --tech           [HiSeq|MiSeq]   Sequencing technology ('MiSeq' or 'HiSeq' or '454')
   --help                           Show this help
 
   The 'nanuqAuthFile' contains your Nanuq username and password.
@@ -63,8 +63,8 @@ sub main {
   if ((!defined($projectId) or length($projectId) == 0) and (!defined($sampleSheet) or length($sampleSheet) == 0)) {
     $errMsg .= "Error: missing --projectId or --useSheet option!\n";
   }
-  if (!defined($techName) or length($techName) == 0 or ($techName ne "HiSeq" and $techName ne "MiSeq")) {
-    $errMsg .= "Error: missing or invalid --tech value (should be 'HiSeq' or 'MiSeq')!\n";
+  if (!defined($techName) or length($techName) == 0 or ($techName ne "HiSeq" and $techName ne "MiSeq" and $techName ne "454")) {
+    $errMsg .= "Error: missing or invalid --tech value (should be 'HiSeq' or 'MiSeq' or '454')!\n";
   }
   if (length($errMsg)) {
     die $errMsg . "\n" . getUsage();
