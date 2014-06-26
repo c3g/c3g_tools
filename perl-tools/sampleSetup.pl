@@ -6,6 +6,7 @@ use File::Path qw(mkpath);
 use Getopt::Long;
 #use Text::CSV;
 use Text::CSV::Encoded;
+use File::Find;
 
 my $version = "1.0";
 
@@ -83,7 +84,7 @@ sub main {
 
   if ($links) {
     my $rA_sampleInfos = parseSampleSheet($projectFile, $techName);
-    createLinks($rA_sampleInfos);
+    createLinks($rA_sampleInfos, $techName);
   }
 }
 
@@ -130,6 +131,7 @@ sub parseSampleSheet {
   my $fastq1Idx=-1;
   my $fastq2Idx=-1;
   my $bamIdx=-1;
+  my $dateIdx="";
 
   my $csv = Text::CSV::Encoded->new ({ encoding => "iso-8859-1" });
   $csv->parse($line);
@@ -161,7 +163,17 @@ sub parseSampleSheet {
       $fastq2Idx = $idx;
     } elsif ($headers[$idx] eq "BAM") {
       $bamIdx = $idx;
-    }
+    
+    # 454:
+    } elsif ($headers[$idx] eq "Run Start Date" && $techName eq "454") {
+      $dateIdx = $idx;
+    } #elsif ($headers[$idx] eq "Run Start Date") && $techName eq "454" {
+    #  $dateIdx = $idx;
+    #} elsif ($headers[$idx] eq "Run Start Date") && $techName eq "454" {
+    #  $dateIdx = $idx;
+    #}
+
+
   }
 
   my $sampleSheetErrors = "";
@@ -195,7 +207,7 @@ sub parseSampleSheet {
   if ($fastq1Idx == -1 and $bamIdx == -1) {
     $sampleSheetErrors .= "Missing FASTQ1 or BAM\n";
   }
-  if (length($sampleSheetErrors) > 0) {
+  if (length($sampleSheetErrors) > 0 && $techName ne "454") {
     die $sampleSheetErrors;
   }
 
@@ -206,40 +218,55 @@ sub parseSampleSheet {
       warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] data is not in valid state!\n";
     } else {
       my %sampleInfo;
-      $sampleInfo{'name'} = $values[$nameIdx];
+      $sampleInfo{'name'}           = $values[$nameIdx];
       $sampleInfo{'libraryBarcode'} = $values[$libraryBarcodeIdx];
-      $sampleInfo{'runId'} = $values[$runIdIdx];
-      $sampleInfo{'qualOffset'} = $values[$qualOffsetIdx];
-      $sampleInfo{'lane'} = $values[$laneIdx];
-      $sampleInfo{'runType'} = $values[$runTypeIdx];
-      $sampleInfo{'readSetId'} = $values[$readSetIdIdx];
-      $sampleInfo{'filePrefix'} = $values[$filePrefixIdx];
+      $sampleInfo{'runId'}          = $values[$runIdIdx];
+      $sampleInfo{'qualOffset'}     = $values[$qualOffsetIdx];
+      $sampleInfo{'lane'}           = $values[$laneIdx];
+      $sampleInfo{'runType'}        = $values[$runTypeIdx];
+      $sampleInfo{'readSetId'}      = $values[$readSetIdIdx];
+      $sampleInfo{'filePrefix'}     = $values[$filePrefixIdx];
+      $sampleInfo{'date'}           = $values[$dateIdx];
 
       my $rootDir;
       if ($techName eq 'HiSeq') {
         $rootDir = "/lb/robot/hiSeqSequencer/hiSeqRuns/";
       } elsif ($techName eq 'MiSeq') {
         $rootDir = "/lb/robot/miSeqSequencer/miSeqRuns/";
-      } else {
+      } elsif ($techName eq '454') {
+        $rootDir = "/lb/robot/454sequencers/runs/";
+      }else {
         die "Unknown prefix technology type: " . $techName . "\n";
       }
 
-      if ($values[$fastq1Idx]) {
-        $sampleInfo{'fastq1'} = $rootDir . $values[$fastq1Idx];
-      }
-      if ($values[$fastq2Idx]) {
-        $sampleInfo{'fastq2'} = $rootDir . $values[$fastq2Idx];
-      }
-      if ($values[$bamIdx]) {
-        $sampleInfo{'bam'} = $rootDir . $values[$bamIdx];
-      }
+      # If Illumina:
+      if($techName ne "454"){
+        if ($values[$fastq1Idx]) {
+          $sampleInfo{'fastq1'} = $rootDir . $values[$fastq1Idx];
+        }
+        if ($values[$fastq2Idx]) {
+          $sampleInfo{'fastq2'} = $rootDir . $values[$fastq2Idx];
+        }
+        if ($values[$bamIdx]) {
+          $sampleInfo{'bam'} = $rootDir . $values[$bamIdx];
+        }
 
-      # Readsets must have at least one BAM or FASTQ file defined to be selected, otherwise warning is raised
-      if ($values[$bamIdx] or $values[$fastq1Idx]) {
+        # Readsets must have at least one BAM or FASTQ file defined to be selected, otherwise warning is raised
+        if ($values[$bamIdx] or $values[$fastq1Idx]) {
+          push(@retVal, \%sampleInfo);
+        } else {
+          warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
+        }
+      }else{
+        # else if 454
+        my $fastaName        = $values[$filePrefixIdx].".fna";
+        $fastaName =~ s/\.fna/\.454Reads\.fna/;
+        my $qualName         = $values[$filePrefixIdx].".qual";
+        $qualName =~ s/\.qual/\.454Reads\.qual/;
+        $sampleInfo{'fasta'} = $fastaName;
+        $sampleInfo{'qual'}  = $qualName;
         push(@retVal, \%sampleInfo);
-      } else {
-        warn "[Warning] Sample Name $values[$nameIdx], Run ID $values[$runIdIdx], Lane $values[$laneIdx] has neither BAM nor FASTQ1 fields set!\n";
-     }
+      }
     }
   }
 
@@ -248,30 +275,103 @@ sub parseSampleSheet {
 
 sub createLinks {
   my $rA_sampleInfos = shift;
+  my $techName       = shift;
 
-  for my $rH_sample (@$rA_sampleInfos) {
-
-    # Create base raw read directory
-    my $rawReadDir = 'raw_reads/' . $rH_sample->{'name'} . "/run" . $rH_sample->{'runId'} . "_" . $rH_sample->{'lane'};
+  my @symlinks;
+  
+  ###################
+  ## 454 
+ 
+  if($techName eq "454"){
+    my $rawReadDir = 'raw_reads/';
     mkpath($rawReadDir);
+    # Create base raw read directory
+    my $i=0;
+    my $rootDir;
+    for my $rH_sample (@$rA_sampleInfos) {
 
-    my $rawReadPrefix = $rawReadDir . '/' . $rH_sample->{'name'} . '.' . $rH_sample->{'libraryBarcode'} . '.' . $rH_sample->{'qualOffset'} . ".";
+      # find directory. For 454 libraries, libraries are stored by their date name.
+      my $completeDate = $rH_sample->{'date'};
+      my @completeDate = split(/\s/, $completeDate);
+      my $date         = $completeDate[0];
+      my $time         = $completeDate[1];
+      my @date         = split(/-/, $date);
+      my @time         = split(/:/, $time);
+      my $year         = $date[0];
+      my $month        = $date[1];
+      my $day          = $date[2];
+      my $hour         = $time[0];
+      my $min          = $time[1];
+      my $sec          = $time[2];
+      
+      my $indir  = "/lb/robot/454sequencer/runs/2014/"; # TODO: adap to multiple directory to check-in.
+      my $prefix = $year."_".$month."_".$day."_".$hour."_".$min."_".$sec."_FLX";
 
-    my @symlinks;
-
-    # List all links to create
-    if ($rH_sample->{'bam'}) {
-      push(@symlinks, [$rH_sample->{'bam'}, $rawReadPrefix . "bam"]);
-    } elsif ($rH_sample->{'fastq1'}) {
-      my $runType = $rH_sample->{'runType'};
-      if ($runType eq "SINGLE_END") {
-        push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "single.fastq.gz"]);
-      } elsif ($runType eq "PAIRED_END") {
-        push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "pair1.fastq.gz"]);
-        push(@symlinks, [$rH_sample->{'fastq2'}, $rawReadPrefix . "pair2.fastq.gz"]);
-      } else {
-        die "Error: unknown run type: $runType!";
+      if($i == 0){
+        opendir(D, $indir) || die "Can't open directory: $!\n";
+        while (my $f = readdir(D)) {  
+          #print "\$f = $f\n";
+          if($f =~ $prefix){
+            $rootDir = $indir.$f."/";
+          }
+        }
+        closedir(D);
+        
+        opendir(D, $rootDir) || die "Can't open directory: $!\n";
+        while (my $f = readdir(D)) {  
+          #print "\$f = $f\n";
+          if($f =~ "^D_"){
+            $rootDir = $rootDir.$f."/";
+          }
+        }
+        closedir(D);
       }
+      print STDERR $rootDir."\n";
+      push(@symlinks, [$rootDir."/".$rH_sample->{'fasta'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".fna"]);
+      push(@symlinks, [$rootDir."/".$rH_sample->{'qual'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".qual"]);
+      print STDERR $rootDir."/".$rH_sample->{'fasta'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".fna\n";
+      print STDERR $rootDir."/".$rH_sample->{'qual'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".qual\n";
+    
+      # Create all symbolic links
+      for my $symlink (@symlinks) {
+        if (-l @$symlink[1]) {
+          warn "[Warning] Symbolic link @$symlink[1] already exists! Skipping.\n";
+        } elsif (-f @$symlink[0] and symlink(@$symlink[0], @$symlink[1])) {
+          print "Created symbolic link @$symlink[1] successfully.\n";
+        } else {
+          die "[Error] Can't create symbolic link @$symlink[1] to target @$symlink[0]!\n";
+        }
+      }
+      $i++;
+    }    
+
+  ###################
+  # HiSeq and MiSeq
+  }else{
+
+    for my $rH_sample (@$rA_sampleInfos) {
+
+      # Create base raw read directory
+      my $rawReadDir = 'raw_reads/' . $rH_sample->{'name'} . "/run" . $rH_sample->{'runId'} . "_" . $rH_sample->{'lane'};
+      mkpath($rawReadDir);
+
+      my $rawReadPrefix = $rawReadDir . '/' . $rH_sample->{'name'} . '.' . $rH_sample->{'libraryBarcode'} . '.' . $rH_sample->{'qualOffset'} . ".";
+  
+
+     # List all links to create
+     if ($rH_sample->{'bam'}) {
+       push(@symlinks, [$rH_sample->{'bam'}, $rawReadPrefix . "bam"]);
+      } elsif ($rH_sample->{'fastq1'}) {
+       my $runType = $rH_sample->{'runType'};
+       if ($runType eq "SINGLE_END") {
+         push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "single.fastq.gz"]);
+       } elsif ($runType eq "PAIRED_END") {
+         push(@symlinks, [$rH_sample->{'fastq1'}, $rawReadPrefix . "pair1.fastq.gz"]);
+         push(@symlinks, [$rH_sample->{'fastq2'}, $rawReadPrefix . "pair2.fastq.gz"]);
+       } else {
+         die "Error: unknown run type: $runType!";
+       }
+     }
     }
 
     # Create all symbolic links
