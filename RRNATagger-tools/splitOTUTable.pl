@@ -64,7 +64,7 @@ open(OUT_F, ">".$unmatched) or die "Can't open input file ".$unmatched."\n";
 
 my $regex; 
 $regex = "k__bacteria|k__archaea" if($select eq "bactArch");
-$regex = "k__fungi" if($select eq "fungi");
+$regex = "k__fungi|o__fungi" if($select eq "fungi");
 
 while(<IN>){
   chomp;
