@@ -122,9 +122,9 @@ foreach my $analysisType (@analysisType){
   my $line_number = 0;
   my $sum=0;
   while(<IN>){
-    $line_number++;
     chomp($_);
     next if ($_ =~ m/\#/);
+    $line_number++;
     my @row = split(/\t/, $_);
     shift(@row);
     foreach my $number (@row){
