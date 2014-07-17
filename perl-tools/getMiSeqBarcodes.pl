@@ -95,8 +95,6 @@ foreach my $dirname (@dirname){
 
 print STDERR "Found " . $root . " file.\n";
 
-
-
 open(IN, "<".$root) or die "Can't open file ".$root."\n";
 while(<IN>){
 	chomp;
@@ -104,9 +102,9 @@ while(<IN>){
 	my @row = split(/,/, $_);
   my $headerName = $row[2];
   my $sequence = $row[4];
-  print STDERR $headerName."\n";
+  #print STDERR $headerName."\n";
   for my $key (keys %sampleNamesHash){
-    print STDERR $key."\n";
+    #print STDERR $key."\n";
     
     if($headerName =~ m/($key)/){
 	    print STDOUT ">".$1."\n".$row[4]."\n";
