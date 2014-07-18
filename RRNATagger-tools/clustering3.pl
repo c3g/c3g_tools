@@ -52,13 +52,14 @@ But with dnaclust instead of usearch.
 
 ENDHERE
 
-my ($help, $infile_fastq, $infile_fasta, $ref_db, $start_at, $verbose, $outdir, $barcodes, $num_threads);
+my ($help, $infile_fastq, $infile_fasta, $ref_db, $start_at, $verbose, $outdir, $barcodes, $num_threads, $lowAbunCutOff);
 GetOptions(
   'infile_fasta=s'  => \$infile_fasta,
   'infile_fastq=s'  => \$infile_fastq,
   'barcodes=s'      => \$barcodes,
   'ref_db=s'        => \$ref_db,
   'outdir=s'        => \$outdir,
+  'lowAbunCutOff=i' => \$lowAbunCutOff,
   'num_threads=i'   => \$num_threads,
   'verbose'         => \$verbose,
   'start_at=i'      => \$start_at,
@@ -82,6 +83,7 @@ my $usearch= which('usearch'); chomp $usearch;
 print "path of usearch:\t".$usearch."\n" if($verbose);
 die "Can't find dnaclust on path\n" if(!defined($dnaclust));
 die "Can't find usearch on path\n" if(!defined($usearch));
+$lowAbunCutOff = 3 unless($lowAbunCutOff);
 
 $start_at = 0 unless($start_at);
 
@@ -285,7 +287,7 @@ dclustToFasta($outdir."/derep1_099.dc", $outdir."/derep1.fasta", $outdir."/derep
 $cmd = $dereplicate;
 $cmd .= " --fasta ".$outdir."/derep1_099.fasta";
 $cmd .= " --outfile ".$outdir."/derep1_099_derep2.fasta";
-$cmd .= " --minsize 3";
+$cmd .= " --minsize ".$lowAbunCutOff;
 $cmd .= " --sort ";
 $cmd .= " --num_threads ".$num_threads;
 system($cmd) if($start_at <= 4);
