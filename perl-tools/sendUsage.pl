@@ -40,7 +40,8 @@ sub main {
     my @dirsToTest =  grep { /^[^\.]/ && -d "$rootDir/$_" } readdir(ROOT_DIR);
     closedir(ROOT_DIR);
 
-    for my $dirToTest (@dirsToTest) {
+    for my $relDirToTest (@dirsToTest) {
+      my $dirToTest = $rootDir.'/'.$relDirToTest;
       my ($dev,$ino,$mode,$nlink,$uid,$gid,$rdev,$size,$atime,$mtime,$ctime,$blksize,$blocks) = stat($dirToTest);
       my $uname = getpwuid($uid);
       my $du = `du -bs $dirToTest`;
