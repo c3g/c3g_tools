@@ -4,6 +4,7 @@ import argparse
 import csv
 import logging
 import os
+import re
 import subprocess
 
 log = logging.getLogger(__name__)
@@ -17,7 +18,7 @@ def get_nanuq_readset_file(nanuq_auth_file, nanuq_project_id, nanuq_readset_file
 
     subprocess.check_call(["bash", "-c", command])
 
-def create_readsets(nanuq_readset_file, seq_type):
+def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="readsets.tsv"):
     # Lowercase the first seq_type character
     lcfirst_seq_type = seq_type[0].lower() + seq_type[1:]
 
@@ -25,7 +26,7 @@ def create_readsets(nanuq_readset_file, seq_type):
     raw_reads_directory = "raw_reads"
     symlinks = []
 
-    nanuq_vs_new_readset_keys = [
+    nanuq_vs_mugqic_pipeline_readset_keys = [
         ['Name', 'Sample'],
         ['Filename Prefix', 'Readset'],
         ['Library Barcode', 'Library'],
@@ -39,30 +40,30 @@ def create_readsets(nanuq_readset_file, seq_type):
     ]
     formats = ['FASTQ1', 'FASTQ2', 'BAM']
 
-    new_readset_csv_rows = []
+    mugqic_pipeline_readset_csv_rows = []
 
     # Parse Nanuq readset file and list symlinks to be created
     log.info("Parse Nanuq readset file " + nanuq_readset_file + " ...")
     nanuq_readset_csv = csv.DictReader(open(nanuq_readset_file, 'rb'), delimiter=',', quotechar='"')
     for line in nanuq_readset_csv:
         if line['Status'] and line['Status'] == "Data is valid":
-            new_readset_csv_row = {}
-            for nanuq_key, new_key in nanuq_vs_new_readset_keys:
+            mugqic_pipeline_readset_csv_row = {}
+            for nanuq_key, mugqic_pipeline_key in nanuq_vs_mugqic_pipeline_readset_keys:
                 value = line.get(nanuq_key, None)
                 if value:
-                    new_readset_csv_row[new_key] = value
+                    mugqic_pipeline_readset_csv_row[mugqic_pipeline_key] = value
 
             for format in formats:
                 if line.get(format, None):
                     nanuq_readset_path = os.path.normpath(nanuq_readset_root_directory + line[format])
                     if os.path.isfile(nanuq_readset_path):
-                        new_readset_path = os.path.join(raw_reads_directory, line['Name'], os.path.basename(nanuq_readset_path))
-                        symlinks.append([nanuq_readset_path, new_readset_path])
-                        new_readset_csv_row[format] = new_readset_path
+                        mugqic_pipeline_readset_path = os.path.join(raw_reads_directory, line['Name'], os.path.basename(nanuq_readset_path))
+                        symlinks.append([nanuq_readset_path, mugqic_pipeline_readset_path])
+                        mugqic_pipeline_readset_csv_row[format] = mugqic_pipeline_readset_path
                     else:
                         raise Exception("Error: Nanuq readset path " + nanuq_readset_path + " is invalid!")
 
-            new_readset_csv_rows.append(new_readset_csv_row)
+            mugqic_pipeline_readset_csv_rows.append(mugqic_pipeline_readset_csv_row)
         else:
             log.warning("Sample Name " + line['Name'] + ", Run ID " + line['Run'] + ", Lane " + line['Region'] + " data is not valid... skipping")
 
@@ -78,10 +79,10 @@ def create_readsets(nanuq_readset_file, seq_type):
             os.symlink(target, link_name)
             log.info("Symlink " + link_name + " created successfully.")
 
-    fieldnames = [key[1] for key in nanuq_vs_new_readset_keys] + formats
-    new_readset_csv = csv.DictWriter(open('readsets.tsv', 'wb'), fieldnames=fieldnames, delimiter='\t')
-    new_readset_csv.writeheader()
-    new_readset_csv.writerows(new_readset_csv_rows)
+    fieldnames = [key[1] for key in nanuq_vs_mugqic_pipeline_readset_keys] + formats
+    mugqic_pipeline_readset_csv = csv.DictWriter(open(mugqic_pipeline_readset_file, 'wb'), fieldnames=fieldnames, delimiter='\t')
+    mugqic_pipeline_readset_csv.writeheader()
+    mugqic_pipeline_readset_csv.writerows(mugqic_pipeline_readset_csv_rows)
 
 #-------------------------------------------------------------------------------
 # Main script
@@ -106,12 +107,14 @@ if args.nanuq_project_id:
     if not args.nanuq_auth_file:
         raise Exception("Error: missing Nanuq authentication file (use -a or --nanuq-auth-file)!")
 
-    nanuq_readset_file = "project.nanuq.csv"
+    nanuq_readset_file = "project.nanuq." + args.nanuq_project_id + ".csv"
+    mugqic_pipeline_readset_file = "readsets." + args.nanuq_project_id + ".tsv"
 
     get_nanuq_readset_file(args.nanuq_auth_file.name, args.nanuq_project_id, nanuq_readset_file, args.seq_type)
 
 elif args.nanuq_readset_file:
     nanuq_readset_file = args.nanuq_readset_file.name
+    mugqic_pipeline_readset_file = "readsets.tsv"
 
 if not args.no_links:
-    create_readsets(nanuq_readset_file, args.seq_type)
+    create_readsets(nanuq_readset_file, args.seq_type, mugqic_pipeline_readset_file)
