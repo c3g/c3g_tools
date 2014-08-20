@@ -18,14 +18,20 @@ sub main {
   my $verbose;
   my $fromEmail;
   my $server;
+  my $smtpHost;
   my $result = GetOptions ( "from=s" => \$fromEmail,
                             "to=s" => \@to,
                             "dir=s" => \@dirs,
                             "server=s" => \$server,
+                            "smtpHost=s" => \$smtpHost,
                             "verbose" => \$verbose);
 
-  if(!defined($server) && length($server)) {
+  if(!defined($server) || length($server) == 0) {
     die ("You need to set server");
+  }
+
+  if(!defined($smtpHost) || length($smtpHost) == 0) {
+    $smtpHost = 'mailserver.genome.mcgill.ca';
   }
 
   my %dirInfo;
@@ -94,7 +100,7 @@ sub main {
   $output .= "\n";
 
   print $output;
-  sendEmail($fromEmail, \@to, $server, $output);
+  sendEmail($fromEmail, \@to, $server, $smtpHost, $output);
 }
 
 sub nice_size {
@@ -114,9 +120,10 @@ sub sendEmail {
   my $fromEmail = shift;
   my $rA_to = shift;
   my $server = shift;
+  my $smtpHost = shift;
   my $message = shift;
 
-  my $smtp = Net::SMTP->new('mailserver.genome.mcgill.ca');
+  my $smtp = Net::SMTP->new($smtpHost);
   if(!defined($smtp) || !($smtp)) {
     print STDERR "SMTP ERROR: Unable to open smtp session.\n";
     return 1;
