@@ -3,6 +3,7 @@
 use strict;
 use POSIX qw( strftime );
 use Net::SMTP;
+use Net::SMTPS;
 #use Time::localtime;
 #use File::stat;
 use Getopt::Long;
@@ -123,11 +124,15 @@ sub sendEmail {
   my $smtpHost = shift;
   my $message = shift;
 
-  my $smtp = Net::SMTP->new($smtpHost);
+  #my $smtp = Net::SMTP->new($smtpHost);
+
+  #my $smtp = Net::SMTPS->new($smtpHost, Port => 587,  doSSL => 'starttls', SSL_version=>'SSL');
+  my $smtp = Net::SMTPS->new($smtpHost, Port => 587,  doSSL => 'starttls');
   if(!defined($smtp) || !($smtp)) {
     print STDERR "SMTP ERROR: Unable to open smtp session.\n";
     return 1;
   }
+  $smtp->auth ( 'louis.letourneau@mail.mcgill.ca', 'vgnjscph' ) or die("Could not authenticate with server.\n");
 
   if (! ($smtp->mail($fromEmail) ) ) {
     print STDERR "SMTP ERROR: Cannot set from: ".$fromEmail.".\n";
