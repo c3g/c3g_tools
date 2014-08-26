@@ -33,7 +33,7 @@ sub main {
   my $startsWithChr=0;
   open(DICT, $dictFile) or die "Can't open dictionary: $dictFile\n";
   while($line = <DICT>) {
-    if(/^\@SQ.+SN:([^\t]+)\t.*/) {
+    if($line =~ /^\@SQ.+SN:([^\t]+)\t.*/) {
       my $chr = $1;
       if(substr($chr, 0, 3) eq 'chr') {
         $startsWithChr = 1;
