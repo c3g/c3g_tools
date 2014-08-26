@@ -8,7 +8,7 @@
 
 args <- commandArgs(TRUE)
 mainPath <- args[1]
-mainPathSca <- args[2]
+kmer <- args[2]
 sample <- args[3]
 type <- args[4]
 meanCov <- as.numeric(args[5])
@@ -17,15 +17,10 @@ strand <- as.numeric(args[7])
 filterRead <- as.numeric(args[8])
 readLen <- as.numeric(args[9])
 
-algo <- ""
-if (length(args)>9) {
-  algo <- args[10]
-}
-
 #lib
 
 #set path 
-folderScaffold <- paste(mainPathSca,"/scaffolds",algo,"/",sample,"/ray/ray21/",sep="")
+folderScaffold <- paste(mainPath,"/scaffolds/", sample,"/ray/ray",kmer,"/",sep="")
 folderOut <- paste(folderScaffold,"/insert",type,"/", sep="")
 dir.create(file.path(folderOut), showWarnings = FALSE, recursive=TRUE)
 
@@ -54,7 +49,7 @@ file <- paste(folderOut,"insert.tab",sep="")
 if (!file.exists(file) | file.info(file)$size==0){
 q()
 }
-allInsert <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "character", "character", "numeric", "numeric", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))
+allInsert <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "character", "character", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric"))
 
 
 file <- paste(folderOut,"scaffolds.tab",sep="")
@@ -122,7 +117,7 @@ tabScaFilter <- tabSca[which(tabSca$ID_SCA %in% allInsertFilter$ID_SCA),]
 
 
 #Delete insertion with #cluster <= filterRead
-del <- which((allInsertFilter$SCLIP1+allInsertFilter$SCOEA1+allInsertFilter$OEA1 + allInsertFilter$SCLIP2+allInsertFilter$SCOEA2+allInsertFilter$OEA2)<=filterRead)
+del <- which((allInsertFilter$SCLIP1+allInsertFilter$OEA1 + allInsertFilter$SCLIP2+allInsertFilter$OEA2)<=filterRead)
 if (length(del)>0) {
   allInsertFilter <- allInsertFilter[-del,]
   allClusterFilter <- allClusterFilter[which(allClusterFilter$ID_INSERT %in% allInsertFilter$ID_INSERT),]
@@ -130,7 +125,7 @@ if (length(del)>0) {
 }
 
 #Delete insertion without sclip cluster or OEA cluster
-del <- which((allInsertFilter$SCLIP1 + allInsertFilter$SCLIP2)==0 | (allInsertFilter$SCOEA1+allInsertFilter$SCOEA2)==0)
+del <- which((allInsertFilter$SCLIP1 + allInsertFilter$SCLIP2)==0 | (allInsertFilter$OEA1+allInsertFilter$OEA2)==0)
 if (length(del)>0) {
   allInsertFilter <- allInsertFilter[-del,]
   allClusterFilter <- allClusterFilter[which(allClusterFilter$ID_INSERT %in% allInsertFilter$ID_INSERT),]
