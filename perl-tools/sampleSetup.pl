@@ -23,6 +23,7 @@ Usage: perl $0 --nanuqAuthFile \$HOME/.nanuqAuth.txt --usesheet project.nanuq.cs
   --links                          Create raw_reads directory and symlinks (default)
   --nolinks                        Do not create raw_reads directory or symlinks
   --tech           [HiSeq|MiSeq]   Sequencing technology ('MiSeq' or 'HiSeq' or '454')
+  --excludeSent                    Exclude samples that are flagged as previously sent to client in nanuq
   --help                           Show this help
 
   The 'nanuqAuthFile' contains your Nanuq username and password.
@@ -40,6 +41,7 @@ sub main {
   my $sampleSheet;
   my $nanuqAuthFile;
   my $links = 1;  # Create symlinks by default
+  my $excludeSent = 0;
   my $help;
   my $result = GetOptions(
     "tech=s"          => \$techName,
@@ -47,6 +49,7 @@ sub main {
     "usesheet=s"      => \$sampleSheet,
     "nanuqAuthFile=s" => \$nanuqAuthFile,
     "links!"          => \$links,
+    "excludeSent!"    => \$excludeSent,
     "help!"           => \$help,
   );
 
@@ -76,7 +79,7 @@ sub main {
 
   if (defined($projectId)) {
     # Fecth sample sheet data from Nanuq
-    getSampleSheet($projectFile, $techName, $projectId, $nanuqAuthFile);
+    getSampleSheet($projectFile, $techName, $projectId, $excludeSent, $nanuqAuthFile);
   } else {
     # Use the specified sample sheet
     $projectFile = $sampleSheet;
@@ -93,9 +96,15 @@ sub getSampleSheet {
   my $projectFile = shift;
   my $techName = shift;
   my $projectId = shift;
+  my $excludeSent = shift;
   my $nanuqAuthFile = shift;
 
-  my $command = 'wget --no-cookies --post-file ' . $nanuqAuthFile . ' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/' . $techName . '/project/' . $projectId . '/filename/' . $projectFile . "\n";
+  my $command = 'wget --no-cookies --post-file ' . $nanuqAuthFile . ' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/' . $techName . '/project/' . $projectId;
+  if($excludeSent) {
+    $command .= '/excludeStatusList/resultSentToClient,analysing';
+  }
+  $command .= '/filename/' . $projectFile . "\n";
+
   print '#' . $command;
   system($command);
   if ($? == -1) {
