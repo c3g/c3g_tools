@@ -46,6 +46,10 @@ sub main {
 
   open(BED, $bedFile) or die "Can't open BED: $bedFile\n";
   while($line = <BED>) {
+    if($line =~ /^track/) {
+      next;
+    }
+
     chomp($line);
     my @values = split(/\t/, $line);
  
