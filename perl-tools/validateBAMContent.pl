@@ -18,7 +18,7 @@ sub main {
 
   for(my $idx=1; $idx < @ARGV; $idx++) {
     print STDERR "Testing: " . $ARGV[$idx] . "\n";
-    my ($sampleName) = $ARGV[$idx] =~ /([BD][^\/.]+).*\.sorted.*.bam$/;
+    my ($sampleName) = $ARGV[$idx] =~ /([^\/.]+)\.sorted.*.bam$/;
     my $rAoH_sample = $sampleInfo{$sampleName};
     if(!defined($rAoH_sample)) {
       warn "Missing sample in sample sheet: ".$sampleName."\n";;

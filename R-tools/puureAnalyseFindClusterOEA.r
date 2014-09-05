@@ -9,26 +9,22 @@
 
 args <- commandArgs(TRUE)
 mainPath <- args[1]
-mainPathSca <- args[2]
+kmer <- args[2]
 sample <- args[3]
 type <- args[4]
 minMapq <- as.numeric(args[5])
 insertSize <- as.numeric(args[6])
 
-algo <- ""
-if (length(args)>6) {
-  algo <- args[7]
-}
-
 #lib
 library(Rsamtools)
 library(grid)
 library(igraph) # install.packages("igraph", lib="~/.R/library")
+library(GenomicAlignments)
 
 #set path 
-folderScaffold <- paste(mainPathSca,"/scaffolds",algo,"/",sample,"/ray/ray21/",sep="")
-folderSC <- paste(mainPath,"/sclip",algo,"/",sample,"/",sep="")
-folderExtract <- paste(mainPath,"/extract",algo,"/",sample,"/",sep="")
+folderSC <- paste(mainPath,"/sclip/",sample,"/",sep="")
+folderExtract <- paste(mainPath,"/extract/",sample,"/",sep="")
+folderScaffold <- paste(mainPath,"/scaffolds/", sample,"/ray/ray",kmer,"/",sep="")
 folderOut <- paste(folderScaffold,"/insert",type,"/", sep="")
 dir.create(file.path(folderOut), showWarnings = FALSE, recursive=TRUE)
 
@@ -266,20 +262,12 @@ addInsert <- function (selectIns){
     sclip2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="sclip" & selectIns$SCA_READ_FIRST==FALSE)])
     OEA1 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="OEA" & selectIns$SCA_READ_FIRST==TRUE)])
     OEA2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="OEA" & selectIns$SCA_READ_FIRST==FALSE)])
-    scOEA1 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="scOEA" & selectIns$SCA_READ_FIRST==TRUE)])
-    scOEA2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="scOEA" & selectIns$SCA_READ_FIRST==FALSE)])
 
     twoStrand <- 0
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="sclip" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
       twoStrand <- twoStrand + 1
     }
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="sclip" & selectI$SCA_READ_FIRST==FALSE)])>=1) {
-      twoStrand <- twoStrand + 1
-    }
-    if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="scOEA" & selectI$SCA_READ_FIRST==FALSE)])>=1) {
-      twoStrand <- twoStrand + 1
-    }
-    if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="scOEA" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
       twoStrand <- twoStrand + 1
     }
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="OEA" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
@@ -329,6 +317,7 @@ clusterFusion <- function(tabInsert, insertSize) {
 # MAIN
 # #########################################################################################################
 # #########################################################################################################
+folderOut
 
 file <- paste(folderOut,"scaffolds.tab",sep="")
 if (!file.exists(file) | file.info(file)$size==0){

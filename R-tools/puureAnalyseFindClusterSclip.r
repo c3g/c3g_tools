@@ -8,26 +8,22 @@
 
 args <- commandArgs(TRUE)
 mainPath <- args[1]
-mainPathSca <- args[2]
+kmer <- args[2]
 sample <- args[3]
 type <- args[4]
 minMapq <- as.numeric(args[5])
 insertSize <- as.numeric(args[6])
 
-algo <- ""
-if (length(args)>6) {
-  algo <- args[7]
-}
-
 #lib
 library(Rsamtools)
 library(grid)
 library(igraph) # install.packages("igraph", lib="~/.R/library")
+library(GenomicAlignments)
 
 #set path 
-folderScaffold <- paste(mainPathSca,"/scaffolds",algo,"/",sample,"/ray/ray21/",sep="")
-folderSC <- paste(mainPath,"/sclip",algo,"/",sample,"/",sep="")
-folderExtract <- paste(mainPath,"/extract",algo,"/",sample,"/",sep="")
+folderScaffold <- paste(mainPath,"/scaffolds/",sample,"/ray/ray",kmer,"/",sep="")
+folderSC <- paste(mainPath,"/sclip/",sample,"/",sep="")
+folderExtract <- paste(mainPath,"/extract/",sample,"/",sep="")
 folderOut <- paste(folderScaffold,"/insert",type,"/", sep="")
 dir.create(file.path(folderOut), showWarnings = FALSE, recursive=TRUE)
 

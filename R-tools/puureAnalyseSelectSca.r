@@ -8,22 +8,16 @@
 
 args <- commandArgs(TRUE)
 mainPath <- args[1]
-mainPathSca <- args[2]
+kmer <- args[2]
 sample <- args[3]
 type <- args[4]
 minSize <- as.numeric(args[5])
-
-algo <- ""
-if (length(args)>5) {
-  algo <- args[6]
-}
-
 
 #lib
 library(IRanges)
 
 #set path 
-folderScaffold <- paste(mainPathSca,"/scaffolds",algo,"/",sample,"/ray/ray21/",sep="")
+folderScaffold <- paste(mainPath,"scaffolds/",sample,"/ray/ray",kmer,"/",sep="")
 folderOut <- paste(folderScaffold,"/insert",type,"/", sep="")
 dir.create(file.path(folderOut), showWarnings = FALSE, recursive=TRUE)
 

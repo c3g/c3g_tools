@@ -3,12 +3,16 @@
 use strict;
 use POSIX qw( strftime );
 use Net::SMTP;
+#use Net::SMTPS;
+use Net::SSLGlue::SMTP;
 #use Time::localtime;
 #use File::stat;
 use Getopt::Long;
 use Time::Piece;
+use MIME::Base64;
 
-my $version = "0.1";
+our $version = "0.1";
+our $mailHost = 'mailserver.genome.mcgill.ca';
 
 &main();
 
@@ -18,14 +22,24 @@ sub main {
   my $verbose;
   my $fromEmail;
   my $server;
+  my $smtpHost;
+  my $user;
+  my $pass;
   my $result = GetOptions ( "from=s" => \$fromEmail,
                             "to=s" => \@to,
                             "dir=s" => \@dirs,
                             "server=s" => \$server,
+                            "smtpHost=s" => \$smtpHost,
+                            "user=s" => \$user,
+                            "pass=s" => \$pass,
                             "verbose" => \$verbose);
 
-  if(!defined($server) && length($server)) {
+  if(!defined($server) || length($server) == 0) {
     die ("You need to set server");
+  }
+
+  if(!defined($smtpHost) || length($smtpHost) == 0) {
+    $smtpHost = $mailHost;
   }
 
   my %dirInfo;
@@ -94,7 +108,7 @@ sub main {
   $output .= "\n";
 
   print $output;
-  sendEmail($fromEmail, \@to, $server, $output);
+  sendEmail($fromEmail, \@to, $server, $smtpHost, $user, $pass, $output);
 }
 
 sub nice_size {
@@ -114,12 +128,31 @@ sub sendEmail {
   my $fromEmail = shift;
   my $rA_to = shift;
   my $server = shift;
+  my $smtpHost = shift;
+  my $user = shift;
+  my $pass = shift;
   my $message = shift;
 
-  my $smtp = Net::SMTP->new('mailserver.genome.mcgill.ca');
+  my $smtp;
+  if($smtpHost eq $mailHost) {
+    $smtp = Net::SMTP->new($smtpHost);
+  }
+  else {
+    $smtp = Net::SMTP->new($smtpHost, Port => 587, Debug => 1);
+    $smtp->starttls();
+  }
   if(!defined($smtp) || !($smtp)) {
     print STDERR "SMTP ERROR: Unable to open smtp session.\n";
     return 1;
+  }
+
+  if($smtpHost ne $mailHost) {
+    $smtp->datasend("AUTH LOGIN\n");
+    $smtp->response();
+    $smtp->datasend(encode_base64($user)); # username
+    $smtp->response();
+    $smtp->datasend(encode_base64($pass)); # password
+    $smtp->response();
   }
 
   if (! ($smtp->mail($fromEmail) ) ) {
@@ -134,7 +167,7 @@ sub sendEmail {
 
   my $tos = join(',',@$rA_to);
 
-	my $subject = 'Subject: MUGQIC '.$server.' Space Usage Breakdown'."\n";
+  my $subject = 'Subject: MUGQIC '.$server.' Space Usage Breakdown'."\n";
 
   $smtp->data();
   $smtp->datasend("To: ".$tos."\n");

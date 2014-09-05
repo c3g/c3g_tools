@@ -8,7 +8,7 @@
 
 args <- commandArgs(TRUE)
 mainPath <- args[1]
-mainPathSca <- args[2]
+kmer <- args[2]
 sample <- args[3]
 type <- args[4]
 meanCov <- as.numeric(args[5])
@@ -16,19 +16,15 @@ insertSize <- as.numeric(args[6])
 minOverlap <- as.numeric(args[7])
 fileExclu <- args[8]
 
-algo <- ""
-if (length(args)>8) {
-  algo <- args[9]
-}
-
 #lib
 library(Rsamtools)
 library(igraph) # install.packages("igraph", lib="~/.R/library")
 
 #set path 
-folderScaffold <- paste(mainPathSca,"/scaffolds",algo,"/",sample,"/ray/ray21/",sep="")
+folderScaffold <- paste(mainPath,"/scaffolds/",sample,"/ray/ray",kmer,"/",sep="")
 folderOut <- paste(folderScaffold,"/insert",type,"/", sep="")
 dir.create(file.path(folderOut), showWarnings = FALSE, recursive=TRUE)
+folderScaffold
 
 # #########################################################################################################
 # #########################################################################################################
@@ -104,20 +100,12 @@ addInsert <- function (selectIns, minOverlap){
     sclip2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="sclip" & selectIns$SCA_READ_FIRST==FALSE)])
     OEA1 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="OEA" & selectIns$SCA_READ_FIRST==TRUE)])
     OEA2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="OEA" & selectIns$SCA_READ_FIRST==FALSE)])
-    scOEA1 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="scOEA" & selectIns$SCA_READ_FIRST==TRUE)])
-    scOEA2 <- sum(selectIns$NUM_READ[which(selectIns$TYPE=="scOEA" & selectIns$SCA_READ_FIRST==FALSE)])
 
     twoStrand <- 0
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="sclip" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
       twoStrand <- twoStrand + 1
     }
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="sclip" & selectI$SCA_READ_FIRST==FALSE)])>=1) {
-      twoStrand <- twoStrand + 1
-    }
-    if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="scOEA" & selectI$SCA_READ_FIRST==FALSE)])>=1) {
-      twoStrand <- twoStrand + 1
-    }
-    if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="scOEA" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
       twoStrand <- twoStrand + 1
     }
     if (sum(selectI$TWO_STRAND[which(selectI$TYPE=="OEA" & selectI$SCA_READ_FIRST==TRUE)])>=1) {
@@ -127,7 +115,7 @@ addInsert <- function (selectIns, minOverlap){
       twoStrand <- twoStrand + 1
     }
 
-    allInsertTmp <- rbind(allInsertTmp, data.frame(CHR=selectI$CHR[1], REF_START=min(c(selectI$REF_START,selectI$REF_END)), REF_END=max(c(selectI$REF_START,selectI$REF_END)), INSERT_POS_A=refPos1, NB_INSERT_A=nbInser1, INSERT_POS_B=refPos2, NB_INSERT_B=nbInser2, SCLIP1=sclip1, SCOEA1=scOEA1, OEA1=OEA1, SCLIP2=sclip2, SCOEA2=scOEA2, OEA2=OEA2, ID_SCA=selectI$ID_SCA[1], SCA_START=min(c(selectI$SCA_START,selectI$SCA_END)), SCA_END=max(c(selectI$SCA_START,selectI$SCA_END)), INSERT_SCA_A=scaPos1, INSERT_SCA_B=scaPos2, TWO_STRAND=twoStrand, stringsAsFactors=FALSE ))
+    allInsertTmp <- rbind(allInsertTmp, data.frame(CHR=selectI$CHR[1], REF_START=min(c(selectI$REF_START,selectI$REF_END)), REF_END=max(c(selectI$REF_START,selectI$REF_END)), INSERT_POS_A=refPos1, NB_INSERT_A=nbInser1, INSERT_POS_B=refPos2, NB_INSERT_B=nbInser2, SCLIP1=sclip1, OEA1=OEA1, SCLIP2=sclip2, OEA2=OEA2, ID_SCA=selectI$ID_SCA[1], SCA_START=min(c(selectI$SCA_START,selectI$SCA_END)), SCA_END=max(c(selectI$SCA_START,selectI$SCA_END)), INSERT_SCA_A=scaPos1, INSERT_SCA_B=scaPos2, TWO_STRAND=twoStrand, stringsAsFactors=FALSE ))
   }
 
   return(allInsertTmp)
@@ -176,23 +164,15 @@ q()
 }
 tabSC <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "logical", "numeric", "character", "logical", "character", "character"))
 
-file <- paste(folderOut,"cluster.scOEA.fusion.tab",sep="")
+file <- paste(folderOut,"cluster.OEA.fusion.tab",sep="")
 if (!file.exists(file) | file.info(file)$size==0){
 q()
 }
-tabSCOEA <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "logical", "numeric", "character", "logical", "character", "character"))
-
-file <- paste(folderOut,"cluster.OEA.fusion.tab",sep="")
-if (file.exists(file) & file.info(file)$size!=0){
-  tabOEA <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "logical", "numeric", "character", "logical", "character", "character"))
-  tabCluster <- rbind(tabSC, rbind(tabSCOEA, tabOEA))
-} else {
-  tabCluster <- rbind(tabSC, tabSCOEA)
-}
+tabOEA <- read.table(file, quote="", comment.char="", stringsAsFactors=FALSE, sep="\t", header=TRUE, colClasses=c("character", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric", "numeric","numeric", "numeric", "numeric", "numeric", "numeric", "logical", "numeric", "character", "logical", "character", "character"))
+tabCluster <- rbind(tabSC, tabOEA)
 
 
 rm(tabSC)
-rm(tabSCOEA)
 rm(tabOEA)
 
 allInsert <- NULL
@@ -244,7 +224,7 @@ if (is.null(allInsert)){
 q()
 }
 
-allInsert <- allInsert[,c(1,15,2,3,4,5,6,7,8,9,10,11,12,13,14,18,19,20)]
+allInsert <- allInsert[,c(1,13,2,3,4,5,6,7,8,9,10,11,12,16,17,18)]
 allCluster <- allCluster[,c(1,20,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18)]
 
 
