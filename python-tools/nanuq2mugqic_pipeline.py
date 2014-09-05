@@ -55,7 +55,7 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
 
             for format in formats:
                 if line.get(format, None):
-                    nanuq_readset_path = os.path.normpath(nanuq_readset_root_directory + line[format])
+                    nanuq_readset_path = os.path.normpath(os.path.join(nanuq_readset_root_directory, line[format]))
                     if os.path.isfile(nanuq_readset_path):
                         mugqic_pipeline_readset_path = os.path.join(raw_reads_directory, line['Name'], os.path.basename(nanuq_readset_path))
                         symlinks.append([nanuq_readset_path, mugqic_pipeline_readset_path])
