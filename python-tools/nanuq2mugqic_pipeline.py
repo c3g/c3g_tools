@@ -37,7 +37,7 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
 
             if seq_type == "Pacbio":
                 nanuq_vs_mugqic_pipeline_readset_keys = [
-                    ['Name', 'Sample'],
+                    ['Name', 'SampleID'],
                     ['Filename Prefix', 'Readset'],
                     ['Run', 'Run'],
                     ['Well', 'Smartcell'],
@@ -61,7 +61,7 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
 
             else:  # seq_type = HiSeq or MiSeq
                 nanuq_vs_mugqic_pipeline_readset_keys = [
-                    ['Name', 'Sample'],
+                    ['Name', 'SampleID'],
                     ['Filename Prefix', 'Readset'],
                     ['Library Barcode', 'Library'],
                     ['Run Type', 'RunType'],
