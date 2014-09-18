@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ### Eric Audemard (2011/10/21) - eric.audemard@mail.mcgill.ca
 

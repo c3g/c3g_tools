@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ### Mathieu Bourgey (2013/03/21)
 ### get GC and mappability count by bin

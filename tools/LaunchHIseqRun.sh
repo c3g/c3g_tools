@@ -1,4 +1,4 @@
-#! /bin/bash
+#!/bin/bash
 
 ## usage: LaunchHIseqRun.sh is.indexed(0: no 1:yes =>$2) indexStringValue($3)
 ## to do usage
