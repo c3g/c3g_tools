@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 
 ### Mathieu Bourgey (2013/10/03)
 ### vcfStats

@@ -23,6 +23,7 @@ Usage: perl $0 --nanuqAuthFile \$HOME/.nanuqAuth.txt --usesheet project.nanuq.cs
   --links                          Create raw_reads directory and symlinks (default)
   --nolinks                        Do not create raw_reads directory or symlinks
   --tech           [HiSeq|MiSeq]   Sequencing technology ('MiSeq' or 'HiSeq' or '454')
+  --excludeSent                    Exclude samples that are flagged as previously sent to client in nanuq
   --help                           Show this help
 
   The 'nanuqAuthFile' contains your Nanuq username and password.
@@ -40,6 +41,7 @@ sub main {
   my $sampleSheet;
   my $nanuqAuthFile;
   my $links = 1;  # Create symlinks by default
+  my $excludeSent = 0;
   my $help;
   my $result = GetOptions(
     "tech=s"          => \$techName,
@@ -47,6 +49,7 @@ sub main {
     "usesheet=s"      => \$sampleSheet,
     "nanuqAuthFile=s" => \$nanuqAuthFile,
     "links!"          => \$links,
+    "excludeSent!"    => \$excludeSent,
     "help!"           => \$help,
   );
 
@@ -76,7 +79,7 @@ sub main {
 
   if (defined($projectId)) {
     # Fecth sample sheet data from Nanuq
-    getSampleSheet($projectFile, $techName, $projectId, $nanuqAuthFile);
+    getSampleSheet($projectFile, $techName, $projectId, $excludeSent, $nanuqAuthFile);
   } else {
     # Use the specified sample sheet
     $projectFile = $sampleSheet;
@@ -85,6 +88,7 @@ sub main {
   if ($links) {
     my $rA_sampleInfos = parseSampleSheet($projectFile, $techName);
     createLinks($rA_sampleInfos, $techName);
+    downloadBEDs($rA_sampleInfos, $nanuqAuthFile);
   }
 }
 
@@ -92,9 +96,15 @@ sub getSampleSheet {
   my $projectFile = shift;
   my $techName = shift;
   my $projectId = shift;
+  my $excludeSent = shift;
   my $nanuqAuthFile = shift;
 
-  my $command = 'wget --no-cookies --post-file ' . $nanuqAuthFile . ' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/' . $techName . '/project/' . $projectId . '/filename/' . $projectFile . "\n";
+  my $command = 'wget --no-cookies --post-file ' . $nanuqAuthFile . ' https://genomequebec.mcgill.ca/nanuqMPS/csv/technology/' . $techName . '/project/' . $projectId;
+  if($excludeSent) {
+    $command .= '/excludeStatusList/resultSentToClient,analysing';
+  }
+  $command .= '/filename/' . $projectFile . "\n";
+
   print '#' . $command;
   system($command);
   if ($? == -1) {
@@ -108,6 +118,40 @@ sub getSampleSheet {
     if ($childValue != 0) {
       printf "child exited with value %d\n", $childValue;
       exit(1);
+    }
+  }
+}
+
+sub downloadBEDs {
+  my $rA_sampleInfos = shift;
+  my $nanuqAuthFile = shift;
+
+  my %bedFiles;
+  for my $rH_sample (@$rA_sampleInfos) {
+    if(defined($rH_sample->{'bed'}) && length($rH_sample->{'bed'}) > 0) {
+      my @bedFileList = split(';', $rH_sample->{'bed'});
+      for my $bed (@bedFileList) {
+        $bedFiles{$bed} = 1;
+      }
+    }
+  }
+
+  for my $bed (keys(%bedFiles)) {
+    my $command = 'wget --no-cookies --post-file ' . $nanuqAuthFile . ' https://genomequebec.mcgill.ca/nanuqLimsCgi/targetRegion/downloadBed.cgi?bedName=' . $bed . ' -O ' . $bed;
+    print '#' . $command;
+    system($command);
+    if ($? == -1) {
+      print "failed to execute: $!\n";
+      exit(1);
+    } elsif ($? & 127) {
+      printf "child died with signal %d, %s coredump\n", ($? & 127), ($? & 128) ? 'with' : 'without';
+      exit(1);
+    } else {
+      my $childValue = $? >> 8;
+      if ($childValue != 0) {
+        printf "child exited with value %d\n", $childValue;
+        exit(1);
+      }
     }
   }
 }
@@ -131,6 +175,7 @@ sub parseSampleSheet {
   my $fastq1Idx=-1;
   my $fastq2Idx=-1;
   my $bamIdx=-1;
+  my $bedIdx=-1;
   my $dateIdx="";
 
   my $csv = Text::CSV::Encoded->new ({ encoding => "iso-8859-1" });
@@ -161,6 +206,8 @@ sub parseSampleSheet {
       $fastq1Idx = $idx;
     } elsif ($headers[$idx] eq "FASTQ2") {
       $fastq2Idx = $idx;
+    } elsif ($headers[$idx] eq "BED Files") {
+      $bedIdx = $idx;
     } elsif ($headers[$idx] eq "BAM") {
       $bamIdx = $idx;
     
@@ -177,6 +224,7 @@ sub parseSampleSheet {
   }
 
   my $sampleSheetErrors = "";
+  my $sampleSheetWarnings = "";
   if ($nameIdx == -1) {
     $sampleSheetErrors .= "Missing Sample Name\n";
   }
@@ -207,6 +255,12 @@ sub parseSampleSheet {
   if ($fastq1Idx == -1 and $bamIdx == -1) {
     $sampleSheetErrors .= "Missing FASTQ1 or BAM\n";
   }
+  if ($bedIdx == -1) {
+    $sampleSheetWarnings .= "Missing BED Files column\n";
+  }
+  if (length($sampleSheetWarnings) > 0) {
+    warn $sampleSheetWarnings;
+  }
   if (length($sampleSheetErrors) > 0 && $techName ne "454") {
     die $sampleSheetErrors;
   }
@@ -227,6 +281,7 @@ sub parseSampleSheet {
       $sampleInfo{'readSetId'}      = $values[$readSetIdIdx];
       $sampleInfo{'filePrefix'}     = $values[$filePrefixIdx];
       $sampleInfo{'date'}           = $values[$dateIdx];
+      $sampleInfo{'bed'}            = $values[$bedIdx];
 
       my $rootDir;
       if ($techName eq 'HiSeq') {

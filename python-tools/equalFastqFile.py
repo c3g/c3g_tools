@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 ### Eric Audemard (2013/02/20) - eric.audemard@mail.mcgill.ca
 
 import os

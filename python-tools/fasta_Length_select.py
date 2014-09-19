@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ### Mathieu Bourgey (2012/01/04) - mbourgey@genomequebec.com
 
