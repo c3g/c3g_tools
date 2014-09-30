@@ -3,7 +3,10 @@
 use strict;
 use String::Util 'trim';
 
-open(FILE, $ARGV[0]) or die "Can't open\n";
+my $inputFile = $ARGV[0];
+my $minDepth = $ARGV[1];
+
+open(FILE, $inputFile) or die "Can't open\n";
 my $line = <FILE>;
 
 my @values = split("\t",$line);
@@ -21,7 +24,7 @@ while($line = <FILE>) {
     my @depths = split(',', $values[$i]);
     my $no = trim($depths[0]);
     my $tu = trim($depths[1]);
-    if($no > 10 || $tu > 10) {
+    if($no > $minDepth || $tu > $minDepth) {
       $doPrint = 1;
       last;
     }

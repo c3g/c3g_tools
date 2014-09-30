@@ -4,7 +4,7 @@ use strict;
 use POSIX qw( strftime );
 use Net::SMTP;
 #use Net::SMTPS;
-use Net::SSLGlue::SMTP;
+#use Net::SSLGlue::SMTP;
 #use Time::localtime;
 #use File::stat;
 use Getopt::Long;
