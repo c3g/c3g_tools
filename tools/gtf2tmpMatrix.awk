@@ -23,4 +23,4 @@ awk ' BEGIN{
 		na=ens
 	}
 	print ens "\t" na
-} ' $1 | sort -u > $2 
+} ' $1 | sort -u | sed -e "s| |_|g" > $2 
