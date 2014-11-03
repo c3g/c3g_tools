@@ -386,19 +386,19 @@ sub createLinks {
       push(@symlinks, [$rootDir."/".$rH_sample->{'qual'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".qual"]);
       print STDERR $rootDir."/".$rH_sample->{'fasta'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".fna\n";
       print STDERR $rootDir."/".$rH_sample->{'qual'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".qual\n";
-    
-      # Create all symbolic links
-      for my $symlink (@symlinks) {
-        if (-l @$symlink[1]) {
-          warn "[Warning] Symbolic link @$symlink[1] already exists! Skipping.\n";
-        } elsif (-f @$symlink[0] and symlink(@$symlink[0], @$symlink[1])) {
-          print "Created symbolic link @$symlink[1] successfully.\n";
-        } else {
-          die "[Error] Can't create symbolic link @$symlink[1] to target @$symlink[0]!\n";
-        }
-      }
       $i++;
-    }    
+    } 
+
+    # Create all symbolic links
+    for my $symlink (@symlinks) {
+      if (-l @$symlink[1]) {
+        warn "[Warning] Symbolic link @$symlink[1] already exists! Skipping.\n";
+      } elsif (-f @$symlink[0] and symlink(@$symlink[0], @$symlink[1])) {
+        print "Created symbolic link @$symlink[1] successfully.\n";
+      } else {
+        die "[Error] Can't create symbolic link @$symlink[1] to target @$symlink[0]!\n";
+      }
+    }
 
   ###################
   # HiSeq and MiSeq
