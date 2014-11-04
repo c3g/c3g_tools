@@ -341,8 +341,16 @@ sub createLinks {
     my $rawReadDir = 'raw_reads/';
     mkpath($rawReadDir);
     # Create base raw read directory
-    my $i=0;
+
+    my $indir  = "/lb/robot/454sequencer/runs/2014/"; # TODO: adap to multiple directory to check-in.
     my $rootDir;
+    my @directories;
+    opendir(D, $indir) || die "Can't open directory: $!\n";
+    while (my $f = readdir(D)) {  
+      #print "\$f = $f\n";
+      push(@directories, $f);
+    }
+    closedir(D);
     for my $rH_sample (@$rA_sampleInfos) {
 
       # find directory. For 454 libraries, libraries are stored by their date name.
@@ -359,34 +367,35 @@ sub createLinks {
       my $min          = $time[1];
       my $sec          = $time[2];
       
-      my $indir  = "/lb/robot/454sequencer/runs/2014/"; # TODO: adap to multiple directory to check-in.
       my $prefix = $year."_".$month."_".$day."_".$hour."_".$min."_".$sec."_FLX";
 
-      if($i == 0){
-        opendir(D, $indir) || die "Can't open directory: $!\n";
-        while (my $f = readdir(D)) {  
-          #print "\$f = $f\n";
-          if($f =~ $prefix){
-            $rootDir = $indir.$f."/";
-          }
+      my $runDir = undef;
+      for my $directory (@directories) {
+        if($directory =~ /$prefix/){
+          $runDir = $indir.$directory.'/';
+          last;
         }
-        closedir(D);
-        
-        opendir(D, $rootDir) || die "Can't open directory: $!\n";
-        while (my $f = readdir(D)) {  
-          #print "\$f = $f\n";
-          if($f =~ "^D_"){
-            $rootDir = $rootDir.$f."/";
-          }
-        }
-        closedir(D);
       }
-      print STDERR $rootDir."\n";
-      push(@symlinks, [$rootDir."/".$rH_sample->{'fasta'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".fna"]);
-      push(@symlinks, [$rootDir."/".$rH_sample->{'qual'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".qual"]);
-      print STDERR $rootDir."/".$rH_sample->{'fasta'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".fna\n";
-      print STDERR $rootDir."/".$rH_sample->{'qual'}." ".$rawReadDir."/".$rH_sample->{'filePrefix'}.".qual\n";
-      $i++;
+      if(!defined($runDir)) {
+        die "Run dir not found for: ".$prefix."\n";
+      }
+
+      my $runDDir = undef;
+      opendir(D, $runDir) || die "Can't open directory: $!\n";
+      while (my $f = readdir(D)) {  
+        #print "\$f = $f\n";
+        if($f =~ "^D_"){
+          $runDDir = $runDir.$f."/";
+          last;
+        }
+      }
+      closedir(D);
+      if(!defined($runDDir)) {
+        die "Run D dir not found in: ".$runDir."\n";
+      }
+
+      push(@symlinks, [$runDDir."/".$rH_sample->{'fasta'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".fna"]);
+      push(@symlinks, [$runDDir."/".$rH_sample->{'qual'}, $rawReadDir."/".$rH_sample->{'filePrefix'}.".qual"]);
     } 
 
     # Create all symbolic links
