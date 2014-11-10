@@ -45,10 +45,10 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
                 ]
                 formats = ['BAS', 'BAX']
 
-                fieldnames = [key[1] for key in nanuq_vs_mugqic_pipeline_readset_keys] + ['NbBasepairs', 'EstimatedGenomeSize'] + formats
+                fieldnames = [key[1] for key in nanuq_vs_mugqic_pipeline_readset_keys] + ['NbBasePairs', 'EstimatedGenomeSize'] + formats
 
                 nb_basepairs = re.search("^\([^/]*/[^/]*/(.*)\)$", line['Longest Subreads (count mean bp)'])
-                mugqic_pipeline_readset_csv_row['NbBasepairs'] = re.sub(",", "", nb_basepairs.group(1))
+                mugqic_pipeline_readset_csv_row['NbBasePairs'] = re.sub(",", "", nb_basepairs.group(1))
 
                 if line.get('Results Directory', None):
                     nanuq_readset_prefix = os.path.normpath(os.path.join(nanuq_readset_root_directory, line['Results Directory'], line['Movie name']))
