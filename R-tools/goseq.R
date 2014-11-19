@@ -113,13 +113,13 @@ stop("Wrong annotation file or specie, while no usable Non-native file are provi
 
 set.seed(123456789)
 
-d1<-read.table(file, header=T, sep="\t", quote="", stringsAsFactors=F)
+d1<-read.table(file, header=T, sep="\t", quote="", stringsAsFactors=F, comment.char="")
 toUse<-unlist(strsplit(columns,","))
 selecT<-c(as.numeric(toUse[1]),as.numeric(toUse[2]))
 d2<-d1[,selecT]
 
 if(method == 1) {
-kgX<-read.table(known_ref, header=T, sep="\t", quote="", stringsAsFactors=F)
+kgX<-read.table(known_ref, header=T, sep="\t", quote="", stringsAsFactors=F, comment.char="")
 tmp<-merge(d2,kgX,by.x=1,by.y=1)
 d2<-tmp[,c(3,2)]
 }
@@ -138,8 +138,8 @@ de<-subset(d3,d3[,2]==1)
 gene.vector = as.integer(unique(d3[,1]) %in% unique(de[,1]))
 names(gene.vector) = unique(d3[,1])
 if (useNNgo) {
-	goTable=read.table(go_path,header=F)
-	geneLenPre=read.table(gene_path,header=F)
+	goTable=read.table(go_path,header=F, sep="\t", quote="", stringsAsFactors=F, comment.char="")
+	geneLenPre=read.table(gene_path,header=F, sep="\t", quote="", stringsAsFactors=F, comment.char="")
 	geneTable=unfactor(geneLenPre[,2])
 	names(geneTable)=unfactor(geneLenPre[,1])
 	pwf = nullp(gene.vector, bias.data=geneTable[names(geneTable) %in% names(gene.vector)])
