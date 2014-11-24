@@ -19,7 +19,15 @@ def get_nanuq_readset_file(nanuq_auth_file, nanuq_project_id, nanuq_readset_file
 
     subprocess.check_call(["bash", "-c", command])
 
-def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="readsets.tsv"):
+def get_nanuq_bed_files(nanuq_auth_file, bed_files):
+    for bed in bed_files:
+        command = "wget --no-cookies --post-file " + nanuq_auth_file + " https://genomequebec.mcgill.ca/nanuqLimsCgi/targetRegion/downloadBed.cgi?bedName=" + bed + " -O " + bed
+        log.info("Fetching Nanuq BED file from server...")
+        log.info(command)
+
+        subprocess.check_call(["bash", "-c", command])
+
+def create_readsets(nanuq_auth_file, nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="readsets.tsv"):
     # Lowercase the first seq_type character
     lcfirst_seq_type = seq_type[0].lower() + seq_type[1:]
 
@@ -31,6 +39,7 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
     # Parse Nanuq readset file and list symlinks to be created
     log.info("Parse Nanuq readset file " + nanuq_readset_file + " ...")
     nanuq_readset_csv = csv.DictReader(open(nanuq_readset_file, 'rb'), delimiter=',', quotechar='"')
+    bed_files = set();
     for line in nanuq_readset_csv:
         if line['Status'] and line['Status'] == "Data is valid":
             mugqic_pipeline_readset_csv_row = {}
@@ -75,6 +84,9 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
                 formats = ['FASTQ1', 'FASTQ2', 'BAM']
 
                 fieldnames = [key[1] for key in nanuq_vs_mugqic_pipeline_readset_keys] + formats
+                available_beds = line['BED Files'].split(';')
+                for bed in available_beds:
+                    bed_files.add(bed)
 
                 for format in formats:
                     if line.get(format, None):
@@ -94,6 +106,9 @@ def create_readsets(nanuq_readset_file, seq_type, mugqic_pipeline_readset_file="
             mugqic_pipeline_readset_csv_rows.append(mugqic_pipeline_readset_csv_row)
         else:
             log.warning(str(line) + " line data is not valid... skipping")
+
+    # Get the bed files once
+    get_nanuq_bed_files(nanuq_auth_file, bed_files)
 
     # Create symbolic links and parent directories if necessary
     for target, link_name in symlinks:
@@ -144,4 +159,4 @@ elif args.nanuq_readset_file:
     mugqic_pipeline_readset_file = "readsets.tsv"
 
 if not args.no_links:
-    create_readsets(nanuq_readset_file, args.seq_type, mugqic_pipeline_readset_file)
+    create_readsets(args.nanuq_auth_file.name, nanuq_readset_file, args.seq_type, mugqic_pipeline_readset_file)
