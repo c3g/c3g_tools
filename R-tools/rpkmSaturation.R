@@ -15,8 +15,8 @@ DoSat=args[6]
 ##Do sat values 0=RPKM ; 1=RPKM+SATURATION ; 2=SATURATION
 
 ## open files
-co=read.table(count_file,header=T,sep="\t",check.names=FALSE)
-gtf=read.table(gtf_file,header=F,sep="\t")
+co=read.table(count_file, header=T, sep="\t", check.names=FALSE, quote="", comment.char="")
+gtf=read.table(gtf_file,header=F,sep="\t", check.names=FALSE, quote="", comment.char="")
 
 ##rpkm
 leT=cbind(gtf[,2])
