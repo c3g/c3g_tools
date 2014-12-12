@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ### Mathieu Bourgey (2013/08/15) - mbourgey@genomequebec.com
 ### format gtf obtained form cuffcompare (from cufflinks)
