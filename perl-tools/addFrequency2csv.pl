@@ -17,7 +17,11 @@ sub initVcfFiles {
   my %samples;
   for my $vcfFile (@{$rA_vcfFiles}) {
     #my ($sampleName) = $vcfFile =~ /^([^.\/]+)/;
-    my ($sampleName) = $vcfFile =~ /^alignment\/(.*)\/.*/;
+    my ($sampleName) = $vcfFile =~ /.*alignment\/(.*)\/.*/;
+    if(!defined($sampleName) || length($sampleName) == 9) {
+      die "Couldn't extract sample name from : $vcfFile\n";
+    }
+
     my $fh;
     open($fh, "<", $vcfFile) or die "Can't open $vcfFile\n";
     my $line = <$fh>;
