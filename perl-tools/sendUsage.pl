@@ -134,26 +134,26 @@ sub sendEmail {
   my $message = shift;
 
   my $smtp;
-  if($smtpHost eq $mailHost) {
+#  if($smtpHost eq $mailHost) {
     $smtp = Net::SMTP->new($smtpHost);
-  }
-  else {
-    $smtp = Net::SMTP->new($smtpHost, Port => 587, Debug => 1);
-    $smtp->starttls();
-  }
+#  }
+#  else {
+#    $smtp = Net::SMTP->new($smtpHost, Port => 587, Debug => 1);
+#    $smtp->starttls();
+#  }
   if(!defined($smtp) || !($smtp)) {
     print STDERR "SMTP ERROR: Unable to open smtp session.\n";
     return 1;
   }
 
-  if($smtpHost ne $mailHost) {
-    $smtp->datasend("AUTH LOGIN\n");
-    $smtp->response();
-    $smtp->datasend(encode_base64($user)); # username
-    $smtp->response();
-    $smtp->datasend(encode_base64($pass)); # password
-    $smtp->response();
-  }
+#  if($smtpHost ne $mailHost) {
+#    $smtp->datasend("AUTH LOGIN\n");
+#    $smtp->response();
+#    $smtp->datasend(encode_base64($user)); # username
+#    $smtp->response();
+#    $smtp->datasend(encode_base64($pass)); # password
+#    $smtp->response();
+#  }
 
   if (! ($smtp->mail($fromEmail) ) ) {
     print STDERR "SMTP ERROR: Cannot set from: ".$fromEmail.".\n";
