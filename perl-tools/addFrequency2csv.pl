@@ -48,7 +48,7 @@ sub main {
   print $headers[0];
   for(my $i=1; $i < @headers; $i++) {
     print "\t";
-    if(defined($rHoA_alias->{$headers[$i]})) {
+    if(defined($rHoA_alias->{$headers[$i]}) && defined($rHoH_samplesFiles->{$rHoA_alias->{$headers[$i]}->[0]}) && defined($rHoH_samplesFiles->{$rHoA_alias->{$headers[$i]}->[1]})) {
       $columnIdxToSample{$i} = $headers[$i];
       print $headers[$i]." Allele Frequency\t";
       print $headers[$i]." Variant normal ratio\t";
