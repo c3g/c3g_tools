@@ -175,34 +175,34 @@ if( (-e $filteredSummary) and (-s $filteredSummary) ){
 	close(OUT);
 
   # Fill hash for alternate table
-  $hashSummary{'1- raw'}{'1- totalReads'}         = $totalReads;
-  $hashSummary{'1- raw'}{'2- sequencedBases'}     = $totalSequencedBasesRaw;
-  $hashSummary{'1- raw'}{'3- averageReadLength'}  = $averageReadLength;
-  #$hashSummary{'1- raw'}{'failedReads'}          = $failedReads;
-  #$hashSummary{'1- raw'}{'passedReads'}          = $passedReads;
-  $hashSummary{'1- raw'}{'4- shortestRead'}       = $shortestReadRaw;
-  $hashSummary{'1- raw'}{'5- longestRead'}        = $longestReadRaw;
-  $hashSummary{'1- raw'}{'6- >=3Kb'}              = $ge3KbRaw; 
-  $hashSummary{'1- raw'}{'7- >=7Kb'}              = $ge7KbRaw; 
-  $hashSummary{'1- raw'}{'8- >=9Kb'}              = $ge9KbRaw; 
-  $hashSummary{'1- raw'}{'9- >=12Kb'}             = $ge12KbRaw;
-  $hashSummary{'1- raw'}{'91- >=15Kb'}            = $ge15KbRaw;
+  $hashSummary{'1- raw polymerase reads'}{'1- totalReads'}         = $totalReads;
+  $hashSummary{'1- raw polymerase reads'}{'2- sequencedBases'}     = $totalSequencedBasesRaw;
+  $hashSummary{'1- raw polymerase reads'}{'3- averageReadLength'}  = $averageReadLength;
+  #$hashSummary{'1- raw polymerase reads'}{'failedReads'}          = $failedReads;
+  #$hashSummary{'1- raw polymerase reads'}{'passedReads'}          = $passedReads;
+  $hashSummary{'1- raw polymerase reads'}{'4- shortestRead'}       = $shortestReadRaw;
+  $hashSummary{'1- raw polymerase reads'}{'5- longestRead'}        = $longestReadRaw;
+  $hashSummary{'1- raw polymerase reads'}{'6- >=3Kb'}              = $ge3KbRaw; 
+  $hashSummary{'1- raw polymerase reads'}{'7- >=7Kb'}              = $ge7KbRaw; 
+  $hashSummary{'1- raw polymerase reads'}{'8- >=9Kb'}              = $ge9KbRaw; 
+  $hashSummary{'1- raw polymerase reads'}{'9- >=12Kb'}             = $ge12KbRaw;
+  $hashSummary{'1- raw polymerase reads'}{'91- >=15Kb'}            = $ge15KbRaw;
  
-  $hashSummary{'2- filtered'}{'1- totalReads'}        = $passedReads;
-  $hashSummary{'2- filtered'}{'2- sequencedBases'}    = $totalSequencedBases;
-  $hashSummary{'2- filtered'}{'3- averageReadLength'} = $averageReadLengthQCpassed;
-  $hashSummary{'2- filtered'}{'4- shortestRead'}      = $shortestRead;
-  $hashSummary{'2- filtered'}{'5- longestRead'}       = $longestRead;
-  $hashSummary{'2- filtered'}{'6- >=3Kb'}             = $ge3Kb;
-  $hashSummary{'2- filtered'}{'7- >=7Kb'}             = $ge7Kb;
-  $hashSummary{'2- filtered'}{'8- >=9Kb'}             = $ge9Kb;
-  $hashSummary{'2- filtered'}{'9- >=12Kb'}            = $ge12Kb;
-  $hashSummary{'2- filtered'}{'91- >=15Kb'}           = $ge15Kb;
+  #$hashSummary{'2- filtered'}{'1- totalReads'}        = $passedReads;
+  #$hashSummary{'2- filtered'}{'2- sequencedBases'}    = $totalSequencedBases;
+  #$hashSummary{'2- filtered'}{'3- averageReadLength'} = $averageReadLengthQCpassed;
+  #$hashSummary{'2- filtered'}{'4- shortestRead'}      = $shortestRead;
+  #$hashSummary{'2- filtered'}{'5- longestRead'}       = $longestRead;
+  #$hashSummary{'2- filtered'}{'6- >=3Kb'}             = $ge3Kb;
+  #$hashSummary{'2- filtered'}{'7- >=7Kb'}             = $ge7Kb;
+  #$hashSummary{'2- filtered'}{'8- >=9Kb'}             = $ge9Kb;
+  #$hashSummary{'2- filtered'}{'9- >=12Kb'}            = $ge12Kb;
+  #$hashSummary{'2- filtered'}{'91- >=15Kb'}           = $ge15Kb;
 }
 
-getReadsStats($shortReads, "short reads", "3-");
-getReadsStats($longReads, "long reads", "4-");
-getReadsStats($correctedReads, "corrected reads", "5-");
+getReadsStats($shortReads, "short subreads", "3-");
+getReadsStats($longReads, "long subreads", "4-");
+getReadsStats($correctedReads, "corrected long subreads", "5-");
 
 # Compute N25, N50, N75 and display length of each contig for final contigs.
 $totalBases = 0;

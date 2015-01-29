@@ -16,7 +16,7 @@ The main repo dir organization is:
 
   root/RRNATagger-tools - dir containing specific perl and R scripts for the RRNAtagger (16/18S) pipeline
 
-  root/tools - dir containing other type of scripts (wak, sh, etc...)
+  root/tools - dir containing other type of scripts (awk, sh, etc...)
 
 
 -------------------------
