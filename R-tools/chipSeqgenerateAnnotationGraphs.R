@@ -79,7 +79,7 @@ for(i in 2:ncol(designs[1,])) {
       designName<-design[1]
       fileDir=file.path(output_dir,"peak_call")
       annotationDir=file.path(output_dir,"annotation")
-      listFile=file.path(fileDir,list.files(fileDir,pattern=paste(designName,"_peaks.bed","$",sep=""),recursive=T))
+      listFile=file.path(fileDir,list.files(fileDir,pattern=paste(designName,"_peaks.(narrow|broad)Peak","$",sep=""),recursive=T))
       print(paste("NOTICE: Processing peaks files to generate stats: ", paste(listFile, collapse=","),sep=" "))      
       for(fi in listFile ){
         averagePeakWidth<-NA
@@ -87,11 +87,10 @@ for(i in 2:ncol(designs[1,])) {
         lowestPeak<-NA
         medianPeakHeight<-NA
         percentNearTSS<-NA
-        prefix=gsub("_peaks.bed", "", fi, fixed=T)
+        prefix=gsub("_peaks.(narrow|broad)Peak$", "", fi)
         words<-unlist(strsplit(prefix,"/"));
         designGroup<-words[c(length(words)-1)]
-        file<-paste(prefix, "_peaks.bed",sep="")
-        d1<-read.table(file, header=F, sep="\t", check.names=F)
+        d1<-read.table(fi, header=F, sep="\t", check.names=F)
         nPeaks<-nrow(d1)
         averagePeakWidth<-round(mean(d1[,3]-d1[,2]),0)
         # read summits file
