@@ -65,7 +65,8 @@ def id_to_name(gf,t,n):
 
 def main():
 	print "\n------------------------------------------------------------"
-	print "rrnaBAMCounter.py will estimate rRNA abundancy after mapping reads on fasta containing rRNA sequeunces"
+	print "rrnaBAMCounter.py will estimate rRNA abundancy after "
+	print "mapping reads on fasta containing rRNA sequeunces"
 	print "This program was written by Mathieu BOURGEY"
 	print "For more information, contact: mbourgey@mail.mcgill.ca"
 	print "------------------------------------------------------------\n"
@@ -84,13 +85,13 @@ def main():
  		ct["total"]+=1
  		if not x.is_unmapped :
   			ct["rRNA_mapped"]+=1
-  		if not samfile.getrname(x.reference_id) in ct :
-   			ct[samfile.getrname(x.reference_id)]=0
-  		ct[samfile.getrname(x.reference_id)]+=1
+                        if not samfile.getrname(x.reference_id) in ct :
+                                ct[samfile.getrname(x.reference_id)]=0
+                        ct[samfile.getrname(x.reference_id)]+=1
         ##associate rRNA instance to count (include instance with no read mapped
 	##and go find the Gene nama in the gtf
 	rname=["Mapped","rRNA_mapped"]
-	rcountTmp=[str(ct["total"]),str(ct["rRNA_mapped"])]
+	rcount=[str(ct["total"]),str(ct["rRNA_mapped"])]
 	for r in samfile.references:
 		rname.append(mappingTable[str(r)])
 		if r in ct :
