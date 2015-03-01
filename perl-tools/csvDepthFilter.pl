@@ -1,12 +1,13 @@
 #!/usr/bin/env perl
-#
 use strict;
 use String::Util 'trim';
 
 my $inputFile = $ARGV[0];
-my $minDepth = $ARGV[1];
+my $outputFile = $ARGV[1];
+my $minDepth = $ARGV[2];
 
-open(FILE, $inputFile) or die "Can't open\n";
+open(FILE, $inputFile) or die "Can't open $inputFile\n";
+open(OFILE, '>'.$outputFile) or die "Can't write to $outputFile\n";
 my $line = <FILE>;
 
 my @values = split("\t",$line);
@@ -16,7 +17,7 @@ for(my $i=0; $i < @values; $i++) {
     push(@depthColumns, $i);
   }
 }
-print STDOUT $line;
+print OFILE $line;
 while($line = <FILE>) {
   my $doPrint = 0;
   @values = split("\t",$line);
@@ -31,7 +32,8 @@ while($line = <FILE>) {
   }
 
   if($doPrint != 0) {
-    print STDOUT $line;
+    print OFILE $line;
   }
 }
+close(OFILE);
 close(FILE);
