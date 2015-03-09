@@ -229,6 +229,6 @@ if (length(listFile) > 0) {
 		}
 	}
 } 
-finalTable=cbind(name,align,duplicate,pairOrient,medianInsS,meanInsS,averageDev,standD,wgMeanCov,wgbase10,wgbase25,wgbase50,wgbase75,wgbase100,wgbase500,ccdsMeanCov,ccdsbase10,ccdsbase25,ccdsbase50,ccdsbase75,ccdsbase100,ccdsbase500)
-#colnames(finalTable)=c("SampleName","Aligned","Duplicates","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","WG Mean Coverage","WG %_bases_above_10","WG %_bases_above_25","WG %_bases_above_50","WG %_bases_above_75","WG %_bases_above_100","WG %_bases_above_500","CCDS Mean Coverage","CCDS %_bases_above_10","CCDS %_bases_above_25","CCDS %_bases_above_50","CCDS %_bases_above_75","CCDS %_bases_above_100","CCDS %_bases_above_500")
+finalTable=cbind(name,align,align - duplicate,duplicate,duplicate / align * 100,pairOrient,medianInsS,meanInsS,averageDev,standD,wgMeanCov,wgbase10,wgbase25,wgbase50,wgbase75,wgbase100,wgbase500,ccdsMeanCov,ccdsbase10,ccdsbase25,ccdsbase50,ccdsbase75,ccdsbase100,ccdsbase500)
+colnames(finalTable)=c("Sample","Mapped Reads","Not Duplicate Reads","Duplicate Reads","Duplicate %","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","WG Mean Coverage","WG %_bases_above_10","WG %_bases_above_25","WG %_bases_above_50","WG %_bases_above_75","WG %_bases_above_100","WG %_bases_above_500","CCDS Mean Coverage","CCDS %_bases_above_10","CCDS %_bases_above_25","CCDS %_bases_above_50","CCDS %_bases_above_75","CCDS %_bases_above_100","CCDS %_bases_above_500")
 write.table(finalTable,file=outputFile,sep="\t",row.names=F,col.names=T,quote=F)
