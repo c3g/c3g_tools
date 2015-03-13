@@ -32,7 +32,7 @@ sub main {
     my %bamIDs;
     my %rgIDs;
     foreach my $line (@header){
-      if($line =~ /^@RG.*ID:([^\t]+)\t.*PU:run([^_]+)_(.)\t.*LB:([^\t]+)\t.*SM:([^\t]+)(\t.*)?/) {
+      if($line =~ /^\@RG.*ID:([^\t]+)\t.*PU:run([^_]+)_(.)\t.*LB:([^\t]+)\t.*SM:([^\t]+)(\t.*)?/) {
         my $rgId = $1;
         my $flowcell = $2;
         my $lane = $3;
