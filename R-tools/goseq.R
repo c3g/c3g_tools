@@ -99,7 +99,7 @@ d2<-tmp[,c(3,2)]
 d2<-d2[order(d2[,2]),]
 
 head(d2)
-is.significant<-function(x,pv=pvalThr) ifelse(x < pv,1,0)
+is.significant<-function(x,pv=pvalThr) ifelse(x <= pv,1,0)
 if(sum(is.significant(d2[,2])==1) == 0) {
 	print("No significant adjusted p-values found")
 	write.table(paste("Enriched category",paste("FDR <",as.character(fdrThr),"filtered p-value"),"GOID","Term","Ontology","Definition","Synonym", sep="\t"), out_path, append=F, row.names=F, col.names=F, quote=F)
@@ -118,7 +118,7 @@ GO.wall =  goseq(pwf,gene2cat = goTable)
 
 
 head(GO.wall)
-enriched.GO = cbind(GO.wall$category[p.adjust(GO.wall$over_represented_pvalue, method = "BH") < fdrThr], GO.wall$over_represented_pvalue[p.adjust(GO.wall$over_represented_pvalue, method = "BH") < fdrThr])
+enriched.GO = cbind(GO.wall$category[p.adjust(GO.wall$over_represented_pvalue, method = "BH") <= fdrThr], GO.wall$over_represented_pvalue[p.adjust(GO.wall$over_represented_pvalue, method = "BH") <= fdrThr])
 head(enriched.GO)
 library(GO.db)
 if(dim(enriched.GO)[1] == 0) {
