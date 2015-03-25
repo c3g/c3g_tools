@@ -55,8 +55,10 @@ def id_to_name(gf,t,n):
 	while l != "" :
 		if l[0] != "#" :
 			c=l.replace(' "','\t').replace('"; ','\t').split("\t")
-			if idTag in c and c[c.index(idTag)+1] in n and not map_dict.has_key(c[c.index(idTag)+1]) :
-				map_dict[c[c.index(idTag)+1]] = c[c.index(nameTag)+1]
+			if idTag in c and nameTag in c :
+                                if c[c.index(idTag)+1] in n :
+                                        if not map_dict.has_key(c[c.index(idTag)+1]) :
+                                                map_dict[c[c.index(idTag)+1]] = c[c.index(nameTag)+1]
 		l=g.readline()
 	g.close()
 	return map_dict
@@ -77,6 +79,7 @@ def main():
 	mappingTable=id_to_name(gtf,typ,samfile.references)
 	## open output
 	o=open(outF,'w')
+	o2=open(outF+"_short.tsv",'w')
 	## count in a hash :total reads; mapped read to rRNA; mapped read by rRNA instance in the fasta
 	ct={}
 	ct["total"]=0
@@ -91,16 +94,24 @@ def main():
         ##associate rRNA instance to count (include instance with no read mapped
 	##and go find the Gene nama in the gtf
 	rname=["Mapped","rRNA_mapped"]
+	srname=["Mapped","rRNA_mapped","rRNA_mapped_%"]
 	rcount=[str(ct["total"]),str(ct["rRNA_mapped"])]
+	srcount=[str(ct["total"]),str(ct["rRNA_mapped"]),str(round((float(ct["rRNA_mapped"])/float(ct["total"]))*100,2))]
 	for r in samfile.references:
-		rname.append(mappingTable[str(r)])
+                if str(r) in mappingTable :
+                        rname.append(mappingTable[str(r)])
+                else :
+                        rname.append(str(r))
 		if r in ct :
 			rcount.append(str(ct[r]))
 		else:
 			rcount.append("0")	
 	o.write("\t".join(rname)+"\n")
 	o.write("\t".join(rcount)+"\n")
+	o2.write("\t".join(srname)+"\n")
+        o2.write("\t".join(srcount)+"\n")
 	o.close()
+	o2.close()
 	samfile.close()
 
 main()
