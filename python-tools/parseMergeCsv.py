@@ -92,17 +92,27 @@ if __name__ == '__main__':
             del reader
         i+=1
         
-    if subset and subset <= fieldnames:
-      fieldnames = subset
+    if not subset is None:
+        diff = [x for x in subset if x not in fieldnames]
+        if len(diff) > 0 :
+            error_subset = " ".join(diff)        
+            warnings.warn("WARNING: Columns to include are not in input files: all columns will be included " + error_subset )
+        else:    
+            fieldnames = subset
     else:
       fieldnames = list(data.fromkeys(fieldnames))
-    diff = [x for x in exclude if x not in fieldnames]
+    if exclude is None:
+        diff = []        
+    else:
+        diff = [x for x in exclude if x not in fieldnames]
     #print str(fieldnames)
     #print str(exclude)
     #print str(diff)
     if exclude and len(diff) > 0 :
         error_exclude = " ".join(diff)        
         warnings.warn("WARNING: Columns to exclude are not in input files: " + error_exclude )
+    elif exclude is None:
+        pass
     else:        
         fieldnames = [x for x in fieldnames if x not in exclude ]
     
@@ -111,10 +121,10 @@ if __name__ == '__main__':
         tmpdata=collections.OrderedDict()
         try:
             # Try numeric conversion
-            tmpdata=sorted(data.items(), key=lambda d: float(d[1][args.sort]))            
+            tmpdata=sorted(data.items(), key=lambda d: float(d[1][args.sort]) if d[1].has_key(args.sort) else None)            
             data=collections.OrderedDict(tmpdata)
         except ValueError:            
-            tmpdata=sorted(data.items(), key=lambda d: d[1][args.sort])
+            tmpdata=sorted(data.items(), key=lambda d: d[1][args.sort] if d[1].has_key(args.sort) else None )
             data=collections.OrderedDict(tmpdata)
             
     # Print output file  
