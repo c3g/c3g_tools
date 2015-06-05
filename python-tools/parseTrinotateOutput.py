@@ -27,6 +27,8 @@ import os
 import collections
 import itertools
 import operator
+import re
+import warnings
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
@@ -36,6 +38,7 @@ if __name__ == '__main__':
     parser.add_argument("-g", "--gene_ontology", help="Name of column for gene_ontology, default is gene_ontology_blast", type=str, required=False, default= "gene_ontology_blast")
     parser.add_argument("-o", "--output", help="Output File prefix", type=str , required=True)
     parser.add_argument("-l", "--length_file", help="Path to the gene/transcript length file. If declared, only the longest gene/transcript is reported. (\t separated file with columns gene_id\tlength)", type=argparse.FileType('rb') , required=False)
+    parser.add_argument("-f", "--filter", help="Filter annotations, generate a filtered annotations file", type=str, nargs="+", required=False)
     args = parser.parse_args()
     
     csv.field_size_limit(sys.maxsize)
@@ -51,17 +54,19 @@ if __name__ == '__main__':
     #Open output files
     outfile_blast=open(os.path.abspath(outfile) + "_blast.tsv" , "wb")
     outfile_go=open(os.path.abspath(outfile) + "_go.tsv" , "wb")
-    
+      
     # Read file    
-    trinotatereader = csv.DictReader(infile,  delimiter='\t', quoting=csv.QUOTE_NONE)    
-    field_names_blast= [key] + ["Symbol"] + [vals for vals in trinotatereader.fieldnames if vals not in [key] ] + ["longest_transcript_length", "longest_transcript_id"]
+    trinotatereader = csv.DictReader(infile,  delimiter='\t', quoting=csv.QUOTE_NONE, restval=".")    
+    field_names_blast= [key] + ["Symbol"] + [vals for vals in trinotatereader.fieldnames if vals not in [key] ]
+    if length_fname:
+        field_names_blast= field_names_blast + ["longest_transcript_length", "longest_transcript_id"]
     field_names_go=[key] + [go]
     csvwriter = csv.DictWriter(outfile_blast, field_names_blast, extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
     csvwriter_go = csv.DictWriter(outfile_go, field_names_go, extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
     
     # Force to print only one line per transcript id
     transcript_id = trinotatereader.fieldnames[1]
-    
+
     # Read transcript length file. If this file is defined, the output will be
     # a gene/isoform subset of Trinotate report with only the longest isoform per gene.
     longest_item = {}
@@ -96,6 +101,28 @@ if __name__ == '__main__':
     csvwriter.writeheader()
     csvwriter_go.writeheader()
     for line in iter(trinotatereader):
+        # If filter is defined, filter elements given a set of filter definitions 
+        if args.filter:
+            filter_all=" ".join(args.filter)        
+            outfile_filtered=open(os.path.abspath(outfile) + "_filtered.tsv" , "wb")
+            filtered_writer = csv.DictWriter(outfile_filtered, [key], extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
+            # Search for variables in trinotate reader and create a script that must be evaluated
+            re_fields=dict(( fn, re.compile(fn)) for fn in trinotatereader.fieldnames )        
+            
+            for line in iter(trinotatereader):                                  
+                commands=["def validate(): "]
+                if all(x is None for x in [re_fields[k].search(filter_all) for k in line.keys()]):
+                    warnings.warn("The expression doesn't include any of the trinotate output fields: " + ",".join(trinotatereader.fieldnames))
+                    break
+                commands.extend([ """{variable} = \"{variable_value}\"""".format(variable=k, variable_value=line[k]) for k,v in line.items() if re_fields[k].search(filter_all) ] )
+                commands.append( "return(" + filter_all + ")"  + '\n')
+                # print '\n\t'.join(commands)
+                # So fun python exeeeec
+                exec '\n\t'.join(commands)
+                #print validate()
+                if validate():
+                    filtered_writer.writerow(line)
+        # controls for filtered genes given the transcript lengths
         if item_done.has_key(line[transcript_id]):
             continue
         else:

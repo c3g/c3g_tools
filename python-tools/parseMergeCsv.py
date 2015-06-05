@@ -35,8 +35,9 @@ if __name__ == '__main__':
     parser.add_argument("-c", "--common", help="Common columns, if more than one, use comma separated column names, i.e. gene,transcript ", nargs="+",  type=str , required=True)
     parser.add_argument("-s", "--subset", help="A subset of column names to print in the output file", nargs="+",  type=str , required=False, default=None)
     parser.add_argument("-x", "--exclude", help="A subset of column names to exclude from  the output file", nargs="+",  type=str , required=False, default=None)
-    parser.add_argument("-l", "--left", help="left outer join", action="store_true")
-    parser.add_argument("-t", "--sort", help="a column name to sort by", type=str , required=False)
+    parser.add_argument("-l", "--left", help="If selected, left outer join", action="store_true")
+    parser.add_argument("-t", "--sort", help="A column name to sort by", type=str , required=False)
+    parser.add_argument("-n", "--make_names", help="If TRUE then the names of the columns in the input files that are duplicated are adjusted so that they are all preserved. If false, values are updated every time an input file is loaded", action="store_true")
     args = parser.parse_args()
     
     #error found when testing, don't ask me if system size is exceeded
@@ -67,19 +68,30 @@ if __name__ == '__main__':
     else:
         key=[None] * len(infiles)
         
-    #print str(in_sep)
+    print "NOTICE: merging " + " ".join(infiles) + ", delimited by: " + str(in_sep) + ", with keys: " +  str(key) 
     #print str(key)
     #print str(args.left)
     # Open output files    
     data = collections.OrderedDict()
     fieldnames = []
-    i=0
+    replacement_names={}
+
+    i=0    
     for filename in infiles:
         with open(filename, "rb") as fp: # python 2
             if in_sep[i] in ['\t',"\\t"]:                
                 reader = csv.DictReader(fp, quoting=csv.QUOTE_NONE, dialect=csv.excel_tab)
             else:
-                reader = csv.DictReader(fp, delimiter=in_sep[i],quoting=csv.QUOTE_NONE)
+                reader = csv.DictReader(fp, delimiter=in_sep[i], quoting=csv.QUOTE_NONE)
+            if args.make_names:
+                new_names = dict((rn,rn + "." + str(i)) if rn in fieldnames else (rn,rn) for rn in reader.fieldnames)
+                #print str([new_names.values()])
+                #print str([new_names.keys()])
+                if i==0 :
+                    replacement_names = { v:k for k, v in new_names.items() if k in fieldnames }
+                else:
+                    replacement_names.update( { v:k for k, v in new_names.items() if k in fieldnames } )
+                reader.fieldnames = [new_names[fn] for fn in reader.fieldnames]
             fieldnames.extend(reader.fieldnames)
             for row in reader:
                 key_field = out_sep.join(row[k] for k in key[i].split(",") ) if key[i] else reader.fieldnames[0]
@@ -99,23 +111,29 @@ if __name__ == '__main__':
             warnings.warn("WARNING: Columns to include are not in input files: all columns will be included " + error_subset )
         else:    
             fieldnames = subset
+            if args.make_names:
+                fieldnames.extend([k for k,v in replacement_names.items() if v in fieldnames])
     else:
       fieldnames = list(data.fromkeys(fieldnames))
     if exclude is None:
         diff = []        
     else:
         diff = [x for x in exclude if x not in fieldnames]
-    #print str(fieldnames)
+    
     #print str(exclude)
     #print str(diff)
+    #print str(replacement_names)
+    
     if exclude and len(diff) > 0 :
         error_exclude = " ".join(diff)        
         warnings.warn("WARNING: Columns to exclude are not in input files: " + error_exclude )
     elif exclude is None:
         pass
     else:        
+        if args.make_names:
+            exclude.extend([k for k,v in replacement_names.items() if v in exclude])
         fieldnames = [x for x in fieldnames if x not in exclude ]
-    
+    print "NOTICE: will preserve the following headers: " + str(fieldnames)
     # Sort by a selected field
     if args.sort and args.sort in fieldnames:
         tmpdata=collections.OrderedDict()
