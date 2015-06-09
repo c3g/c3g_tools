@@ -95,34 +95,46 @@ if __name__ == '__main__':
         length_fname.close()
     #print "NOTICE: length of longest_item: " + str(len(longest_item))
     count =1
-             
+    # If filter is defined, filter elements given a set of filter definitions          
+    if args.filter:
+        filter_updated=" ".join(args.filter)        
+        outfile_filtered=open(os.path.abspath(outfile) + "_filtered.tsv" , "wb")
+        filtered_writer = csv.DictWriter(outfile_filtered, [key], extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
+        re_fields=dict(( fn, re.compile(fn)) for fn in trinotatereader.fieldnames)
+    
+    # This function will replace all occurrences of a variable (a column name) in the filter string 
+    def multiple_replace(text, adict):
+        rx = re.compile('|'.join(map(re.escape, adict)))
+        def one_xlat(match):
+            try:
+                value = float(adict[match.group(0)])
+                return adict[match.group(0)]
+            except ValueError:        
+                return "\"" + adict[match.group(0)] + "\""
+                pass
+        return rx.sub(one_xlat, text)
+
     # Write blast / go annotated results
     item_done={}
     csvwriter.writeheader()
     csvwriter_go.writeheader()
     for line in iter(trinotatereader):
         # If filter is defined, filter elements given a set of filter definitions 
-        if args.filter:
-            filter_all=" ".join(args.filter)        
-            outfile_filtered=open(os.path.abspath(outfile) + "_filtered.tsv" , "wb")
-            filtered_writer = csv.DictWriter(outfile_filtered, [key], extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
-            # Search for variables in trinotate reader and create a script that must be evaluated
-            re_fields=dict(( fn, re.compile(fn)) for fn in trinotatereader.fieldnames )        
-            
-            for line in iter(trinotatereader):                                  
-                commands=["def validate(): "]
-                if all(x is None for x in [re_fields[k].search(filter_all) for k in line.keys()]):
-                    warnings.warn("The expression doesn't include any of the trinotate output fields: " + ",".join(trinotatereader.fieldnames))
-                    break
-                commands.extend([ """{variable} = \"{variable_value}\"""".format(variable=k, variable_value=line[k]) for k,v in line.items() if re_fields[k].search(filter_all) ] )
-                commands.append( "return(" + filter_all + ")"  + '\n')
-                # print '\n\t'.join(commands)
-                # So fun python exeeeec
-                exec '\n\t'.join(commands)
-                #print validate()
-                if validate():
-                    filtered_writer.writerow(line)
-        # controls for filtered genes given the transcript lengths
+        # Search for variables in trinotate reader and create a script that must be evaluated
+        if args.filter:            
+            # Search for variables in reader 
+            if all(x is None for x in [re_fields[k].search(filter_updated) for k in line.keys()]):
+                warnings.warn("The expression doesn't include any of the queried fields: " + ",".join(trinotatereader.fieldnames) + " in " + filename )
+            commands=["def validate(): "]                    
+            filter_all=multiple_replace(filter_updated, line)
+            commands.append( "return(" + filter_all + ")"  + '\n')                    
+            exec '\n\t'.join(commands)
+            print filter_all 
+            print validate()
+            # If expression is true, write gene/transcript to the output file
+            if validate():
+                filtered_writer.writerow(line)
+        # Controls for filtered genes given the transcript lengths
         if item_done.has_key(line[transcript_id]):
             continue
         else:
