@@ -354,7 +354,7 @@ sub getReadsStats{
 		$header =~ s/>//;
 	  push(@length, $length);
 	  $ge3Kb++ if($length >= 3000);
-	  $ge7Kb++ if($length >= 6000);
+	  $ge7Kb++ if($length >= 7000);
 	  $ge9Kb++ if($length >= 9000);
 	  $ge12Kb++ if($length >= 12000);
 	  $ge15Kb++ if($length >= 15000);
