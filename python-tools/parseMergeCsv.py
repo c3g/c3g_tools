@@ -33,7 +33,7 @@ if __name__ == '__main__':
     parser.add_argument("-i", "--input_files", help="List of files to merge" , type=str, nargs="+", required=True)
     parser.add_argument("-d", "--delimiter", help="Delmiter for input files" , type=str, nargs="+", required=False, default='\t')    
     parser.add_argument("-o", "--output", help="Output File prefix", type=str , required=True)
-    parser.add_argument("-c", "--common", help="Common columns, if more than one, use comma separated column names, i.e. gene,transcript ", nargs="+",  type=str , required=False)
+    parser.add_argument("-c", "--common", help="Common columns used to join, if more than one, use comma separated column names, i.e. gene,transcript. By default, the first column is used as key", nargs="+",  type=str , required=False)    
     parser.add_argument("-s", "--subset", help="A subset of column names to print in the output file", nargs="+",  type=str , required=False, default=None)
     parser.add_argument("-x", "--exclude", help="A subset of column names to exclude from  the output file", nargs="+",  type=str , required=False, default=None)
     parser.add_argument("-l", "--left", help="If selected, left outer join", action="store_true")
@@ -63,13 +63,17 @@ if __name__ == '__main__':
     else:
         raise Exception("Error: Two or more input files are required " + args.delimiter )
  
-    if not args.common is None and len(args.common) == len(infiles) and len(args.common) > 1:
+    if not args.common is None and len(args.common) == len(infiles) and len(args.common) > 1:        
         key=args.common
     elif not args.common is None  and len(args.common) == 1:
         key=[args.common[0]] * len(infiles)
     else:
         key=[None] * len(infiles)
-        
+    
+    # Treat the None case
+    if "None" in key:
+        key=map(lambda x:x if x is x!= 'None' else None,key)
+    
     print "NOTICE: merging " + " ".join(infiles) + ", delimited by: " + str(in_sep) + ", with keys: " +  str(key) 
     #print str(key)
     #print str(args.left)
@@ -127,7 +131,7 @@ if __name__ == '__main__':
                     # If expression is not true, the next line is read
                     if not validate():
                         continue                             
-                key_field = out_sep.join(row[k] for k in key[i].split(",") ) if key[i] else reader.fieldnames[0]
+                key_field = out_sep.join(row[k] for k in key[i].split(",") ) if key[i] else row[reader.fieldnames[0]]
                 # Default behavior is cross join (common elements of all tables are added)
                 # if left outer join, preserve only keys of the first file
                 if (args.left and i == 0 ) or not args.left:
