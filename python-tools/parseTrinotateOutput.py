@@ -31,14 +31,14 @@ import re
 import warnings
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("-r", "--report", help="Input Files", type=argparse.FileType('rb'), required=True)
+    parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter, description='Parse trinotate output and produce genes and isoforms annotations files: extract blast symbol, Go terms and/or filter for any field in trinotate output')
+    parser.add_argument("-r", "--report", help="Trinotate report (tsv format)", type=argparse.FileType('rb'), required=True)
     parser.add_argument("-i", "--item_column", help="Column name for the item to select (\"#gene_id\" for genes, \"transcript_id\" for transcripts)" , type=str, required=False, default= "#gene_id")
     parser.add_argument("-b", "--Top_BLASTX_hit", help="Column name for top blast hit, default is sprot_Top_BLASTX_hit", type=str , required=False, default= "sprot_Top_BLASTX_hit")
-    parser.add_argument("-g", "--gene_ontology", help="Name of column for gene_ontology, default is gene_ontology_blast", type=str, required=False, default= "gene_ontology_blast")
+    parser.add_argument("-g", "--gene_ontology", help="Column name for gene_ontology, default is gene_ontology_blast", type=str, required=False, default= "gene_ontology_blast")
     parser.add_argument("-o", "--output", help="Output File prefix", type=str , required=True)
-    parser.add_argument("-l", "--length_file", help="Path to the gene/transcript length file. If declared, only the longest gene/transcript is reported. (\t separated file with columns gene_id\tlength)", type=argparse.FileType('rb') , required=False)
-    parser.add_argument("-f", "--filter", help="Filter annotations, generate a filtered annotations file", type=str, nargs="+", required=False)
+    parser.add_argument("-l", "--length_file", help="Path to the gene/transcript length file. If declared, only the longest transcript per gene is reported. (\t separated file with columns gene_id\tlength)", type=argparse.FileType('rb') , required=False)
+    parser.add_argument("-f", "--filter", help="Filter annotations using a python expression, generate a filtered annotations file", type=str, nargs="+", required=False)
     args = parser.parse_args()
     
     csv.field_size_limit(sys.maxsize)
@@ -51,7 +51,7 @@ if __name__ == '__main__':
     key=args.item_column
     length_fname=args.length_file
     
-    #Open output files
+    # Open output files
     outfile_blast=open(os.path.abspath(outfile) + "_blast.tsv" , "wb")
     outfile_go=open(os.path.abspath(outfile) + "_go.tsv" , "wb")
       
@@ -97,6 +97,7 @@ if __name__ == '__main__':
     count =1
     # If filter is defined, filter elements given a set of filter definitions          
     if args.filter:
+        transcript_filtered={}
         filter_updated=" ".join(args.filter)        
         outfile_filtered=open(os.path.abspath(outfile) + "_filtered.tsv" , "wb")
         filtered_writer = csv.DictWriter(outfile_filtered, [key], extrasaction='ignore',  delimiter='\t', quoting=csv.QUOTE_NONE)
@@ -121,20 +122,23 @@ if __name__ == '__main__':
     for line in iter(trinotatereader):
         # If filter is defined, filter elements given a set of filter definitions 
         # Search for variables in trinotate reader and create a script that must be evaluated
-        if args.filter:            
-            # Search for variables in reader 
-            if all(x is None for x in [re_fields[k].search(filter_updated) for k in line.keys()]):
-                warnings.warn("The expression doesn't include any of the queried fields: " + ",".join(trinotatereader.fieldnames) + " in " + filename )
-            commands=["def validate(): "]                    
-            filter_all=multiple_replace(filter_updated, line)
-            commands.append( "return(" + filter_all + ")"  + '\n')                    
-            exec '\n\t'.join(commands)
-            print filter_all 
-            print validate()
-            # If expression is true, write gene/transcript to the output file
-            if validate():
-                filtered_writer.writerow(line)
-        # Controls for filtered genes given the transcript lengths
+        if args.filter:                        
+            # Controls for duplicated lines (one transcript per gene)            
+            if not transcript_filtered.has_key(line[transcript_id]):
+                # Search for variables in reader
+                if all(x is None for x in [re_fields[k].search(filter_updated) for k in line.keys()]):
+                    warnings.warn("The expression doesn't include any of the queried fields: " + ",".join(trinotatereader.fieldnames) + " in " + filename )
+                commands=["def validate(): "]                    
+                filter_all=multiple_replace(filter_updated, line)
+                commands.append( "return(" + filter_all + ")"  + '\n')                    
+                exec '\n\t'.join(commands)
+                #print filter_all 
+                #print validate()
+                # If expression is true, write gene/transcript to the output file
+                if validate():
+                    filtered_writer.writerow(line)
+                    transcript_filtered[line[transcript_id]] = None
+        # Controls for duplicated lines (one transcript per gene)
         if item_done.has_key(line[transcript_id]):
             continue
         else:
@@ -154,4 +158,4 @@ if __name__ == '__main__':
                     csvwriter_go.writerow(line)
     del trinotatereader
     del csvwriter
-    del csvwriter_go
+    del csvwriter_go    
