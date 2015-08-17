@@ -53,6 +53,6 @@ if __name__ == '__main__':
     output_file=open(args.output + ".fasta",'w')
     SeqIO.write(seq_records_FF, output_file, "fasta")
     output_file.close()
-    output_file=open(args.output + ".xls",'w')
+    output_file=open(args.output + ".tsv",'w')
     SeqIO.write(seq_records_FF, output_file, "tab")
     output_file.close()
