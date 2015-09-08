@@ -19,6 +19,7 @@ fi
 FPR="fastqPickRandom.pl --compressed --threshold"
 FQ2FA="fastq2FastaQual.pl"
 BLAST="blastn -query"
+BLASTFILTER="blast_filter.py"
 
 #check output directory
 if [ ! -d $OUTPUT_DIR/ ]; then
@@ -43,7 +44,8 @@ fi
 $FQ2FA $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.fastq $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.fasta $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.qual
 
 #Blast fasta
-$BLAST $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.fasta -db nt -out $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.blastres -perc_identity 80 -num_descriptions 1 -num_alignments 1
+$BLAST $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.fasta -db nt -out $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.blastres -perc_identity 80 -max_target_seqs 1 -outfmt "6 qseqid sseqid sgi sacc evalue pident staxids sscinames qcovs qcovhsp"
 
 #subselect only the species and report only the 20 most frequent
-grep ">" $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.blastres | awk ' { print $2 "_" $3} ' | sort | uniq -c | sort -n -r | head -20 > $OUTPUT_PREFIX.R1.RDP.blastHit_20MF_species.txt
+$BLASTFILTER -i $OUTPUT_PREFIX.R1.subSampled_${SAMPLE_TO}.blastres -s 20 -q 70 -o $OUTPUT_PREFIX.R1.RDP.blastHit_20MF_species.txt
+
