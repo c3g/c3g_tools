@@ -11,7 +11,10 @@ mergeTables <- function(blastFile, coverageFile, outdir) {
   #outfile      = paste0(root, "blast_report_with_cov.tsv")
 
   ## Load tables
-  tBlast = read.table(blastFile, sep="\t", comment.char="#", header=FALSE, quote="")
+  # blastFile ="WGA_Sendo_LEV6574/30X/merSize14/blast/blast_report.csv"
+  tBlast = readLines(blastFile)
+	tBlast = tBlast[!grepl("^#",tBlast)]
+  tBlast = read.table( textConnection(tBlast) , sep="\t", comment.char="", header=FALSE, quote="")
   tCoverage = read.table(coverageFile, sep="\t", comment.char="#", header=FALSE, skip=1)
 
   ## Compute average coverage for each contigs.
