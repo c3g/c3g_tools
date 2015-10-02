@@ -342,15 +342,17 @@ sub createLinks {
     mkpath($rawReadDir);
     # Create base raw read directory
 
-    my $indir  = "/lb/robot/454sequencer/runs/2014/"; # TODO: adap to multiple directory to check-in.
+    my @searchDirs= ("/lb/robot/454sequencer/runs/", "/lb/robot/454sequencer/runs/2014/","/lb/robot/454sequencer/runs/2015/","/lb/robot/454sequencer/runs/2016/");
     my $rootDir;
     my @directories;
-    opendir(D, $indir) || die "Can't open directory: $!\n";
-    while (my $f = readdir(D)) {  
-      #print "\$f = $f\n";
-      push(@directories, $f);
+    for my $indir (@searchDirs) {
+      opendir(D, $indir) || warn "Can't open directory: $!\n";
+      while (my $f = readdir(D)) {  
+        #print "\$f = $f\n";
+        push(@directories, $indir.$f);
+      }
+      closedir(D);
     }
-    closedir(D);
     for my $rH_sample (@$rA_sampleInfos) {
 
       # find directory. For 454 libraries, libraries are stored by their date name.
@@ -372,7 +374,7 @@ sub createLinks {
       my $runDir = undef;
       for my $directory (@directories) {
         if($directory =~ /$prefix/){
-          $runDir = $indir.$directory.'/';
+          $runDir = $directory.'/';
           last;
         }
       }
