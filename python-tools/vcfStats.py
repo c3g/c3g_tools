@@ -144,11 +144,20 @@ def main():
 				region[i][j]=str(int(round(clen/int(region[i][j]))))
 		out.write(i+"\t"+"\t".join(region[i].values())+"\n")
 	out.close()
-	f=open(fil,'a',0)
-	f.write(outB+"\n")
-	f.flush()
+	listOut=[outB]
+	f=open(fil,'r')
+	l=f.readline()
+	while l != "" :
+            c=l.split()
+            if len(c) > 0:
+                listOut.append(c[0])
+            l=f.readline()
+        f.close()
+        f=open(fil,'w')
+        for i in set(listOut):
+            f.write(i+"\n")
 	f.close()
-	### glastFenerate the graph (png and pdf) for the report
+	### generate the graph (png and pdf) for the report
 	#generateGraphs(region,samples,outB)
 
 main()
