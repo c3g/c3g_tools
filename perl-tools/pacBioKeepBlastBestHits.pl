@@ -73,6 +73,7 @@ print STDOUT $header;
 
 for my $k1 (sort keys %hash) { 
   for my $k2 (sort keys %{ $hash{$k1} }){
+    $hash{$k1}{$k2} =~ s/[#]+//g;
     print STDOUT $hash{$k1}{$k2}."\n";
 
   }
