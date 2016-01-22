@@ -1,6 +1,12 @@
-28 tags, 268 commits
+29 tags, 269 commits
 
-HEAD        Thu Jan 21 13:24:38 2016 -0500        2 commits
+HEAD        Thu Jan 21 15:31:41 2016 -0500        1 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       ab85318 ading a changelog to mugqic_tools (since v2.1.5)
+
+2.1.5        Thu Jan 21 14:47:39 2016 -0500        2 commits
 
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
 
