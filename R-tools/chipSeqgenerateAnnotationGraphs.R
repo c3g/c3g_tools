@@ -41,7 +41,7 @@ for(i in 2:ncol(designs[1,])) {
       # Exon intron stats
       exons<-paste(prefix, ".exon.stats.csv",sep="")
       print(paste("NOTICE: processing annotation exon stats files: ", paste(exons, collapse=","),sep=" "))
-      if(file.info(exons)$size == 0 || length(scan(exons)) > 0) {
+      if(file.info(exons)$size == 0 || length(scan(exons)) == 0) {
         d1=data.frame(c(0))
       }
       else {
