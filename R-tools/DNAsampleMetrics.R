@@ -5,6 +5,7 @@
 args=commandArgs(TRUE)
 fileDir=args[1]
 outputFile=args[2]
+type=args[3]
 
 name=NULL
 align=NULL
@@ -38,60 +39,62 @@ base75=rep("NA",sampleNum)
 base100=rep("NA",sampleNum)
 base500=rep("NA",sampleNum)
 base1000=rep("NA",sampleNum)
-## get insert size metrics
-listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[2],"$",sep=""),recursive=T))
-nameSample=strsplit(basename(listFile),".sorted",fixed=T)
-if (sampleNum == length(listFile)) {
-	sampleNum=length(listFile)
-	for(i in 1:length(listFile)) {
-		nameLoc=match(nameSample[[i]][1],name)
-		stats=scan(file=listFile[i],what="character",sep="\n")
-		statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
-		statsValue=strsplit(statsLigne,"\t",fixed=T)
-		pairOrient[nameLoc]=statsValue[[1]][8]
-		medianInsS[nameLoc]=statsValue[[1]][1]
-		meanInsS[nameLoc]=statsValue[[1]][5]
-		averageDev[nameLoc]=statsValue[[1]][2]
-		standD[nameLoc]=statsValue[[1]][6]
-	}
-} else {
-	sampleNumTmp=length(listFile)
-	for(i in 1:length(listFile)) {
-		if (nameSample[[i]][1] %in% name) {
-			nameLoc=match(nameSample[[i]][1],name)
-			stats=scan(file=listFile[i],what="character",sep="\n")
-			statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
-			statsValue=strsplit(statsLigne,"\t",fixed=T)
-			pairOrient[nameLoc]=statsValue[[1]][8]
-			medianInsS[nameLoc]=statsValue[[1]][1]
-			meanInsS[nameLoc]=statsValue[[1]][5]
-			averageDev[nameLoc]=statsValue[[1]][2]
-			standD[nameLoc]=statsValue[[1]][6]
-		} else {
-			sampleNum=sampleNum+1
-			stats=scan(file=listFile[i],what="character",sep="\n")
-			name=c(name,nameSample[[i]][1])
-			align=c(align,"NA")
-			duplicate=c(duplicate,"NA")
-			statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
-			statsValue=strsplit(statsLigne,"\t",fixed=T)
-			pairOrient=c(pairOrient,statsValue[[1]][8])
-			medianInsS=c(medianInsS,statsValue[[1]][1])
-			meanInsS=c(meanInsS,statsValue[[1]][5])
-			averageDev=c(averageDev,statsValue[[1]][2])
-			standD=c(standD,statsValue[[1]][6])
-			MeanCov=c(MeanCov,"NA")
-			base10=c(base10,"NA")
-			base25=c(base25,"NA")
-			base50=c(base50,"NA")
-			base75=c(base75,"NA")
-			base100=c(base100,"NA")
-			base500=c(base500,"NA")
-                        base1000=c(base1000,"NA")
-		}
-	}
-}
 
+if (type == "PAIRED_END") {
+    ## get insert size metrics
+    listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[2],"$",sep=""),recursive=T))
+    nameSample=strsplit(basename(listFile),".sorted",fixed=T)
+    if (sampleNum == length(listFile)) {
+            sampleNum=length(listFile)
+            for(i in 1:length(listFile)) {
+                    nameLoc=match(nameSample[[i]][1],name)
+                    stats=scan(file=listFile[i],what="character",sep="\n")
+                    statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
+                    statsValue=strsplit(statsLigne,"\t",fixed=T)
+                    pairOrient[nameLoc]=statsValue[[1]][8]
+                    medianInsS[nameLoc]=statsValue[[1]][1]
+                    meanInsS[nameLoc]=statsValue[[1]][5]
+                    averageDev[nameLoc]=statsValue[[1]][2]
+                    standD[nameLoc]=statsValue[[1]][6]
+            }
+    } else {
+            sampleNumTmp=length(listFile)
+            for(i in 1:length(listFile)) {
+                    if (nameSample[[i]][1] %in% name) {
+                            nameLoc=match(nameSample[[i]][1],name)
+                            stats=scan(file=listFile[i],what="character",sep="\n")
+                            statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
+                            statsValue=strsplit(statsLigne,"\t",fixed=T)
+                            pairOrient[nameLoc]=statsValue[[1]][8]
+                            medianInsS[nameLoc]=statsValue[[1]][1]
+                            meanInsS[nameLoc]=statsValue[[1]][5]
+                            averageDev[nameLoc]=statsValue[[1]][2]
+                            standD[nameLoc]=statsValue[[1]][6]
+                    } else {
+                            sampleNum=sampleNum+1
+                            stats=scan(file=listFile[i],what="character",sep="\n")
+                            name=c(name,nameSample[[i]][1])
+                            align=c(align,"NA")
+                            duplicate=c(duplicate,"NA")
+                            statsLigne=stats[grep("WIDTH_OF_10_PERCENT",stats,fixed=T)+1]
+                            statsValue=strsplit(statsLigne,"\t",fixed=T)
+                            pairOrient=c(pairOrient,statsValue[[1]][8])
+                            medianInsS=c(medianInsS,statsValue[[1]][1])
+                            meanInsS=c(meanInsS,statsValue[[1]][5])
+                            averageDev=c(averageDev,statsValue[[1]][2])
+                            standD=c(standD,statsValue[[1]][6])
+                            MeanCov=c(MeanCov,"NA")
+                            base10=c(base10,"NA")
+                            base25=c(base25,"NA")
+                            base50=c(base50,"NA")
+                            base75=c(base75,"NA")
+                            base100=c(base100,"NA")
+                            base500=c(base500,"NA")
+                            base1000=c(base1000,"NA")
+                    }
+            }
+    }
+}
 
 ## get coverage metrics
 listFile=file.path(fileDir,list.files(fileDir,pattern=paste(paternFile[3],"$",sep=""),recursive=T))
@@ -152,6 +155,6 @@ if (length(listFile) > 0) {
 		}
 	}
 } 
-finalTable=cbind(name,align,align - duplicate,duplicate,duplicate / align * 100,pairOrient,medianInsS,meanInsS,averageDev,standD,wgMeanCov,wgbase10,wgbase25,wgbase50,wgbase75,wgbase100,wgbase500,ccdsMeanCov,ccdsbase10,ccdsbase25,ccdsbase50,ccdsbase75,ccdsbase100,ccdsbase500)
+finalTable=cbind(name,align,align - duplicate,duplicate,duplicate / align * 100,pairOrient,medianInsS,meanInsS,averageDev,standD,MeanCov,base10,base25,base50,base75,base100,base500)
 colnames(finalTable)=c("Sample","Mapped Reads","Not Duplicate Reads","Duplicate Reads","Duplicate %","Pair Orientation","Median Insert Size","Mean Insert Size","Average Deviation","Standard Deviation","Mean Coverage","%_bases_above_10","%_bases_above_25","%_bases_above_50","%_bases_above_75","%_bases_above_100","%_bases_above_500")
 write.table(finalTable,file=outputFile,sep="\t",row.names=F,col.names=T,quote=F)
