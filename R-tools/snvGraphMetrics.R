@@ -47,17 +47,21 @@ fileExtensionRetained=c("Summary.table.csv","TsTv.summary.csv","changeRate.tsv",
 
 cat("summary table ...\n")
 sumT=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[1],listFiles)],sep="\n",what='character')),",")
-valueSum=c("Number_of_variants_before_filter","Number_of_variants_filtered_out","Number_of_not_variants","Number_of_variants_processed","Number_of_known_variants")
+##change for new ouptu from snpEff
+##valueSum=c("Number_of_variants_before_filter","Number_of_variants_filtered_out","Number_of_not_variants","Number_of_variants_processed","Number_of_known_variants")
+valueSum=c("Number_of_variants_before_filter","Number_of_not_variants","Number_of_variants_processed","Number_of_known_variants")
 summaryTable=NULL
 for (i in 1:length(valueSum)){
-	summaryTable=rbind(summaryTable,sumT[[grep(valueSum[i],sumT)]][1:2])
+	try(summaryTable<-rbind(summaryTable,sumT[[grep(valueSum[i],sumT)]][1:2]),silent=TRUE)
 }
 summaryTable=gsub("<br>(i.e.non-emptyID)","",summaryTable,fixed=T)
-perS=list(c("%",as.character(round((as.numeric(summaryTable[2,2])/as.numeric(summaryTable[1,2]))*100,2))),c("%",as.character(round((as.numeric(summaryTable[3,2])/as.numeric(summaryTable[1,2]))*100,2))),c("%",as.character(round((as.numeric(summaryTable[5,2])/as.numeric(summaryTable[4,2]))*100,2))))
-summaryTable=rbind(summaryTable[1:2,],perS[[1]],summaryTable[3,],perS[[2]],summaryTable[4:5,],perS[[3]])
+##perS=list(c("%",as.character(round((as.numeric(summaryTable[2,2])/as.numeric(summaryTable[1,2]))*100,2))),c("%",as.character(round((as.numeric(summaryTable[3,2])/as.numeric(summaryTable[1,2]))*100,2))),c("%",as.character(round((as.numeric(summaryTable[5,2])/as.numeric(summaryTable[4,2]))*100,2))))
+perS=list(c("%",as.character(round((as.numeric(summaryTable[2,2])/as.numeric(summaryTable[1,2]))*100,2))),c("%",as.character(round((as.numeric(summaryTable[4,2])/as.numeric(summaryTable[3,2]))*100,2))))
+##summaryTable=rbind(summaryTable[1:2,],perS[[1]],summaryTable[3,],perS[[2]],summaryTable[4:5,],perS[[3]])
+summaryTable=rbind(summaryTable[1:2,],perS[[1]],summaryTable[3:4,],perS[[2]])
 sumTs=strsplit(gsub(" ","",scan(listFiles[grep(fileExtensionRetained[2],listFiles)],sep="\n",what='character')),",")
 for ( i in 1:length(sumTs)) {
-	summaryTable=rbind(summaryTable,sumTs[[i]][1:2])
+	try(summaryTable<-rbind(summaryTable,sumTs[[i]][1:2]),silent=TRUE)
 }
 colnames(summaryTable)=c("Summary_stats","Value")
 write.table(t(summaryTable),paste(outputBaseName,"SummaryTable.tsv",sep="."),sep="\t",col.names=F,row.names=F,quote=F)
@@ -233,53 +237,53 @@ cat("done\n")
 
 ## Coverage
 ##   * change it as a cumulative sum and bin the coverage value
-cat("Coverage ...\n")
-coverage=t(read.table(listFiles[grep(fileExtensionRetained[9],listFiles)],sep=",",header=T,check.names=F,row.names=1))
-write.table(t(coverage),paste(outputBaseName,"SNVCoverage.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
-jpeg(paste(outputBaseName,"SNVCoverage.jpeg",sep="."),800,800)
-par(las=2)
-par(mar=c(7,7,7,7))
-plot(-1000,-10000, xlim=c(0,max(as.numeric(rownames(coverage)))), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
-for (i in seq(0,100,by=10)) {
-	abline(h=i,col='grey',lty=3)
-}
-points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
-points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
-axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
-axis(1,at=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))),labels=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))))
-Map(function(x,y,z) 
-  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
-  seq(0,100,by=10),
-  rep(2,11),
-  as.character(round(seq(0,max(coverage)*1.2,length=11)))
-)
-par(las=0)
-axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
-mtext(side = 4, line = 5, "Variant count",col=2)
-dev.off()
-pdf(paste(outputBaseName,"SNVCoverage.pdf",sep="."),title="Variant count by coverage",paper='special')
-par(las=2)
-par(mar=c(7,7,7,7))
-plot(-1000,-10000, xlim=c(0,max(as.numeric(rownames(coverage)))), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
-for (i in seq(0,100,by=10)) {
-	abline(h=i,col='grey',lty=3)
-}
-points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
-points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
-axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
-axis(1,at=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))),labels=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))))
-Map(function(x,y,z) 
-  axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
-  seq(0,100,by=10),
-  rep(2,11),
-  as.character(round(seq(0,max(coverage)*1.2,length=11)))
-)
-par(las=0)
-axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
-mtext(side = 4, line = 5, "Variant count",col=2)
-dev.off()
-listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"SNVCoverage",sep="."))
-cat("done\n")
+# cat("Coverage ...\n")
+# coverage=t(read.table(listFiles[grep(fileExtensionRetained[9],listFiles)],sep=",",header=T,check.names=F,row.names=1))
+# write.table(t(coverage),paste(outputBaseName,"SNVCoverage.tsv",sep="."),sep="\t",col.names=T,row.names=F,quote=F)
+# jpeg(paste(outputBaseName,"SNVCoverage.jpeg",sep="."),800,800)
+# par(las=2)
+# par(mar=c(7,7,7,7))
+# plot(-1000,-10000, xlim=c(0,max(as.numeric(rownames(coverage)))), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+# for (i in seq(0,100,by=10)) {
+# 	abline(h=i,col='grey',lty=3)
+# }
+# points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
+# points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
+# axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+# axis(1,at=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))),labels=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))))
+# Map(function(x,y,z) 
+#   axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+#   seq(0,100,by=10),
+#   rep(2,11),
+#   as.character(round(seq(0,max(coverage)*1.2,length=11)))
+# )
+# par(las=0)
+# axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+# mtext(side = 4, line = 5, "Variant count",col=2)
+# dev.off()
+# pdf(paste(outputBaseName,"SNVCoverage.pdf",sep="."),title="Variant count by coverage",paper='special')
+# par(las=2)
+# par(mar=c(7,7,7,7))
+# plot(-1000,-10000, xlim=c(0,max(as.numeric(rownames(coverage)))), ylim=c(0,100),main="Variant count by coverage",xlab="Variant Quality",ylab="Cumulative variant sum",axes=F)
+# for (i in seq(0,100,by=10)) {
+# 	abline(h=i,col='grey',lty=3)
+# }
+# points(as.numeric(rownames(coverage)),cumsum(coverage)/sum(coverage)*100,type='b',cex=2,pch="*")
+# points(as.numeric(rownames(coverage)),(coverage/(max(coverage)*1.2))*100,type='b',lty=2,col=2,cex=2,pch="*")
+# axis(2,at=seq(0,100,by=10),labels=seq(0,100,by=10))
+# axis(1,at=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))),labels=round(unique(round(seq(0, max(as.numeric(rownames(coverage))), length = 11)/(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))),2)*(exp(ceiling(log10(max(as.numeric(rownames(coverage)))))*log(10))))))
+# Map(function(x,y,z) 
+#   axis(4,at=x,col.axis=y,labels=z,lwd=0,las=1),
+#   seq(0,100,by=10),
+#   rep(2,11),
+#   as.character(round(seq(0,max(coverage)*1.2,length=11)))
+# )
+# par(las=0)
+# axis(4,col=2,at=seq(0,100,by=10),labels=F,lty=2,col.ticks=2)
+# mtext(side = 4, line = 5, "Variant count",col=2)
+# dev.off()
+# listFileOutBasename=c(listFileOutBasename,paste(outputBaseName,"SNVCoverage",sep="."))
+# cat("done\n")
 
 ## InDel lengths
 ##   * barplot
