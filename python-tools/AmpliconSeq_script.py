@@ -38,7 +38,7 @@ def map_per_sample(sample,output):
     out_map.close()
 
 
-def krona(table_tax):
+def krona(table_tax, rep_out_f):
 
     """
     Create file for Krona chart.
@@ -55,8 +55,8 @@ def krona(table_tax):
 
     while sample_number < len(sample_name):
 
-        out_krona = open("alpha_diversity/krona_chart/"+sample_name[sample_number]+".txt","w")
-        file_name.append("alpha_diversity/krona_chart/"+sample_name[sample_number]+".txt")
+        out_krona = open(rep_out_f+sample_name[sample_number]+".txt","w")
+        file_name.append(rep_out_f+sample_name[sample_number]+".txt")
 
         i=2
         while i < len(lines):
@@ -331,7 +331,7 @@ def main(argv):
 
     mod=[]
     mod.append('\n%(prog)s -m map_build -s <samples>')
-    mod.append('%(prog)s -m krona -i <krona_file>')
+    mod.append('%(prog)s -m krona -i <krona_file> -j <output_directory>')
     mod.append('%(prog)s -m catenate_stat -i <filter_fasta> -j <filter_log>')
     mod.append('%(prog)s -m uchime -i <uchime_log> -j <flash_log> -s <samples>')
     mod.append('%(prog)s -m sample_name -i <otu_table_summary> -j <sample_directory>')
@@ -366,8 +366,8 @@ def main(argv):
 
     # Krona chart
 
-    if results.fct_value == 'krona' and results.input_value:
-        krona(results.input_value)
+    if results.fct_value == 'krona' and results.input_value and results.input2_value:
+        krona(results.input_value,results.input2_value)
 
     # Statistics at catenate step
 
