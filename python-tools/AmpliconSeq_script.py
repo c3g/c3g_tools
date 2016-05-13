@@ -49,14 +49,12 @@ def krona(table_tax, rep_out_f):
 
     word = lines[1].split()
     sample_name = word[2:-1]
-    file_name=[]
 
     sample_number = 0
 
     while sample_number < len(sample_name):
 
-        out_krona = open(rep_out_f+sample_name[sample_number]+".txt","w")
-        file_name.append(rep_out_f+sample_name[sample_number]+".txt")
+        out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt","w")
 
         i=2
         while i < len(lines):
@@ -406,6 +404,3 @@ def main(argv):
 
 if __name__ == "__main__":
     main(sys.argv[1:])
-
-
-    
