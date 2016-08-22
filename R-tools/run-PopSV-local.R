@@ -1,0 +1,81 @@
+## Test script for PopSV Analysis
+
+## Installation
+## devtools::install_github("jmonlong/PopSV")
+## Get Args
+args=commandArgs(TRUE)
+bam.file=args[1]
+outputDir=args[2]
+## Load PopSV
+library(PopSV)
+
+setwd(outputDir) ## set working directory path
+bam.files = read.table(bam.file, as.is=TRUE, header=TRUE)
+bin.size = 100
+
+
+## 1) Init file names and construct bins
+files.df = init.filenames(bam.files, code="example")
+bins.df = fragment.genome.hg19(bin.size)
+bins.df = subset(bins.df, chr==19 & start>50500275 & start<52501256)
+save(bins.df, file="bins.RData")
+
+## 2) Get GC content in each bin
+bins.df = getGC.hg19(bins.df)
+
+## 3-4) Get bin counts in each sample and GC correction
+bc.o = sapply(1:nrow(files.df), function(file.i){
+    bin.bam(files.df$bam[file.i], bins.df, files.df$bc[file.i])
+    correct.GC(files.df$bc.gz[file.i], bins.df, files.df$bc.gc[file.i])
+})
+
+## 5) Sample QC and reference sample definition
+## You may(should) have an idea of which samples can be used as reference (e.g. normal in a cancer project; controls in a case/control project; eventually every samples)
+ref.samples = subset(files.df, group=="normal")$sample ## Here I had this information in the original bam info file in a 'group' column.
+
+#### Notes:
+## If you want to use all the samples as reference, leave 'ref.samples' arguments empty/NULL.
+## If you have too many reference samples (lucky you) and want to find, say, 200 of them to use for the analysis, use 'nb.ref.samples=200' parameter in 'qc.samples(...)'
+
+
+bc.all.f = "bc-gcCor-all.tsv"
+pdf("sampQC.pdf")
+samp.qc.o = qc.samples(files.df, bins.df, ref.samples, outfile.prefix=bc.all.f)
+dev.off()
+
+
+## 6) Normalize reference samples
+bins.df = chunk.bin(bins.df, bg.chunk.size=2e4, sm.chunk.size=1e4, large.chr.chunks=TRUE) ## FTE: smaller chunks => 'bg.chunk.size=1e5' recommended
+save(bins.df, file="bins.RData")
+
+norm.o = lapply(unique(bins.df$sm.chunk), function(chunk.id){
+  bc.df = read.bedix(samp.qc.o$bc, subset(bins.df, bg.chunk==subset(bins.df, sm.chunk==chunk.id)$bg.chunk[1]))
+  tn.norm(bc.df, samp.qc.o$cont.sample, bins=subset(bins.df, sm.chunk==chunk.id)$bin)
+})
+out.files = paste("ref", c("bc-norm.tsv", "msd.tsv"), sep="-")
+file.remove(out.files)
+tmp = lapply(norm.o, function(res){
+    write.table(res$bc.norm, file=out.files[1], sep="\t", row.names=FALSE, quote=FALSE, append=file.exists(out.files[1]), col.names=!file.exists(out.files[1]))
+    write.table(res$norm.stats, file=out.files[2], sep="\t", row.names=FALSE, quote=FALSE, append=file.exists(out.files[2]), col.names=!file.exists(out.files[2]))
+})
+
+## 7) Compute Z-scores and test other samples
+
+#### Compute Z-scores in reference samples
+res.z = z.comp(out.files[1], ref.samples, out.files[2])
+write.split.samples(res.z, files.df, ref.samples, res.n=c("z","fc"), files.col=c("z","fc"), compress.index=TRUE)
+
+
+#### Normalization and Z-score computation for other samples
+cases.o = lapply(setdiff(files.df$sample, ref.samples), function(samp){
+  tn.test.sample(samp, files.df, samp.qc.o$cont.sample, samp.qc.o$bc, out.files[2])
+})
+
+
+## 8) Abnormal bin calling
+call.o = lapply(files.df$sample, function(samp){
+  call.abnormal.cov(files.df=files.df, samp=samp, out.pdf=paste0(samp,"/",samp,"-abCovCall.pdf"), FDR.th=.01, merge.cons.bins="stitch", z.th="sdest2N")
+})
+
+res.df = do.call(rbind, call.o)
+
