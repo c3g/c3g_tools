@@ -17,7 +17,6 @@ bin.size = 100
 ## 1) Init file names and construct bins
 files.df = init.filenames(bam.files, code="example")
 bins.df = fragment.genome.hg19(bin.size)
-bins.df = subset(bins.df, chr==19 & start>50500275 & start<52501256)
 save(bins.df, file="bins.RData")
 
 ## 2) Get GC content in each bin
