@@ -293,7 +293,7 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     out_to_R = open(os.path.join(rep_out_f,"OTU_%s_to_R.R" % (name_tax)),"w")
 
-    out_to_R.write('#!/usr/bin/Rscript\n')
+    out_to_R.write('#!/usr/bin/env Rscript\n')
     out_to_R.write('library("pheatmap")\n')
     out_to_R.write('library("RColorBrewer")\n')
     out_to_R.write('## if not installed, quickly add it as follows:\n')
