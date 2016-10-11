@@ -45,7 +45,7 @@ cellularity <- cint$max.cellularity
 ploidy <- cint$max.ploidy
 avg.depth.ratio <- mean(test$gc$adj[, 2])
 
-write(paste(sample_name,as.character(cellularity),as.character(ploidy),sep="\t"),paste(outputDir,paste(sample_name,"Ploidy_celularity.tsv",sep="."),sep="/")
+write(paste(sample_name,as.character(cellularity),as.character(ploidy),sep="\t"),paste(outputDir,paste(sample_name,"Ploidy_celularity.tsv",sep="."),sep="/"))
 
 pdf(paste(outputDir,paste(sample_name,"Ploidy_celularity.pdf",sep="."),sep="/"))
 par(mfrow = c(2,2))
@@ -69,11 +69,11 @@ mut.tab = na.exclude(do.call(rbind, test$mutations))
 mut.alleles = mufreq.bayes(mufreq = mut.tab$F, depth.ratio = mut.tab$adjusted.ratio, cellularity = cellularity, ploidy = ploidy, avg.depth.ratio = avg.depth.ratio)
 
 somatic.mut = cbind(mut.tab[,c("chromosome","position","F","adjusted.ratio", "mutation")],mut.alleles)
-write.table(somatic.mut,paste(outputDir,paste(sample_name,"Somatic_mutations.tsv",sep="."),sep="/"),quote=F.row.names=F,sep="\t")
+write.table(somatic.mut,paste(outputDir,paste(sample_name,"Somatic_mutations.tsv",sep="."),sep="/"),quote=F,row.names=F,sep="\t")
 
 ##Detect copy number variations
 seg.tab = na.exclude(do.call(rbind, test$segments))
 cn.alleles = baf.bayes(Bf = seg.tab$Bf, depth.ratio = seg.tab$depth.ratio, cellularity = cellularity, ploidy = ploidy, avg.depth.ratio = avg.depth.ratio)
 seg.tab <- cbind(seg.tab, cn.alleles)
-write.table(seg.tab,paste(outputDir,paste(sample_name,"Somatic_CNsegments.tsv",sep="."),sep="/"),quote=F.row.names=F,sep="\t")
+write.table(seg.tab,paste(outputDir,paste(sample_name,"Somatic_CNsegments.tsv",sep="."),sep="/"),quote=F,row.names=F,sep="\t")
 
