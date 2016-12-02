@@ -14,9 +14,11 @@ usage=function(errM) {
 	cat("       -h        : this help\n\n")
 	stop(errM)
 }
+
+
 set.seed(123456789)
 perform_dge=function(counts, groups, count_limit, path) {
-
+library(methods)
 # Retain row which have > count_limit
 
 counts<-round(counts[rowSums(counts) > count_limit,])

@@ -18,7 +18,7 @@ usage=function(errM) {
 
 set.seed(123456789)
 perform_dge=function(d, count_limit=1, path, numb, genSymbol) {
-
+library(methods)
 # Retain row which have > count_limit
 
 d<-d[rowSums(d$counts) > count_limit,]
