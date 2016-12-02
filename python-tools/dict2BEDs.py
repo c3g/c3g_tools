@@ -46,6 +46,8 @@ def main():
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
     parser.add_argument("-d", "--dict", help="Sequence Dictionary", type=file, required=True)
     parser.add_argument("-b", "--beds", help="Output BED files", nargs="+", required=True)
+    parser.add_argument("-c", "--chunk", help="chunk size in bp (optional ; Default no chunk)", type=int, default=0)
+    parser.add_argument("-o", "--overlap", help="chunk overlap in bp (optional ; Default no overlap)", type=int, default=0)
     args = parser.parse_args()
 
     ordered_dict = parse_dictionary(args.dict)
@@ -55,21 +57,32 @@ def main():
         total_size += seq.size
 
     currentSize = 0
-    targetSize = total_size / len(args.beds)
+    if len(args.beds) > 0:
+        targetSize = total_size / len(args.beds)
+    else :
+        targetSize = total_size 
     currentBED = open(args.beds.pop(0), "w")
     for seq in ordered_dict:
+        print targetSize
         if len(args.beds) != 0 and currentSize != 0 and currentSize+seq.size >= targetSize:
             currentBED.close()
             print('File ' + currentBED.name + ' ' + str(currentSize))
             currentBED = open(args.beds.pop(0), "w")
-            if len(args.beds) > 0:
-                targetSize = total_size / len(args.beds)
             currentSize = 0
-        currentBED.write(seq.name + '\t0\t' + str(seq.size) + '\n')
+        if args.chunk > 0 :
+            start = 0
+            end = start + args.chunk
+            while end < seq.size:
+                currentBED.write(seq.name + '\t'+str(start)+'\t' + str(end) + '\n')
+                start += (args.chunk - args.overlap)
+                end = start + args.chunk
+            currentBED.write(seq.name + '\t'+str(start)+'\t' + str(seq.size) + '\n')
+        else :
+            currentBED.write(seq.name + '\t0\t' + str(seq.size) + '\n')
         total_size -= seq.size
         currentSize += seq.size
     currentBED.close()
-    print('File2 ' + currentBED.name + ' ' + str(currentSize))
+    print('File ' + currentBED.name + ' ' + str(currentSize))
 
 def parse_dictionary(dict):
     ordered_dict=[]

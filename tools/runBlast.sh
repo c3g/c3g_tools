@@ -25,7 +25,7 @@ if [ ! -d $OUTPUT_DIR/ ]; then
   mkdir $OUTPUT_DIR
 fi
 
-Nseq=$(zcat $FILE_1 | awk ' { if ($0 == "+") { print $0} }' | wc -l) 
+Nseq=$(zcat $FILE_1 | awk ' { if (substr($0,0,1) == "+") { print $0} }' | wc -l) 
 echo "$sample has $Nseq sequences"
 #Get the threshold of random picking
 thrC=$(echo " scale=6; $SAMPLE_TO / $Nseq" | bc)

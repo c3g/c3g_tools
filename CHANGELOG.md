@@ -1,20 +1,30 @@
-29 tags, 274 commits
+29 tags, 278 commits
 
-HEAD        Tue Jan 26 10:55:10 2016 -0500        0 commits
+HEAD        Tue May 3 14:18:00 2016 -0400        10 commits
 
-2.1.5        Tue Jan 26 11:57:08 2016 -0500        8 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
-
+       39ac81a resolve conflicts
+       362d40a commiting changes prior to new release
+       1c82601 new CHANGELOG.md
        354ce82 corrected a bug in chipSeqgenerateAnnotationGraphs.R that caused a blank exon annotation graph - BFXDEV-501
        b0c47cc mugqic_tools - up-to-date CHANGELOG.md
        ab85318 ading a changelog to mugqic_tools (since v2.1.5)
 
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       df62d30 dict2bed - correct bug and add feature - BFXDEV-521
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
 
        96eadd0 R-tools - update SNV metrics to the new stats output fromat from snpEff - BFXDEV-490
        99b25f3 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        e45cf73 Rtools - remove typo and allow to skip insert size when working on single end library - BFXDEV-502
+
+2.1.5        Thu Jan 21 14:47:39 2016 -0500        2 commits
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
+
        b7a6767 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        6863562 perltools - remove # character from blast hit results - BFXDEV-500
 
