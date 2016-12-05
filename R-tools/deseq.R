@@ -3,6 +3,7 @@
 # Usage : Rscript deseq.R -d path_design -c path_rawcountfile -o output_dir
 
 library(DESeq)
+library(methods)
 
 # Usage
 
@@ -15,6 +16,7 @@ usage=function(errM) {
 
 	stop(errM)
 }
+
 set.seed(123456789)
 perform_dge=function(counts, groups, count_limit, path, locfit) {
 
@@ -54,7 +56,6 @@ d2<-d2[order(d2[,(ncol(d2)-1)]),]
 vecWrite<-c(1:4, (ncol(d2)-1), ncol(d2), 5:6, 7:(ncol(d2)-2))
 write.table(d2[,vecWrite], paste(path,"dge_results.csv",sep="/"), quote = FALSE, sep = "\t",  eol = "\n", na = "NA", dec = ".", row.names = FALSE, col.names = TRUE)
 }
-
 
 ##################################
 
@@ -142,7 +143,3 @@ for (i in 2:ncol(design)) {
 
        	perform_dge(current_countMatrix, group, count_limit, name_folder, locfit)
 }
-
-
-
- 
