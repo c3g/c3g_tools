@@ -12,10 +12,11 @@ usage=function(errM) {
 	cat("       -c        : raw count file\n")
 	cat("       -o        : output directory\n")
 	cat("       -h        : this help\n\n")
+
 	stop(errM)
 }
 set.seed(123456789)
-perform_dge=function(counts, groups, count_limit, path) {
+perform_dge=function(counts, groups, count_limit, path, locfit) {
 
 # Retain row which have > count_limit
 
@@ -27,10 +28,17 @@ cds<-newCountDataSet(counts, groups)
 cds<-estimateSizeFactors(cds)
 sizeFactors(cds)
 if(length(groups)==2) {
-cds<-estimateDispersions(cds, method="blind", sharingMode="fit-only")
-}
-else {
-cds<-estimateDispersions(cds, method="pooled")
+    if (locfit == 1) {
+        cds<-estimateDispersions(cds, method="blind", sharingMode="fit-only", fitType="local")
+    } else {
+        cds<-estimateDispersions(cds, method="blind", sharingMode="fit-only")
+    }
+} else {
+    if (locfit == 1) {
+        cds<-estimateDispersions(cds, method="pooled", fitType="local")
+    } else {
+        cds<-estimateDispersions(cds, method="pooled")
+    }
 }
 
 res<-nbinomTest(cds, "1", "2" )
@@ -57,17 +65,20 @@ fpath="."
 design_file=""
 rawcount_file=""
 out_path=""
+locfit=0
 ## get arg variables
 for (i in 1:length(ARG)) {
-	if (ARG[i] == "-d") {
-		design_file=ARG[i+1]
-	} else if (ARG[i] == "-c") {
-		rawcount_file=ARG[i+1]
-	} else if (ARG[i] == "-o") {
-		out_path=ARG[i+1]
-	} else if (ARG[i] == "-h") {
-		usage("")
-	}
+    if (ARG[i] == "-d") {
+        design_file=ARG[i+1]
+    } else if (ARG[i] == "-c") {
+        rawcount_file=ARG[i+1]
+    } else if (ARG[i] == "-o") {
+        out_path=ARG[i+1]
+    } else if (ARG[i] == "-l") {
+        locfit=1
+    } else if (ARG[i] == "-h") {
+        usage("")
+    }
 }
 ## check arg consitency
 if (!(file.exists(design_file))) {
@@ -129,7 +140,7 @@ for (i in 2:ncol(design)) {
 
 	# Perform gene differential expressoin
 
-       	perform_dge(current_countMatrix, group, count_limit, name_folder)
+       	perform_dge(current_countMatrix, group, count_limit, name_folder, locfit)
 }
 
 
