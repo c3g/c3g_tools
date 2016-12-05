@@ -12,6 +12,7 @@ usage=function(errM) {
 	cat("       -d        : design file\n")
 	cat("       -c        : raw count file\n")
 	cat("       -o        : output directory\n")
+        cat("       -l        : perform local fit instead of default parametric dispersion fit\n")
 	cat("       -h        : this help\n\n")
 
 	stop(errM)
