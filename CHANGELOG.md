@@ -1,9 +1,43 @@
-29 tags, 278 commits
+31 tags, 296 commits
 
-HEAD        Tue May 3 14:18:00 2016 -0400        10 commits
+HEAD        Mon Dec 5 15:13:38 2016 -0500        0 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+2.1.7        Fri Jan 20 16:11:20 2017 -0500        17 commits
 
+  Edouard Henrion <edouard.henrion@mcgill.ca>      8 commits
+
+       aa281e5 deseq.R - added '-l => local fit' parameter explanation to the tool manual
+       79f0a77 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       91e39ac DESeq.R - using 'locfit' to allow locat fit instead of just having to use parametric dispersion
+       0db2adb Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       1791395 DESeq & Edger - explicitely importing 'methods' library because Rscript does not
+       5f65c6e Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       0e76111 metaMArkerSeq - correct shebang for heatmap Rscript creation
+       7f27678 ampliconSeq - krona debug
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      6 commits
+
+       6f9a78d Add R script to filter Gene Titan processed data
+       a21249f Add bash script to process gene titan
+       1e3420b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       ff2f40d R-tools - remove typos in RunSequenza_analysis.R
+       18d5720 make runBlast to support no empty fastq 3rd line
+       822983a adding sequenza analysis script
+
+  robert.eveleigh@mcgill.ca <reveleig@abacus2.ferrier.genome.mcgill.ca>      1 commits
+
+       efc56e0 Adding vcf2bed.pl script for varscan2 of tumor_pair pipeline
+
+  Tushar Dubey <tdiitg@gmail.com>      2 commits
+
+       026180c removed subset line from script PopSV
+       8e0170c Added PopSV script(beta)
+
+2.1.6        Tue May 3 14:55:43 2016 -0400        11 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      7 commits
+
+       a929638 new CHANGE LOG prior to new release 2.1.6
        39ac81a resolve conflicts
        362d40a commiting changes prior to new release
        1c82601 new CHANGELOG.md

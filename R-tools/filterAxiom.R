@@ -209,8 +209,8 @@ plateQCmain=function(ARG) {
 		usagePlateQC("Error : output CEL file list not specified")
 	}
 	celList=read.table(cel_file,header=T)
-	cel_table=data.frame(Plate=dirname(as.vector(celList$cel_files)),Sample=basename(as.vector(celList$cel_files)) )
 	match_table=read.table(match_file,header=T)
+	cel_table=match_table[match_table$Sample %in% basename(as.vector(celList$cel_files)),]
 	cr_table=read.table(cr_file,header=T)
 	plate_to_keep=NULL
 	for (i in levels(cel_table$Plate)) {
@@ -227,9 +227,9 @@ plateQCmain=function(ARG) {
 		} else {
 			print(paste("Warning low pass sample rate (",as.character(plate_pass_rate),")  - Excluding plate",i,"\n",sep=" "))
 		}
-		sample_to_keep=cr_table$cel_files[cr_table$call_rate >= min_CR]
         }
-	celList_filtered=data.frame(cel_files=celList$cel_files[dirname(as.vector(celList$cel_files)) %in% plate_to_keep])
+        cf=cel_table[cel_table$Plate %in% plate_to_keep,2]
+	celList_filtered=data.frame(cel_files=celList[basename(as.vector(celList$cel_files)) %in% cf,])
 	write.table(celList_filtered,out_file,col.names=T,row.names=F,quote=F)
 }
 

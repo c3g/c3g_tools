@@ -48,6 +48,7 @@ def main():
     parser.add_argument("-b", "--beds", help="Output BED files", nargs="+", required=True)
     parser.add_argument("-c", "--chunk", help="chunk size in bp (optional ; Default no chunk)", type=int, default=0)
     parser.add_argument("-o", "--overlap", help="chunk overlap in bp (optional ; Default no overlap)", type=int, default=0)
+    parser.add_argument("-r", "--remove", help="remove alt contigs (optional ; Default all chromsomes + alts)", type=bool, default=0)
     args = parser.parse_args()
 
     ordered_dict = parse_dictionary(args.dict)
@@ -92,8 +93,15 @@ def parse_dictionary(dict):
         for line in dictFile:
             if line.startswith('@SQ'):
                 match = re.search('^\@SQ.+SN:([^\t]+)\t.*LN:(\d+)\t.*', line)
-                seq = Sequence(match.group(1), int(match.group(2)))
-                ordered_dict.append(seq)
+                if args.remove:
+                    if "_" in match.group(1) or "." in match.group(1):
+                        continue
+                    else:
+                        seq = Sequence(match.group(1), int(match.group(2)))
+                        ordered_dict.append(seq)
+                else:
+                    seq = Sequence(match.group(1), int(match.group(2)))
+                    ordered_dict.append(seq)
             elif startedSQ:
                 break
     #ordered_dict.sort(key=lambda x: x.size, reverse=True)
