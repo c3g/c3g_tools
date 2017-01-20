@@ -1,11 +1,13 @@
-31 tags, 296 commits
+31 tags, 298 commits
 
-HEAD        Mon Dec 5 15:13:38 2016 -0500        0 commits
+HEAD        Fri Jan 20 16:30:00 2017 -0500        0 commits
 
-2.1.7        Fri Jan 20 16:11:20 2017 -0500        17 commits
+2.1.7        Fri Jan 20 16:31:19 2017 -0500        19 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      8 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      10 commits
 
+       2689de8 MUGQIC_TOOLS - added fixVS2VCF.py to python-tools as it is needed in the tumor_pair pipeline
+       eae6a16 commit prior to mugqic_tools 2.1.7 release
        aa281e5 deseq.R - added '-l => local fit' parameter explanation to the tool manual
        79f0a77 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        91e39ac DESeq.R - using 'locfit' to allow locat fit instead of just having to use parametric dispersion
