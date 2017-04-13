@@ -18,6 +18,7 @@ function usage {
             echo "-A                    APT module (default mugqic_dev/AffymetricxApt/1.18.0)"
             echo "-M                    MUGQIC_TOOLS module (default mugqic_dev/mugqic_tools/2.1.6-beta)"
             echo "-R                    R module (default mugqic_dev/R_Bioconductor/3.2.3_3.2)"
+            echo "-T                    thread the processing using 10 parallel thread for long steps (need multicpu available)"
             echo ""
             echo "####Path and files"
             echo "-c                    cell files folder (Mandatory)"
@@ -51,6 +52,7 @@ PLATE_PASS_RATE_THRESHOLD=95
 AVERAGE_PLATE_CALL_RATE=98.5
 SPECIE=human
 OUTPUT_SNP_NUMBER=6
+THREADED=0
 
 if [ $# -lt 12 ]
 then
@@ -59,7 +61,7 @@ then
 fi
 
 ##get arguments
-while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:" OPT
+while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:T" OPT
 do
     case "$OPT" in
         A) 
@@ -108,6 +110,9 @@ do
         n)
            OUTPUT_SNP_NUMBER=$OPTARG
            ;;
+        T)
+           THREADED=1
+           ;;
         
     esac
 
@@ -120,10 +125,29 @@ REF_ID=$(date +"%F_%H-%M-%S")
 module load ${APT_MODULE} ${MUGIC_TOOLS_MODULE} ${R_MODULE}
 
 ## dev_argument
-#R_TOOLS=/lb/project/mugqic/projects/GeneTitan_BFXTD30/scripts/
+R_TOOLS=~/work/repo/mugqic_tools/R-tools/
 
 
 mkdir -p ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/  ${OUTDIR}/GENO_QC_${REF_ID}/
+
+#######
+#Step 0
+#output standard information in sumary files
+#######
+BATCH_NAME=$(basename CEL_PATH)
+echo "##########################" >  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Analysis summary" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Batch Name: ${BATCH_NAME}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Array Pacakage Name: ${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Array Type Name: ${AXIOM_ARRAY_NAME}" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Array Display Name: NA"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Workflow Type: Best Practices Workflow"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Date Created: ${REF_ID}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "" >>  ${OUTDIR}/summary_${REF_ID}.txt
+
+
+
 
 ########
 ## step1 Group Samples into Batches
@@ -136,9 +160,15 @@ echo "-----------------------"
 echo cel_files > ${OUTDIR}/cel_list1_${REF_ID}.txt
 ls ${CEL_PATH}/*.CEL >>  ${OUTDIR}/cel_list1_${REF_ID}.txt
 
-continue=$(wc -l ${OUTDIR}/cel_list1_${REF_ID}.txt | cut -d\  -f1)
+continue1=$(grep -v "^cel_files$" ${OUTDIR}/cel_list1_${REF_ID}.txt | wc -l | cut -d\  -f1)
 
-if [[ $continue == 1 ]]
+###sample summary
+echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Sample summary" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Number of imput sample: ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+
+if [[ $continue1 == 0 ]]
 then
 
 echo "No sample founds"
@@ -184,9 +214,13 @@ Rscript ${R_TOOLS}/filterAxiom.R -s genoqc \
 -d ${DQC_THRESHOLD} \
 -o ${OUTDIR}/cel_list2_${REF_ID}.txt
 
-continue=$(wc -l ${OUTDIR}/cel_list2_${REF_ID}.txt | cut -d\  -f1)
+continue2=$(grep -v "^cel_files$" ${OUTDIR}/cel_list2_${REF_ID}.txt | wc -l | cut -d\  -f1)
 
-if [[ $continue == 1 ]]
+###sample summary
+echo "Sample passing DQC: ${continue2} out of ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+
+
+if [[ $continue2 == 0 ]]
 then
 
 echo "No sample remains after DQC filtering"
@@ -200,17 +234,63 @@ fi
 echo "-----------------------"
 echo "Runing Step 4 - Call Rates QC"
 echo "-----------------------"
+
+if [[ $THREADED == 1 ]]
+then
+
+echo "multithreading 10cpu"
+
+for i in `seq 1 10` 
+do 
+
+echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step4_${REF_ID}.log \
+--arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
+--analysis-files-path ${ANALYSIS_FILES_DIR} \
+--out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
+--probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.step1.part${i}.ps \
+--cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt"
+
+
+mkdir -p ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}
+apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step4_${REF_ID}.log \
+--arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
+--analysis-files-path ${ANALYSIS_FILES_DIR} \
+--out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
+--probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.step1.part${i}.ps \
+--cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt & pids+=($!)
+
+
+done
+
+wait "${pids[@]}" 
+
+
+echo "CMD: Rscript ${R_TOOLS}/filterAxiom.R -s merge \
+-n 10 \
+-o ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}"
+
+
+Rscript ${R_TOOLS}/filterAxiom.R -s merge \
+-n 10 \
+-o ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}
+
+
+
+else
+
 echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step4_${REF_ID}.log \
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/ \
---cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt"
+--cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt"
 
 apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step4_${REF_ID}.log \
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/ \
---cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt
+--cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt
+
+fi
 
 ########
 ## Step 5: QC the Samples Based on QC Call Rate
@@ -232,9 +312,13 @@ Rscript ${R_TOOLS}/filterAxiom.R -s sampleqc \
 -d ${CALL_RATE_THRESHOLD} \
 -o ${OUTDIR}/cel_list3_${REF_ID}.txt
 
-continue=$(wc -l ${OUTDIR}/cel_list3_${REF_ID}.txt | cut -d\  -f1)
+continue5=$(grep -v "^cel_files$" ${OUTDIR}/cel_list3_${REF_ID}.txt | wc -l | cut -d\  -f1)
 
-if [[ $continue == 1 ]]
+###sample summary
+echo "Sample passing DQC and QC CR: ${continue5} out of ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+
+
+if [[ $continue5 == 0 ]]
 then
 
 echo "No sample remains after Sample QC"
@@ -252,7 +336,9 @@ echo "Runing Step 6 - Plates QC"
 echo "-----------------------"
 echo "CMD: Rscript ${R_TOOLS}/filterAxiom.R -s plateqc \
 -q ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.report.txt \
+-t ${OUTDIR}/GENO_QC_${REF_ID}/apt-geno-qc_${REF_ID}.txt \
 -c ${OUTDIR}/cel_list3_${REF_ID}.txt \
+-i ${OUTDIR}/cel_list2_${REF_ID}.txt \
 -d ${PLATE_PASS_RATE_THRESHOLD} \
 -a ${AVERAGE_PLATE_CALL_RATE} \
 -p ${MASTER_LIST} \
@@ -260,16 +346,25 @@ echo "CMD: Rscript ${R_TOOLS}/filterAxiom.R -s plateqc \
 
 Rscript ${R_TOOLS}/filterAxiom.R -s plateqc \
 -q ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.report.txt \
+-t ${OUTDIR}/GENO_QC_${REF_ID}/apt-geno-qc_${REF_ID}.txt \
 -c ${OUTDIR}/cel_list3_${REF_ID}.txt \
+-i ${OUTDIR}/cel_list2_${REF_ID}.txt \
 -d ${PLATE_PASS_RATE_THRESHOLD} \
 -a ${AVERAGE_PLATE_CALL_RATE} \
 -p ${MASTER_LIST} \
 -o ${OUTDIR}/cel_list4_${REF_ID}.txt
 
 
-continue=$(wc -l ${OUTDIR}/cel_list4_${REF_ID}.txt | cut -d\  -f1)
+continue6=$(grep -v "^cel_files$"  ${OUTDIR}/cel_list4_${REF_ID}.txt | wc -l | cut -d\  -f1)
+perc6=$(echo "scale=5; (${continue6} / ${continue1})*100" | bc -l)
+sampleNum=$(echo "${continue1} - ${continue6}" | bc -l)
 
-if [[ $continue == 1 ]]
+###sample summary
+echo "Sample passing DQC and QC CR and Plate QC: ${continue6} out of ${continue1} (${perc6}%)"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo "Sample did not pass: ${sampleNum}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
+
+
+if [[ $continue6 == 0 ]]
 then
 
 echo "No sample remains after Plate QC"
@@ -284,6 +379,54 @@ fi
 echo "-----------------------"
 echo "Runing Step 7 - Genotyping"
 echo "-----------------------"
+if [[ $THREADED == 1 ]]
+then
+
+echo "multithreading 10cpu"
+
+for i in `seq 1 10` 
+do 
+
+echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step7_${REF_ID}.${i}.log \
+--arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step2.${AXIOM_ARRAY_REV}.apt-axiom-genotype.Biallelic.AxiomGT1.apt2.xml \
+--analysis-files-path ${ANALYSIS_FILES_DIR} \
+--out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
+--summaries \
+--write-models \
+--cc-chp-output \
+--dual-channel-normalization TRUE \
+--probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.Biallelic.part${i}.ps \
+--cel-files ${OUTDIR}/cel_list4_${REF_ID}.txt"
+
+mkdir -p ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}
+apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step7_${REF_ID}.log \
+--arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step2.${AXIOM_ARRAY_REV}.apt-axiom-genotype.Biallelic.AxiomGT1.apt2.xml \
+--analysis-files-path ${ANALYSIS_FILES_DIR} \
+--out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
+--summaries \
+--write-models \
+--cc-chp-output \
+--dual-channel-normalization TRUE \
+--probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.Biallelic.part${i}.ps \
+--cel-files ${OUTDIR}/cel_list4_${REF_ID}.txt & pids+=($!)
+
+
+done
+
+wait "${pids[@]}" 
+
+echo "CMD: Rscript ${R_TOOLS}/filterAxiom.R -s merge \
+-n 10 \
+-o ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}"
+
+
+Rscript ${R_TOOLS}/filterAxiom.R -s merge \
+-n 10 \
+-o ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}
+
+
+else
+
 echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step7_${REF_ID}.log \
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step2.${AXIOM_ARRAY_REV}.apt-axiom-genotype.Biallelic.AxiomGT1.apt2.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
@@ -294,7 +437,6 @@ echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-
 --dual-channel-normalization TRUE \
 --cel-files ${OUTDIR}/cel_list4_${REF_ID}.txt"
 
-
 apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step7_${REF_ID}.log \
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step2.${AXIOM_ARRAY_REV}.apt-axiom-genotype.Biallelic.AxiomGT1.apt2.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
@@ -304,6 +446,8 @@ apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-ax
 --cc-chp-output \
 --dual-channel-normalization TRUE \
 --cel-files ${OUTDIR}/cel_list4_${REF_ID}.txt
+
+fi
 
 
 ########
