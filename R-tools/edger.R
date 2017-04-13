@@ -3,6 +3,7 @@
 # Usage : Rscript edger.R -d path_design -c path_rawcountfile -o output_dir
 
 library(edgeR)
+library(methods)
 
 # Usage
 
@@ -14,7 +15,6 @@ usage=function(errM) {
 	cat("       -h        : this help\n\n")
 	stop(errM)
 }
-
 
 set.seed(123456789)
 perform_dge=function(d, count_limit=1, path, numb, genSymbol) {
@@ -69,7 +69,6 @@ write.table(data_externe[order(data_externe[,5]),], paste(path,"edger_results.cs
 
 
 }
-
 
 ##################################
 

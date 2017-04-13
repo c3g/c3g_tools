@@ -239,6 +239,7 @@ plateQCmain=function(ARG) {
 	celList2=read.table(cel_file2,header=T)
 	cel_table2=data.frame(Plate=dirname(as.vector(celList2$cel_files)),Sample=basename(as.vector(celList2$cel_files)) )
 	match_table=read.table(match_file,header=T)
+	cel_table=match_table[match_table$Sample %in% basename(as.vector(celList$cel_files)),]
 	cr_table=read.table(cr_file,header=T)
 	dqc_table=read.table(dqc_file,header=T)
 	col=rep(0,dim(dqc_table)[1])
