@@ -234,6 +234,8 @@ plateQCmain=function(ARG) {
 		usagePlateQC("Error : output CEL file list not specified")
 	}
 	library(pheatmap)
+	library(ggplot2)
+	library(RColorBrewer)
 	celList=read.table(cel_file,header=T)
 	cel_table=data.frame(Plate=dirname(as.vector(celList$cel_files)),Sample=basename(as.vector(celList$cel_files)) )
 	celList2=read.table(cel_file2,header=T)
@@ -272,60 +274,16 @@ plateQCmain=function(ARG) {
 # 		}
 # 		pheatmap(qc_cr_plate,cluster_rows = F,,cluster_cols =F,main=i,display_numbers=T)
 		
-
-library(ggplot2)
-
-library(RColorBrewer)
-
-​
-
-df = read.table("~/sftp/abacus/lb/project/mugqic/forJean_Axiom.tsv", header=TRUE, as.is=TRUE)
-
-​
-
-## Split column
-
-df$y = gsub("(.)..", "\\1", df$affymetrix.plate.peg.wellposition)
-
-df$x = gsub(".(..)", "\\1", df$affymetrix.plate.peg.wellposition)
-
-​
-
-## Reverse Y label order
-
-df$y = factor(df$y, levels=sort(unique(df$y), decreasing=TRUE))
-
-​
-
-## Default
-
-ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile()
-
-​
-
-## Custom midpoint for the scale
-
-ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradient2(midpoint=98)
-
-​
-
-## Other palettes
-
-ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(colours = terrain.colors(10))
-
-​
-
-## Winner
-
-pal = brewer.pal(n = 12, name =  "RdYlBu")
-
-pal = c(rep(pal[1],6), pal)
-
-ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle("Heatmap") + xlab("") + ylab("")
-
-​
-
-
+		df = data.frame(cr_table$call_rate,cr_table$affymetrix.plate.peg.wellposition)
+		## Split column
+		df$y = gsub("(.)..", "\\1", df$affymetrix.plate.peg.wellposition)
+		df$x = gsub(".(..)", "\\1", df$affymetrix.plate.peg.wellposition)
+		## Reverse Y label order
+		df$y = factor(df$y, levels=sort(unique(df$y), decreasing=TRUE))
+		## Plot
+		pal = brewer.pal(n = 12, name =  "RdYlBu")
+		pal = c(rep(pal[1],6), pal)
+		ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num
 		filtered_cel_num=dim(cel_table[cel_table$Plate == i ,])[1]
