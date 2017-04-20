@@ -55,8 +55,8 @@ exit 0
 
 
 ##Default args
-APT_MODULE=mugqic_dev/AffymetricxApt/1.18.0
-MUGIC_TOOLS_MODULE=mugqic_dev/mugqic_tools/2.1.7
+APT_MODULE=mugqic/AffymetrixApt/1.19.0
+MUGIC_TOOLS_MODULE=mugqic/mugqic_tools/2.1.8
 #r module should have the SNPolisher package installed
 R_MODULE=mugqic_dev/R_Bioconductor/3.2.3_3.2
 DQC_THRESHOLD=0.82
@@ -87,56 +87,72 @@ then
 fi
 
 ##get arguments
-while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:T:b:e:f:g:i:j:k:l:n:q:u:v" OPT
+while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:b:e:f:g:i:j:k:l:n:q:u:v:T:h" OPT
 do
     case "$OPT" in
         A) 
            APT_MODULE=$OPTARG
+           #echo "set-up APT module as: $APT_MODULE"
            ;;
 	M) 
            MUGIC_TOOLS_MODULE=$OPTARG
+           #echo "set-up mugqic_tools module as: $MUGIC_TOOLS_MODULE"
            ;;
         R)
            R_MODULE=$OPTARG
+           #echo "set-up R module as: $R_MODULE"
            ;;
         c)
            CEL_PATH=$OPTARG
+           #echo "set-up cell path as: $CEL_PATH"
            ;;
         l)
            ANALYSIS_FILES_DIR=$OPTARG
+           #echo "set-up analysis file directory as: $ANALYSIS_FILES_DIR"
            ;;
         o)
            OUTDIR=$OPTARG
+           #echo "set-up output directory as: $OUTDIR"
            ;;
         m)
            MASTER_LIST=$OPTARG
+           #echo "set-up master list file as: $MASTER_LIST"
            ;;
         a)
            AXIOM_ARRAY_NAME=$OPTARG
+           #echo "set-up Axiom array name as: $AXIOM_ARRAY_NAME"
            ;;
         r)
            AXIOM_ARRAY_REV=$OPTARG
+           #echo "set-up Axiom array revision version as: $AXIOM_ARRAY_REV"
            ;;
         d)
            DQC_THRESHOLD=$OPTARG
+           #echo "set-up DishQC as: $DQC_THRESHOLD"
            ;;
         s)
           CALL_RATE_THRESHOLD=$OPTARG
+          #echo "set-up call rate threshold as: $CALL_RATE_THRESHOLD"
            ;;
         p)
            PLATE_PASS_RATE_THRESHOLD=$OPTARG
+           #echo "set-up Plate pass rate threshold as: $PLATE_PASS_RATE_THRESHOLD"
            ;;
         C)
            AVERAGE_PLATE_CALL_RATE=$OPTARG
+           #echo "set-up APT module as: $"
            ;;
         S) 
            SPECIE=$OPTARG
+           #echo "set-up APT module as: $"
            ;;
         n)
            OUTPUT_SNP_NUMBER=$OPTARG
+           #echo "set-up APT module as: $"
            ;;
-        T)
+	T)
            THREADED=1
+           echo "set-up multithread mode as: on (10 threads) "
            ;;
         b)
            CR_CUTOFF=$OPTARG
@@ -174,6 +190,10 @@ do
 	v)
            RECOMMENDED=$OPTARG
            ;;
+	h)
+           usage
+           exit
+           ;;
         
     esac
 
@@ -188,6 +208,11 @@ module load ${APT_MODULE} ${MUGIC_TOOLS_MODULE} ${R_MODULE}
 ## dev_argument
 R_TOOLS=~/work/repo/mugqic_tools/R-tools/
 
+echo "$THREADED"
+if [[ $THREADED == 1 ]]
+then
+echo "Running multithreaded"
+fi
 
 mkdir -p ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/  ${OUTDIR}/GENO_QC_${REF_ID}/
 
@@ -309,7 +334,7 @@ echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
 --probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.step1.part${i}.ps \
---cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt"
+--cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt"
 
 
 mkdir -p ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}
@@ -318,7 +343,7 @@ apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-ax
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/tmp${i}/ \
 --probeset-ids ${ANALYSIS_FILES_DIR}/chunked_10_ps/${AXIOM_ARRAY_NAME}.${AXIOM_ARRAY_REV}.step1.part${i}.ps \
---cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt & pids+=($!)
+--cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt & pids+=($!)
 
 
 done
@@ -343,13 +368,13 @@ echo "CMD: apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/ \
---cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt"
+--cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt"
 
 apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-axiom.step4_${REF_ID}.log \
 --arg-file ${ANALYSIS_FILES_DIR}/${AXIOM_ARRAY_NAME}_96orMore_Step1.${AXIOM_ARRAY_REV}.apt-probeset-genotype.AxiomGT1.xml \
 --analysis-files-path ${ANALYSIS_FILES_DIR} \
 --out-dir ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/ \
---cel-files ${OUTDIR}/cel_list1_${REF_ID}.txt
+--cel-files ${OUTDIR}/cel_list2_${REF_ID}.txt
 
 fi
 

@@ -242,13 +242,13 @@ plateQCmain=function(ARG) {
 	cel_table2=data.frame(Plate=dirname(as.vector(celList2$cel_files)),Sample=basename(as.vector(celList2$cel_files)) )
 	match_table=read.table(match_file,header=T)
 	cel_table=match_table[match_table$Sample %in% basename(as.vector(celList$cel_files)),]
+	cel_table$Plate=as.factor(as.vector(cel_table$Plate))
 	cr_table=read.table(cr_file,header=T)
-	dqc_table=read.table(dqc_file,header=T)
-	col=rep(0,dim(dqc_table)[1])
+	dqc_table_tmp=read.table(dqc_file,header=T)
+	dqc_table=dqc_table_tmp[dqc_table_tmp$cel_files %in% cr_table$cel_files,]
+
+	col=rep(0,dim(cr_table)[1])
 	shap=rep(0,dim(cr_table)[1])
-	if (length(col) != length(shap)) {
-	  stop("different number of sample between DQC and QC_CR")
-	}
 	ct=1
 	for (i in levels(cr_table$computed_gender)) {
 	  shap[cr_table$computed_gender == i]=ct
@@ -256,8 +256,8 @@ plateQCmain=function(ARG) {
 	}
 	plate_to_keep=NULL
 	sampleQC_metrics=data.frame(Plate_Barcode=levels(cel_table$Plate),Result=".",Initial_Sample_Number=0,sample_failing_DQC=0,sample_failing_QC_CR=0,sample_pass=0,percent_passed=0,average_CR_passed_sample=0)
-	jpeg(paste(dirname(cr_file),"Qc_Call_Rate_byPlate.jpg",sep="/"))
-	layout(matrix(1:length(levels(cel_table$Plate)),ncol=1))
+	#jpeg(paste(dirname(cr_file),"Qc_Call_Rate_byPlate.jpg",sep="/"))
+	#layout(matrix(1:length(levels(cel_table$Plate)),ncol=1))
 	ct=1
 	for (i in levels(cel_table$Plate)) {
 		jpeg(paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),800,400)
@@ -274,15 +274,15 @@ plateQCmain=function(ARG) {
 # 		}
 # 		pheatmap(qc_cr_plate,cluster_rows = F,,cluster_cols =F,main=i,display_numbers=T)
 		
-		df = data.frame(cr_table$call_rate,cr_table$affymetrix.plate.peg.wellposition)
+		df = data.frame(call_rate=cr_table$call_rate,affymetrix.plate.peg.wellposition=cr_table$affymetrix.plate.peg.wellposition)
 		## Split column
 		df$y = gsub("(.)..", "\\1", df$affymetrix.plate.peg.wellposition)
 		df$x = gsub(".(..)", "\\1", df$affymetrix.plate.peg.wellposition)
 		## Reverse Y label order
 		df$y = factor(df$y, levels=sort(unique(df$y), decreasing=TRUE))
 		## Plot
-		pal = brewer.pal(n = 12, name =  "RdYlBu")
-		pal = c(rep(pal[1],6), pal)
+		pal = brewer.pal(n = 10, name =  "RdYlBu")
+		pal = c(rep(pal[1],4), pal)
 		ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num
