@@ -87,68 +87,68 @@ then
 fi
 
 ##get arguments
-while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:b:e:f:g:i:j:k:l:n:q:u:v:T:h" OPT
+while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:b:e:f:g:i:j:k:l:n:q:u:v:Th" OPT
 do
     case "$OPT" in
         A) 
            APT_MODULE=$OPTARG
-           #echo "set-up APT module as: $APT_MODULE"
+           echo "set-up APT module as: $APT_MODULE"
            ;;
 	M) 
            MUGIC_TOOLS_MODULE=$OPTARG
-           #echo "set-up mugqic_tools module as: $MUGIC_TOOLS_MODULE"
+           echo "set-up mugqic_tools module as: $MUGIC_TOOLS_MODULE"
            ;;
         R)
            R_MODULE=$OPTARG
-           #echo "set-up R module as: $R_MODULE"
+           echo "set-up R module as: $R_MODULE"
            ;;
         c)
            CEL_PATH=$OPTARG
-           #echo "set-up cell path as: $CEL_PATH"
+           echo "set-up cell path as: $CEL_PATH"
            ;;
         l)
            ANALYSIS_FILES_DIR=$OPTARG
-           #echo "set-up analysis file directory as: $ANALYSIS_FILES_DIR"
+           echo "set-up analysis file directory as: $ANALYSIS_FILES_DIR"
            ;;
         o)
            OUTDIR=$OPTARG
-           #echo "set-up output directory as: $OUTDIR"
+           echo "set-up output directory as: $OUTDIR"
            ;;
         m)
            MASTER_LIST=$OPTARG
-           #echo "set-up master list file as: $MASTER_LIST"
+           echo "set-up master list file as: $MASTER_LIST"
            ;;
         a)
            AXIOM_ARRAY_NAME=$OPTARG
-           #echo "set-up Axiom array name as: $AXIOM_ARRAY_NAME"
+           echo "set-up Axiom array name as: $AXIOM_ARRAY_NAME"
            ;;
         r)
            AXIOM_ARRAY_REV=$OPTARG
-           #echo "set-up Axiom array revision version as: $AXIOM_ARRAY_REV"
+           echo "set-up Axiom array revision version as: $AXIOM_ARRAY_REV"
            ;;
         d)
            DQC_THRESHOLD=$OPTARG
-           #echo "set-up DishQC as: $DQC_THRESHOLD"
+           echo "set-up DishQC as: $DQC_THRESHOLD"
            ;;
         s)
           CALL_RATE_THRESHOLD=$OPTARG
-          #echo "set-up call rate threshold as: $CALL_RATE_THRESHOLD"
+          echo "set-up call rate threshold as: $CALL_RATE_THRESHOLD"
            ;;
         p)
            PLATE_PASS_RATE_THRESHOLD=$OPTARG
-           #echo "set-up Plate pass rate threshold as: $PLATE_PASS_RATE_THRESHOLD"
+           echo "set-up Plate pass rate threshold as: $PLATE_PASS_RATE_THRESHOLD"
            ;;
         C)
            AVERAGE_PLATE_CALL_RATE=$OPTARG
-           #echo "set-up APT module as: $"
+           echo "set-up Average Plate Call Rate Threshold as: $AVERAGE_PLATE_CALL_RATE"
            ;;
         S) 
            SPECIE=$OPTARG
-           #echo "set-up APT module as: $"
+           echo "set-up specie as: $PECIE"
            ;;
         n)
            OUTPUT_SNP_NUMBER=$OPTARG
-           #echo "set-up APT module as: $"
+           echo "set-upNumber of SNP in output as: $OUTPUT_SNP_NUMBER"
            ;;
 	T)
            THREADED=1
