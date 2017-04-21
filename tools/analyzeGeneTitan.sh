@@ -696,4 +696,7 @@ echo "priority-order: $PRIORITY" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "recommended: $RECOMMENDED" >>  ${OUTDIR}/summary_${REF_ID}.txt
 
 
+echo "Analysis completed" 
+
+
 

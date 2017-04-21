@@ -284,6 +284,7 @@ plateQCmain=function(ARG) {
 		pal = brewer.pal(n = 10, name =  "RdYlBu")
 		pal = c(rep(pal[1],4), pal)
 		ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
+		dev.off()
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num
 		filtered_cel_num=dim(cel_table[cel_table$Plate == i ,])[1]
@@ -310,8 +311,7 @@ plateQCmain=function(ARG) {
 		sample_to_keep=cr_table$cel_files[cr_table$call_rate >= min_CR]
 		ct=ct+1
         }
-        dev.off()
-        jpeg(paste(dirname(cr_file),"Qc_Call_Rate_vs DQC.jpg",sep="/"))
+        jpeg(paste(dirname(cr_file),"Qc_Call_Rate_vs_DQC.jpg",sep="/"))
         par(xpd=TRUE)
         par(mar=c(5, 4, 4, 12))
         plot(x=dqc_table$axiom_dishqc_DQC[match(dqc_table$cel_files,cr_table$cel_files)],y=cr_table$call_rate,col=col,pch=15+shap[match(dqc_table$cel_files,cr_table$cel_files)],xlab="Dish QC",ylab="QC Call Rate",main="QC Call Rate vs. Dish QC")
