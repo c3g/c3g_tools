@@ -538,7 +538,6 @@ fi
 continue7=$(grep "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.calls.txt | tr '\t' '\n' | grep -v  "probeset_id"  | wc -l)
 echo "Number of Samples genotyped: ${continue7}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 average_call_rate=$(grep -v "^#" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.report.txt | awk ' BEGIN {cr=0;ln=0} NR > 1 {cr+=$3;ln++} END { print cr/ln} ')
-)
 echo "Average QC CR for the passing samples: ${average_call_rate}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 gender=$(grep -v "^#" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.report.txt | awk ' BEGIN {ma=0;fe=0;unk=0} NR > 1 {if ($2 == "male") {ma++} else if ($2 == "female"){fe++} else {unk++}} END { print "male=" ma " female=" fe " unknown=" unk} ')
 echo "Gender Calls Counts: ${gender}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
