@@ -55,7 +55,7 @@ exit 0
 
 
 ##Default args
-APT_MODULE=mugqic/AffymetrixApt/1.19.0
+APT_MODULE=mugqic/AffymetrixApt/1.18.0
 MUGIC_TOOLS_MODULE=mugqic/mugqic_tools/2.1.8
 #r module should have the SNPolisher package installed
 R_MODULE=mugqic_dev/R_Bioconductor/3.2.3_3.2
