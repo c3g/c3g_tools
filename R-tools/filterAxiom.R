@@ -286,7 +286,7 @@ plateQCmain=function(ARG) {
 		pal = brewer.pal(n = 10, name =  "RdYlBu")
 		pal = c(rep(pal[1],4), pal)
 		p = ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
-		ggsave(filename=paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"), plot=p, width=800,height=400)
+		ggsave(filename=paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"), plot=p)
 		#dev.off()
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num

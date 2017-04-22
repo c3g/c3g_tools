@@ -206,7 +206,7 @@ REF_ID=$(date +"%F_%H-%M-%S")
 module load ${APT_MODULE} ${MUGIC_TOOLS_MODULE} ${R_MODULE}
 
 ## dev_argument
-R_TOOLS=~/work/repo/mugqic_tools/R-tools/
+#R_TOOLS=~/work/repo/mugqic_tools/R-tools/
 
 echo "$THREADED"
 if [[ $THREADED == 1 ]]
