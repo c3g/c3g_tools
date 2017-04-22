@@ -261,6 +261,7 @@ plateQCmain=function(ARG) {
 	#layout(matrix(1:length(levels(cel_table$Plate)),ncol=1))
 	ct=1
 	for (i in levels(cel_table$Plate)) {
+		print(paste("ploting plate",i,"\n"))
 		jpeg(paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),800,400)
 		col[dqc_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])]=ct
 # 		qc_cr_plate=matrix(rep(NA,12*8),ncol=12)
