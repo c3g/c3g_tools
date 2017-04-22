@@ -36,6 +36,7 @@ usageSampleQC=function(errM) {
 
 usagePlateQC=function(errM) {
 	cat("\nUsage : Rscript filterAxiom.R -s plateqc [option] <Value>\n")
+	cat("       -q        : QC call rate file\n")
 	cat("       -c        : CEL files list to be filtered\n")
 	cat("       -i        : intermediate CEL files list after DQC step\n")
 	cat("       -a        : minimal average call rate value of passing sample (default 98.5)\n")
