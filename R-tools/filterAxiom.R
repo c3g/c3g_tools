@@ -261,8 +261,8 @@ plateQCmain=function(ARG) {
 	#layout(matrix(1:length(levels(cel_table$Plate)),ncol=1))
 	ct=1
 	for (i in levels(cel_table$Plate)) {
-		print(paste("ploting plate",i,"\n"))
-		jpeg(paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),800,400)
+		print(paste("ploting plate",i))
+		#jpeg(paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),800,400)
 		col[dqc_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])]=ct
 # 		qc_cr_plate=matrix(rep(NA,12*8),ncol=12)
 # 		colnames(qc_cr_plate)=c("01","02","03","04","05","06","07","08","09","10","11","12")
@@ -285,8 +285,9 @@ plateQCmain=function(ARG) {
 		## Plot
 		pal = brewer.pal(n = 10, name =  "RdYlBu")
 		pal = c(rep(pal[1],4), pal)
-		ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
-		dev.off()
+		p = ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
+		ggsave(filename=paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"), plot=p, width=800,height=400)
+		#dev.off()
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num
 		filtered_cel_num=dim(cel_table[cel_table$Plate == i ,])[1]
