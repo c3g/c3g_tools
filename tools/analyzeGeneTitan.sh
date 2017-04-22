@@ -643,7 +643,7 @@ Rscript ${R_TOOLS}/filterAxiom.R -s plotSNP \
 echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "SNP Metrics Summary" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
-phr=$(grep -c -v "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/PolyHighResolution.ps))
+phr=$(grep -c -v "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/PolyHighResolution.ps)
 nmh=$(grep -c -v "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/NoMinorHom.ps)
 mhr=$(grep -c -v "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/MonoHighResolution.ps)
 other=$(grep -c -v "^probeset_id" ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/Other.ps)
