@@ -657,9 +657,9 @@ echo -e "ConversionType\tCount\tPercentage"
 perPHR=$(echo "scale=5; (${phr} / ${tot})*100" | bc -l)
 echo -e "PolyHighResolution\t${phr}\t${perPHR}" >>  ${OUTDIR}/summary_${REF_ID}.txt
 perNMH=$(echo "scale=5; (${nmh} / ${tot})*100" | bc -l)
-echo -e "NoMinorHomt\t${nmh}\t${perMNH}" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo -e "NoMinorHomt\t${nmh}\t${perNMH}" >>  ${OUTDIR}/summary_${REF_ID}.txt
 perMHR=$(echo "scale=5; (${mhr} / ${tot})*100" | bc -l)
-echo -e "MonoHighResolution\t${mhr}\tperMHR" >>  ${OUTDIR}/summary_${REF_ID}.txt
+echo -e "MonoHighResolution\t${mhr}\t${perMHR}" >>  ${OUTDIR}/summary_${REF_ID}.txt
 perOTHER=$(echo "scale=5; (${other} / ${tot})*100" | bc -l)
 echo -e "Other\t${other}\t${perOTHER}" >>  ${OUTDIR}/summary_${REF_ID}.txt
 perCRBT=$(echo "scale=5; (${crbt} / ${tot})*100" | bc -l)
