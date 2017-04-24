@@ -1,6 +1,35 @@
-31 tags, 298 commits
+32 tags, 316 commits
 
-HEAD        Fri Jan 20 16:30:00 2017 -0500        0 commits
+HEAD        Sat Apr 22 14:48:35 2017 -0400        0 commits
+
+2.1.8        Mon Apr 24 09:55:28 2017 -0400        18 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       edfb29a commiting the CHANGELOG before release
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      10 commits
+
+       9ec9b5f correct ggplot
+       e638845 correct ggplot
+       eafb4fc correct typo
+       7f025be correct typo
+       1b9f6b8 correct typo
+       9f98c73 correct typo
+       dd2ba39 correct typo
+       170f2b4 correct typo
+       5e77a35 correct typo
+       9ccb828 correct module incompatibility
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      7 commits
+
+       70af3b5 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       69cce81 update gene titan
+       068bd1b Imporve Genetitan processing script
+       4c049c5 Imporve Genetitan processing script
+       446f05d resolve conflict merging
+       94240fc Updat Axiom tools for more QC
+       3f461c4 add somatic signature R tools
 
 2.1.7        Fri Jan 20 16:31:19 2017 -0500        19 commits
 
