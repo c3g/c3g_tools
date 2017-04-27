@@ -237,6 +237,7 @@ plateQCmain=function(ARG) {
 	library(pheatmap)
 	library(ggplot2)
 	library(RColorBrewer)
+	library(Cairo)
 	celList=read.table(cel_file,header=T)
 	cel_table=data.frame(Plate=dirname(as.vector(celList$cel_files)),Sample=basename(as.vector(celList$cel_files)) )
 	celList2=read.table(cel_file2,header=T)
@@ -262,21 +263,9 @@ plateQCmain=function(ARG) {
 	ct=1
 	for (i in levels(cel_table$Plate)) {
 		print(paste("ploting plate",i))
-		#jpeg(paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),800,400)
+		CairoJPEG(filename=paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"),width=800,height=400)
 		col[dqc_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])]=ct
-# 		qc_cr_plate=matrix(rep(NA,12*8),ncol=12)
-# 		colnames(qc_cr_plate)=c("01","02","03","04","05","06","07","08","09","10","11","12")
-# 		rownames(qc_cr_plate)=c("A","B","C","D","E","F","G","H")
-# 		for (j in 1:12) {
-# 		  for (k in 1:8) {
-# 		    if (sum((cr_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])) & (cr_table$affymetrix.plate.peg.wellposition == paste(rownames(qc_cr_plate)[k],colnames(qc_cr_plate)[j],sep=""))) == 1) {
-# 		      qc_cr_plate[k,j]=cr_table$call_rate[(cr_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])) & (cr_table$affymetrix.plate.peg.wellposition == paste(rownames(qc_cr_plate)[k],colnames(qc_cr_plate)[j],sep=""))]
-# 		     }
-# 		  }
-# 		}
-# 		pheatmap(qc_cr_plate,cluster_rows = F,,cluster_cols =F,main=i,display_numbers=T)
-		
-		df = data.frame(call_rate=cr_table$call_rate,affymetrix.plate.peg.wellposition=cr_table$affymetrix.plate.peg.wellposition)
+		df = data.frame(call_rate=cr_table$call_rate[cr_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])],affymetrix.plate.peg.wellposition=cr_table$affymetrix.plate.peg.wellposition[cr_table$cel_files %in% as.vector(match_table[match_table$Plate == i,2])])
 		## Split column
 		df$y = gsub("(.)..", "\\1", df$affymetrix.plate.peg.wellposition)
 		df$x = gsub(".(..)", "\\1", df$affymetrix.plate.peg.wellposition)
@@ -284,10 +273,10 @@ plateQCmain=function(ARG) {
 		df$y = factor(df$y, levels=sort(unique(df$y), decreasing=TRUE))
 		## Plot
 		pal = brewer.pal(n = 10, name =  "RdYlBu")
-		pal = c(rep(pal[1],4), pal)
-		p = ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
-		ggsave(filename=paste(dirname(cr_file),paste("Qc_Call_Rate_byPlate",i,"jpg",sep="."),sep="/"), plot=p)
-		#dev.off()
+		#pal = c(rep(pal[1],4), pal)
+		p = ggplot(df, aes(x=x, y=y, fill=call_rate)) + geom_tile() + scale_fill_gradientn(name="Call Rate", colours = pal,limits=c(50,100),values=c(0,0.92,seq(0.93,1,length.out=8))) + geom_text(aes(label=round(call_rate,2))) + ggtitle(i) + xlab("") + ylab("")
+		print(p)
+		dev.off()
 		total_cel_num=dim(match_table[match_table$Plate == i ,])[1]
 		sampleQC_metrics$Initial_Sample_Number[sampleQC_metrics$Plate_Barcode == i]=total_cel_num
 		filtered_cel_num=dim(cel_table[cel_table$Plate == i ,])[1]
@@ -318,8 +307,8 @@ plateQCmain=function(ARG) {
         par(xpd=TRUE)
         par(mar=c(5, 4, 4, 12))
         plot(x=dqc_table$axiom_dishqc_DQC[match(dqc_table$cel_files,cr_table$cel_files)],y=cr_table$call_rate,col=col,pch=15+shap[match(dqc_table$cel_files,cr_table$cel_files)],xlab="Dish QC",ylab="QC Call Rate",main="QC Call Rate vs. Dish QC")
-        legend(1,100,legend=levels(cel_table$Plate),col=uniq(sort(col)),fill=T)
-        legend(1.1,98,legend=levels(cr_table$computed_gender),pch=16:15+length(levels(cr_table$computed_gender)))
+        legend(1.01,100,legend=levels(cel_table$Plate),fill=unique(sort(col)))
+        legend(1.01,98,legend=levels(cr_table$computed_gender),pch=16:(15+length(levels(cr_table$computed_gender))))
         dev.off()
 	celList_filtered=data.frame(cel_files=celList$cel_files[dirname(as.vector(celList$cel_files)) %in% plate_to_keep])
 	write.table(celList_filtered,out_file,col.names=T,row.names=F,quote=F)
