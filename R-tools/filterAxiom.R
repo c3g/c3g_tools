@@ -303,7 +303,7 @@ plateQCmain=function(ARG) {
 		sample_to_keep=cr_table$cel_files[cr_table$call_rate >= min_CR]
 		ct=ct+1
         }
-        jpeg(paste(dirname(cr_file),"Qc_Call_Rate_vs_DQC.jpg",sep="/"))
+        jpeg(paste(dirname(cr_file),"Qc_Call_Rate_vs_DQC.jpg",sep="/"),res=300)
         par(xpd=TRUE)
         par(mar=c(5, 4, 4, 12))
         plot(x=dqc_table$axiom_dishqc_DQC[match(dqc_table$cel_files,cr_table$cel_files)],y=cr_table$call_rate,col=col,pch=15+shap[match(dqc_table$cel_files,cr_table$cel_files)],xlab="Dish QC",ylab="QC Call Rate",main="QC Call Rate vs. Dish QC")
