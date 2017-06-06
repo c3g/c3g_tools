@@ -25,6 +25,8 @@ function usage {
             echo "-l                    Chip library folder (containing xml files) (Mandatory)"
             echo "-o                    output folder (Mandatory)"
             echo "-m                    master list file containing the full list of cell files (Mandatory)"
+            echo "-x                    probset file to use for step 7 (Default - provided in the default XML of the Library)"
+            echo "-y                    snp-prior file to use for step 7 (Default - provided in the default XML of the Library)"
             echo ""
             echo "####Generic parameters"
             echo "-a                    Axiom Array name (Mandatory)"
@@ -78,6 +80,8 @@ HOM_HET_BOOL=True
 NMA_CUTOFF=2.0
 PRIORITY=PolyHighResolution,NoMinorHom,OTV,MonoHighResolution,CallRateBelowThreshold
 RECOMMENDED=PolyHighResolution,MonoHighResolution,NoMinorHom,Hemizygous
+PROBSET=""
+SNP_PRIOR=""
 
 
 if [ $# -lt 12 ]
@@ -87,7 +91,7 @@ then
 fi
 
 ##get arguments
-while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:b:e:f:g:i:j:k:l:n:q:u:v:Th" OPT
+while getopts "A:M:R:c:l:o:m:a:r:d:s:p:C:S:n:b:e:f:g:i:j:k:l:n:q:u:v:x:y:Th" OPT
 do
     case "$OPT" in
         A) 
@@ -190,6 +194,14 @@ do
 	v)
            RECOMMENDED=$OPTARG
            ;;
+        x)
+           PROBSET="--probeset-ids $OPTARG"
+           echo "User specific probset file: $OPTARG"
+           ;;
+        y)
+           SNP_PRIOR=" --snp-priors-input-file $OPTARG"
+           echo "User specific snp prior file: $OPTARG"
+           ;;
 	h)
            usage
            exit
@@ -244,7 +256,7 @@ echo "Runing Step 1 - Sample Grouping"
 echo "-----------------------"
 
 echo cel_files > ${OUTDIR}/cel_list1_${REF_ID}.txt
-ls ${CEL_PATH}/*.CEL >>  ${OUTDIR}/cel_list1_${REF_ID}.txt
+ls ${CEL_PATH}/*.[Cc][Ee][Ll] >>  ${OUTDIR}/cel_list1_${REF_ID}.txt
 
 continue1=$(grep -v "^cel_files$" ${OUTDIR}/cel_list1_${REF_ID}.txt | wc -l | cut -d\  -f1)
 
@@ -254,7 +266,7 @@ echo "Sample summary" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "##########################" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "Number of imput sample: ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 
-if [[ $continue1 == 0 ]]
+if [[ $continue1 == 1 ]]
 then
 
 echo "No sample founds"
@@ -306,7 +318,7 @@ continue2=$(grep -v "^cel_files$" ${OUTDIR}/cel_list2_${REF_ID}.txt | wc -l | cu
 echo "Sample passing DQC: ${continue2} out of ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 
 
-if [[ $continue2 == 0 ]]
+if [[ $continue2 == 1 ]]
 then
 
 echo "No sample remains after DQC filtering"
@@ -404,7 +416,7 @@ continue5=$(grep -v "^cel_files$" ${OUTDIR}/cel_list3_${REF_ID}.txt | wc -l | cu
 echo "Sample passing DQC and QC CR: ${continue5} out of ${continue1}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 
 
-if [[ $continue5 == 0 ]]
+if [[ $continue5 == 1 ]]
 then
 
 echo "No sample remains after Sample QC"
@@ -450,7 +462,7 @@ echo "Sample passing DQC and QC CR and Plate QC: ${continue6} out of ${continue1
 echo "Sample did not pass: ${sampleNum}"  >>  ${OUTDIR}/summary_${REF_ID}.txt
 
 
-if [[ $continue6 == 0 ]]
+if [[ $continue6 == 1 ]]
 then
 
 echo "No sample remains after Plate QC"
@@ -531,6 +543,8 @@ apt-genotype-axiom --log-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/apt-genotype-ax
 --write-models \
 --cc-chp-output \
 --dual-channel-normalization TRUE \
+${PROBSET} \
+${SNP_PRIOR} \
 --cel-files ${OUTDIR}/cel_list4_${REF_ID}.txt
 
 fi
@@ -695,6 +709,17 @@ echo "num-minor-allele-cutoff: >=  $NMA_CUTOFF" >>  ${OUTDIR}/summary_${REF_ID}.
 echo "priority-order: $PRIORITY" >>  ${OUTDIR}/summary_${REF_ID}.txt
 echo "recommended: $RECOMMENDED" >>  ${OUTDIR}/summary_${REF_ID}.txt
 
+
+echo "-----------------------"
+echo "Runing Step 9 - Export to PLINK "
+echo "-----------------------"
+echo "CMD: apt-format-result --calls-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.calls.txt \
+ --annotation-file ${ANALYSIS_FILES_DIR}/annotationDB/${AXIOM_ARRAY_NAME}.na35.annot.db \
+--export-plink-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/PLINKData"
+
+apt-format-result --calls-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/AxiomGT1.calls.txt \
+ --annotation-file ${ANALYSIS_FILES_DIR}/annotationDB/${AXIOM_ARRAY_NAME}.na35.annot.db \
+--export-plink-file ${OUTDIR}/GENOTYPE_AXIOM_${REF_ID}/PLINKData
 
 echo "Analysis completed" 
 
