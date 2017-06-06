@@ -15,8 +15,6 @@ tx2gene_file_repo=paste0(index_path, basename(tools::file_path_sans_ext(gtf_file
 tx2gene_file_local=paste0(dirname(dirname(abundance_transcripts_file)),"/", basename(tools::file_path_sans_ext(gtf_file)), ".tx2gene") # ../kallisto
 abundance_gene_file=gsub( "_transcripts", "_genes",abundance_transcripts_file)
 
-
-
 if (file.exists(tx2gene_file_repo)) {
 	tx2gene_file=tx2gene_file_repo
 } else if (file.exists(tx2gene_file_local)) {
