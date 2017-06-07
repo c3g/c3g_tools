@@ -12,7 +12,7 @@ files = unlist(strsplit(abundance_transcripts_files, ","))
 sample_names=sapply(files, function(x) {rev(strsplit(dirname(x),"/")[[1]])[1]})
 output_file_name=paste0("all_samples.abundance_" ,data_type, ".csv")
 
-if (data_type=="trasncripts"){
+if (data_type=="transcripts"){
 	key_id="target_id"
 	count_id="est_counts"
 } else if (data_type=="genes") {
@@ -33,4 +33,5 @@ for (i in seq(length(files))){
 	dt_gene_counts[,i+1]=f_table[rownames(dt_gene_counts),count_id]
 }
 
+dir.create(output_dir)
 write.table(x=dt_gene_counts, file=file.path(output_dir,output_file_name), col.names=T, row.names=F, sep="\t", quote=F)
