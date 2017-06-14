@@ -5,12 +5,10 @@ args = commandArgs(trailingOnly=TRUE)
 abundance_transcripts_files=args[1]
 output_dir=args[2]
 data_type=args[3]
-#abundance_transcripts_files="kallisto/KW390ASoy200/abundance_genes.tsv,kallisto/KW425Soy10/abundance_genes.tsv"
-# output_dir="kallisto"
 
 files = unlist(strsplit(abundance_transcripts_files, ","))
 sample_names=sapply(files, function(x) {rev(strsplit(dirname(x),"/")[[1]])[1]})
-output_file_name=paste0("all_samples.abundance_" ,data_type, ".csv")
+output_file_name=paste0("all_readsets.abundance_" ,data_type, ".csv")
 
 if (data_type=="transcripts"){
 	key_id="target_id"
