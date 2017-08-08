@@ -4,12 +4,14 @@
 # Computation of IHEC ChIP-seq quality metrics
 # Originally from https://github.com/IHEC/ihec-assay-standards/tree/master/ChIP-seq_QC
 # reimplemented by mathieu.bourgey@mcgill.ca - 31/07/2017 
-# mv samtools to sambamba
-# module to load sambamba picard mugqic_dev/deeptools/2.5.3 (for deeptools)
+# module to load samtools mugqic_dev/deeptools/2.5.3 
+
 usage() { 
   echo "Usage: IHEC_chipseq_metrics.sh [option] [-t <H3K27ac|H3K27me3|H3K36me3|H3K4me1|H3K4me3|H3K9me3|Input|H2AFZ|H3ac|H3K4me2|H3K9ac>]"
-  echo "          [-d <ChIP_file_prefix>]"
-  echo "          [-u <Input_file_prefix]" 
+  echo "          [-d <ChIP markDup bam>]"
+  echo "          [-i <Input markDup bam]" 
+  echo "          [-s <ChIp Sample name]" 
+  echo "          [-o <Output directory]" 
   echo "          [-p <ChIP_bed_file>]" 
   echo "          [-n <threads>]"
   exit 1
@@ -17,10 +19,12 @@ usage() {
 
 ## By default the number of threads is set to 1;
 n=1
-DEDUP_BAM=""
-
-
-
+CHIP_TYPE=""
+CHIP_BAM=""
+INPUT_BAM=""
+CHIP_BED_FILE=""
+SAMPLE_NAME=""
+OUTPUT_DIR="ihec_metrics"
 
 while getopts "t:f:u:p::n::" o; do
     case "${o}" in
@@ -86,7 +90,7 @@ fi
 
 
 ## The original number of reads and the number of those aligned:
-sambamba flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
+samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 
 
 total_reads=`grep "in total" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
@@ -99,15 +103,15 @@ singletons=`grep "singletons" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt 
 
 
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
-sambamba view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
-sambamba view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
+samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
+samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
 
 ## Index the final deduplicated BAM file
-sambamba index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
-sambamba index ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
+samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
+samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
 
 
-final_reads=`sambamba flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+final_reads=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 
 #3.     Calculating Jensen-Shannon distance (JSD)
 
@@ -130,7 +134,7 @@ js_dist=`grep ${cname} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 8`
 chance_div=`grep ${cname} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 12`
 
 #4.     Calculating FRiP scores
-reads_under_peaks=`sambamba view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
+reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
 frip=$(echo "${reads_under_peaks}/${final_reads}" | bc -l)
 
 
