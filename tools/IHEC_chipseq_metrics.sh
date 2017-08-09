@@ -22,7 +22,7 @@ DEDUP_BAM=""
 
 
 
-while getopts "t:f:u:p::n::" o; do
+while getopts "t:d:i:p:s:o:n::" o; do
     case "${o}" in
         t)
             CHIP_TYPE=${OPTARG}
