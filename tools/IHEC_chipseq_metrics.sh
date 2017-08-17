@@ -11,6 +11,7 @@ usage() {
   echo "          [-d <ChIP markDup bam>]"
   echo "          [-i <Input markDup bam]" 
   echo "          [-s <ChIp Sample name]" 
+  echo "          [-j <Input sample name]" 
   echo "          [-o <Output directory]" 
   echo "          [-p <ChIP_bed_file>]" 
   echo "          [-n <threads>]"
@@ -22,11 +23,12 @@ n=1
 CHIP_TYPE=""
 CHIP_BAM=""
 INPUT_BAM=""
+INPUT_NAME=""
 CHIP_BED_FILE=""
 SAMPLE_NAME=""
 OUTPUT_DIR="ihec_metrics"
 
-while getopts "t:d:i:p:s:o:n::" o; do
+while getopts "t:d:i:j:p:s:o:n::" o; do
     case "${o}" in
         t)
             CHIP_TYPE=${OPTARG}
@@ -36,6 +38,9 @@ while getopts "t:d:i:p:s:o:n::" o; do
             ;;
         i)
             INPUT_BAM=${OPTARG}
+            ;;
+        j)
+            INPUT_NAME=${OPTARG}
             ;;
         p)
             CHIP_BED_FILE=${OPTARG}
@@ -138,6 +143,6 @@ reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_N
 frip=$(echo "${reads_under_peaks}/${final_reads}" | bc -l)
 
 
-printf "ChIP_name\tInput_name\ttotal_reads\tmapped_reads\tdupped_reads\tdup_rate\tsingletons\tfinal_reads\tjs_dist\tchance_div\tfrip\n" > $WORKING_DIR/${cname}/${cname}_read_stats.txt
-printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "$cname" "$iname" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+printf "ChIP_name\tInput_name\ttotal_reads\tmapped_reads\tdupped_reads\tdup_rate\tsingletons\tfinal_reads\tjs_dist\tchance_div\tfrip\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "${SAMPLE_NAME}" "$iname" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
