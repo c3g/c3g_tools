@@ -22,8 +22,8 @@ if (data_type=="transcripts"){
 #read first file
 f1_table=read.delim(files[1], header=T)
 dt_gene_counts=data.frame(matrix(nrow=nrow(f1_table), ncol=length(files)+1))
-colnames(dt_gene_counts)=c("geneID",sample_names)
-dt_gene_counts[,"geneID"]=f1_table[,key_id]
+colnames(dt_gene_counts)=c("ID",sample_names)
+dt_gene_counts[,"ID"]=f1_table[,key_id]
 rownames(dt_gene_counts)=f1_table[,key_id]
 
 for (i in seq(length(files))){
@@ -31,5 +31,5 @@ for (i in seq(length(files))){
 	dt_gene_counts[,i+1]=f_table[rownames(dt_gene_counts),count_id]
 }
 
-dir.create(output_dir)
+dir.create(output_dir, showWarnings=F)
 write.table(x=dt_gene_counts, file=file.path(output_dir,output_file_name), col.names=T, row.names=F, sep="\t", quote=F)
