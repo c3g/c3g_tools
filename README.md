@@ -18,7 +18,6 @@ The main repo dir organization is:
 
   root/tools - dir containing other type of scripts (awk, sh, etc...)
 
-
 -------------------------
 
 ##Please report bugs, errors or problems by sending an email to bioinformatics.service@mail.mcgill.ca
