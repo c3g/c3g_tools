@@ -8,7 +8,7 @@ tx2gene_file=args[2]
 
 require(tximport)
 
-index_path=file.path(dirname(gtf_file),"cdna_kallisto_index/")
+# index_path=file.path(dirname(gtf_file),"cdna_kallisto_index/")
 abundance_gene_file=gsub( "_transcripts", "_genes",abundance_transcripts_file)
 
 if (!file.exists(tx2gene_file)) {
