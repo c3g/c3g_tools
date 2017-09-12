@@ -1,6 +1,44 @@
-32 tags, 316 commits
+33 tags, 340 commits
 
-HEAD        Sat Apr 22 14:48:35 2017 -0400        0 commits
+HEAD        Mon Aug 28 12:45:29 2017 -0400        0 commits
+
+2.1.9        Mon Aug 28 14:25:02 2017 -0400        24 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      10 commits
+
+       a119ec4 added header line in GC content file
+       957de36 BFXDEV-674 - perl tool methylProfile.bismark.pl minor update
+       bf43c15 while working on BFXDEV-172, did a minor review or goseq.R and edger.R : updated indentation for more clarity when reading the code
+       1da92ed BFXDEV-674 - added python tool to assess the CpG coverage stats in the MethylSeq pipeline
+       f40eaf3 BFXDEV-674 - added R tool for the calculation of the GC bias in the MethylSeq pipeline
+       2e271d4 BFXDEV-674 - added python tool to calculate GC content from a given fasta file (e.g. reference), mainly used to produced GC content reference file needed by the MethylSeq pipeline when calculating the GC bias
+       e2f3ed7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b7a09d5 MethylSeq - added perl tool to compute methylation profile
+       e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
+       b1efd80 updated CHANGELOG.md from 2.1.8 release
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
+
+       8591e6f tool -  ihec metrics debug -  BFXDEV-675
+       a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      8 commits
+
+       ffa02e5 python tools - add script to extract cancer SNVs from gemini db to xls
+       d8cc34b  RNAseq & ChIPseq-   Update (chip) and debug (Rna) IHEC metrics tools - BFXDEV-668  - BFXDEV-675
+       456de6c tools -  implement IHEC ChIPseq metrics script - BFXDEV-675
+       3fb02cc tools -  implement IHEC RNA metrics script - BFXDEV-668
+       3d2e2af Add IHEC rnaseq metrics generation script
+       3a8ab8d update axiom dev suite
+       a1ea573 correct plateQC graphs resolution
+       787a517 correct plateQC graphs
+
+  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+
+       092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       c1040bf adding CreateHicFileInput.sh for .hic file creation in hicseq BFXDEV-670
+       aa6c18f added hicseq related scripts BFXDEV-670
 
 2.1.8        Mon Apr 24 09:55:28 2017 -0400        18 commits
 

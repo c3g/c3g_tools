@@ -48,6 +48,7 @@ def main():
     print "----------------------------------------------------------------------------------\n"
     siz, refF, outF = getarg(sys.argv)
     out=open(outF,'w')
+    out.write("#Chrom\tStart\tEnd\tGCcontent\tUnMappContent\n")
     for seq_record in SeqIO.parse(refF, "fasta"):
         chroS=len(seq_record)
         chroID=str(seq_record.id)
