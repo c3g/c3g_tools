@@ -9,7 +9,7 @@ LAMBDA_STAT_OUTFILE=$3
 PUC19_STAT_OUTFILE=$4
 
 ### Calculate the stats for regular CpGs
-sed 1d $INPUT_CPG_PROFILE | grep lambda -v | grep pUC19 -v | awk '{ cg1x+=1; if($11>=30) cg30x+=1; if($11>=10) cg10x+=1; }END {print cg1x","cg10x","cg30x}' > $CG_STAT_OUTFILE
+sed 1d $INPUT_CPG_PROFILE | grep lambda -v | grep pUC19 -v | awk 'BEGIN{cg1x=0; cg10x=0; cg30x=0;}{ cg1x+=1; if($11>=30) cg30x+=1; if($11>=10) cg10x+=1; }END {print cg1x","cg10x","cg30x}' > $CG_STAT_OUTFILE
 
 # Calculate lambda conversion rate
 cat $INPUT_CPG_PROFILE | grep lambda | awk '{meth+=$10;reads+=$11;} END {print (1-meth/reads)*100}' > $LAMBDA_STAT_OUTFILE
