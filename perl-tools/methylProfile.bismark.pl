@@ -56,7 +56,7 @@ my $chr = "";
 
 open INFILE, "<:gzip", $input || die "Cannot open $input for reading\n";
 open OUTFILE, ">$output" || die "Cannot open $output for writing.\n";
-print OUTFILE "chr\tstart\tend\tnum_C_fw\tnum_total_fw\tmeth_fw\tnum_C_rv\tnum_total_rv\tmeth_rv\ttotal_C\ttotal\ttotal_meth\n";
+print OUTFILE "#chr\tstart\tend\tnum_C_fw\tnum_total_fw\tmeth_fw\tnum_C_rv\tnum_total_rv\tmeth_rv\ttotal_C\ttotal\ttotal_meth\n";
 
 while ($temp = <INFILE>) {
     chomp $temp;
