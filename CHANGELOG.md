@@ -1,11 +1,16 @@
-33 tags, 340 commits
+33 tags, 361 commits
 
-HEAD        Mon Aug 28 12:45:29 2017 -0400        0 commits
+HEAD        Wed Oct 4 10:41:13 2017 -0400        0 commits
 
-2.1.9        Mon Aug 28 14:25:02 2017 -0400        24 commits
+2.1.9        Tue Oct 17 12:01:59 2017 -0400        45 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      10 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      15 commits
 
+       f27476c BFXDEV-674 - added a comment mark to the header line of the output combined file
+       2c1edba BFXDEV-674 - corrected unset variable in cpgStats.sh
+       b49cd5d BFXDEV-674 - added tools/cpgStats.sh for CpG metrics computing within the methylSeq pipeline
+       ce53fe2 BFXDEV-674 - adding bash tools for methylSeq metrics
+       019df95 releasing README and CHANGELOG for verion 2.1.9
        a119ec4 added header line in GC content file
        957de36 BFXDEV-674 - perl tool methylProfile.bismark.pl minor update
        bf43c15 while working on BFXDEV-172, did a minor review or goseq.R and edger.R : updated indentation for more clarity when reading the code
@@ -17,14 +22,35 @@ HEAD        Mon Aug 28 12:45:29 2017 -0400        0 commits
        e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
        b1efd80 updated CHANGELOG.md from 2.1.8 release
 
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      10 commits
 
+       5892d79 remove a call to a non defined variable
+       9e6f5c4 fix unused parameter in abundanceTrancript2gene.R
+       6040b75 added new parameters to kallisto script to handle single reads
+       54a0f98 replaced mentions of samples to readsets
+       717ffcc fix spelling
+       5638e15 fix output of abundanceTranscript2geneLevel function
+       2a7446d added direct call to R_TOOLS variable
+       cbf698f added a step for merging individual abundance files
+       1d393c1 Add R function to convert transcript to gene level abundance
+       aa7ae30 added new function for RNAseq_light
+
+  eloi.mercier@mcgill.ca <eloi.mercier@mcgill.ca>      1 commits
+
+       9de32e1 Merged in RNAseq_light_dev (pull request #1)
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
+
+       b84d9e8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b8acd7b IHEC_chips metrics tool - correct typo
        8591e6f tool -  ihec metrics debug -  BFXDEV-675
        a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
 
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      8 commits
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      10 commits
 
+       e5d11d8 add tool to recoded sample name in the reedset file based on project.nanuq file (library Name, lane, run)
+       2631f72 change ihec methylseq metrics to work on single sample and add GC_bias
        ffa02e5 python tools - add script to extract cancer SNVs from gemini db to xls
        d8cc34b  RNAseq & ChIPseq-   Update (chip) and debug (Rna) IHEC metrics tools - BFXDEV-668  - BFXDEV-675
        456de6c tools -  implement IHEC ChIPseq metrics script - BFXDEV-675
@@ -33,6 +59,10 @@ HEAD        Mon Aug 28 12:45:29 2017 -0400        0 commits
        3a8ab8d update axiom dev suite
        a1ea573 correct plateQC graphs resolution
        787a517 correct plateQC graphs
+
+  Mathieu Bourgey <mbourgey@cedar5.cedar.computecanada.ca>      1 commits
+
+       4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
 
   Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
 
