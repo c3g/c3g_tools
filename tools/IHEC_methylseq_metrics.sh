@@ -35,8 +35,8 @@ AlignedReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.dedupli
 a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && MappingEfficiency=`echo $nr`;
 
 # De-duplicate rate after alignment
-DuplicateReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.deduplication_report.txt |grep -e "Total number duplicated alignments removed:"|awk -F "\t" '{print $2}' |awk '{print $1}'`
-a=`echo $DuplicateReads` && b=`echo $AlignedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && DuplicationRate=`echo $nr`;
+DuplicateReads=$(grep HISTOGRAM -B2 alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.metrics |  head -1  | cut -f6}
+DuplicationRate=$(grep HISTOGRAM -B2 alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.metrics |  head -1  | cut -f8}
 a=`echo $DuplicateReads` && b=`echo $AlignedReads` && DeduplicatedAlignRreads=$(echo " ($b-$a)" |bc)  
 a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
