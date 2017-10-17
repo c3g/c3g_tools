@@ -1,6 +1,103 @@
-31 tags, 298 commits
+33 tags, 361 commits
 
-HEAD        Fri Jan 20 16:30:00 2017 -0500        0 commits
+HEAD        Wed Oct 4 10:41:13 2017 -0400        0 commits
+
+2.1.9        Tue Oct 17 12:01:59 2017 -0400        45 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      15 commits
+
+       f27476c BFXDEV-674 - added a comment mark to the header line of the output combined file
+       2c1edba BFXDEV-674 - corrected unset variable in cpgStats.sh
+       b49cd5d BFXDEV-674 - added tools/cpgStats.sh for CpG metrics computing within the methylSeq pipeline
+       ce53fe2 BFXDEV-674 - adding bash tools for methylSeq metrics
+       019df95 releasing README and CHANGELOG for verion 2.1.9
+       a119ec4 added header line in GC content file
+       957de36 BFXDEV-674 - perl tool methylProfile.bismark.pl minor update
+       bf43c15 while working on BFXDEV-172, did a minor review or goseq.R and edger.R : updated indentation for more clarity when reading the code
+       1da92ed BFXDEV-674 - added python tool to assess the CpG coverage stats in the MethylSeq pipeline
+       f40eaf3 BFXDEV-674 - added R tool for the calculation of the GC bias in the MethylSeq pipeline
+       2e271d4 BFXDEV-674 - added python tool to calculate GC content from a given fasta file (e.g. reference), mainly used to produced GC content reference file needed by the MethylSeq pipeline when calculating the GC bias
+       e2f3ed7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b7a09d5 MethylSeq - added perl tool to compute methylation profile
+       e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
+       b1efd80 updated CHANGELOG.md from 2.1.8 release
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      10 commits
+
+       5892d79 remove a call to a non defined variable
+       9e6f5c4 fix unused parameter in abundanceTrancript2gene.R
+       6040b75 added new parameters to kallisto script to handle single reads
+       54a0f98 replaced mentions of samples to readsets
+       717ffcc fix spelling
+       5638e15 fix output of abundanceTranscript2geneLevel function
+       2a7446d added direct call to R_TOOLS variable
+       cbf698f added a step for merging individual abundance files
+       1d393c1 Add R function to convert transcript to gene level abundance
+       aa7ae30 added new function for RNAseq_light
+
+  eloi.mercier@mcgill.ca <eloi.mercier@mcgill.ca>      1 commits
+
+       9de32e1 Merged in RNAseq_light_dev (pull request #1)
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
+
+       b84d9e8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b8acd7b IHEC_chips metrics tool - correct typo
+       8591e6f tool -  ihec metrics debug -  BFXDEV-675
+       a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      10 commits
+
+       e5d11d8 add tool to recoded sample name in the reedset file based on project.nanuq file (library Name, lane, run)
+       2631f72 change ihec methylseq metrics to work on single sample and add GC_bias
+       ffa02e5 python tools - add script to extract cancer SNVs from gemini db to xls
+       d8cc34b  RNAseq & ChIPseq-   Update (chip) and debug (Rna) IHEC metrics tools - BFXDEV-668  - BFXDEV-675
+       456de6c tools -  implement IHEC ChIPseq metrics script - BFXDEV-675
+       3fb02cc tools -  implement IHEC RNA metrics script - BFXDEV-668
+       3d2e2af Add IHEC rnaseq metrics generation script
+       3a8ab8d update axiom dev suite
+       a1ea573 correct plateQC graphs resolution
+       787a517 correct plateQC graphs
+
+  Mathieu Bourgey <mbourgey@cedar5.cedar.computecanada.ca>      1 commits
+
+       4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
+
+  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+
+       092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       c1040bf adding CreateHicFileInput.sh for .hic file creation in hicseq BFXDEV-670
+       aa6c18f added hicseq related scripts BFXDEV-670
+
+2.1.8        Mon Apr 24 09:55:28 2017 -0400        18 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       edfb29a commiting the CHANGELOG before release
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      10 commits
+
+       9ec9b5f correct ggplot
+       e638845 correct ggplot
+       eafb4fc correct typo
+       7f025be correct typo
+       1b9f6b8 correct typo
+       9f98c73 correct typo
+       dd2ba39 correct typo
+       170f2b4 correct typo
+       5e77a35 correct typo
+       9ccb828 correct module incompatibility
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      7 commits
+
+       70af3b5 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       69cce81 update gene titan
+       068bd1b Imporve Genetitan processing script
+       4c049c5 Imporve Genetitan processing script
+       446f05d resolve conflict merging
+       94240fc Updat Axiom tools for more QC
+       3f461c4 add somatic signature R tools
 
 2.1.7        Fri Jan 20 16:31:19 2017 -0500        19 commits
 
