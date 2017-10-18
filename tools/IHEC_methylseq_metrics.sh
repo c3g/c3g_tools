@@ -31,7 +31,7 @@ trimmedReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Rea
 a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && SurvivalRate=`echo $nr`;
 
 # Mapping efficiency after trimming, IHEC required.
-AlignedReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.deduplication_report.txt |grep -e "Total number of alignments analysed"|awk '{print $NF}'`
+AlignedReads=$(grep HISTOGRAM -B2 alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.metrics |  head -1  | cut -f3)
 a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && MappingEfficiency=`echo $nr`;
 
 # De-duplicate rate after alignment
