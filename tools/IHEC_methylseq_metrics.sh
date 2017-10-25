@@ -22,23 +22,21 @@ else
   fi
 fi
 
-
-
-
 # Calculate the survival rate : #reads after trimming
 rawReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$1;} END {printf "%d\n", sum}'`
 trimmedReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$2;} END {printf "%d\n", sum}'`
 a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && SurvivalRate=`echo $nr`;
 
-# Mapping efficiency after trimming, IHEC required.
-AlignedReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.deduplication_report.txt |grep -e "Total number of alignments analysed"|awk '{print $NF}'`
-a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && MappingEfficiency=`echo $nr`;
+# The number of aligned reads :
+samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt
+AlignedReads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 
-# De-duplicate rate after alignment
-DuplicateReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.deduplication_report.txt |grep -e "Total number duplicated alignments removed:"|awk -F "\t" '{print $2}' |awk '{print $1}'`
-a=`echo $DuplicateReads` && b=`echo $AlignedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && DuplicationRate=`echo $nr`;
-a=`echo $DuplicateReads` && b=`echo $AlignedReads` && DeduplicatedAlignRreads=$(echo " ($b-$a)" |bc)  
-a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
+# The number of deduplicated aligned reads:
+samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt
+DeduplicatedAlignRreads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+
+DuplicateReads=$(echo " ($AlignedReads-$DeduplicatedAlignRreads)" | bc)
+DuplicationRate=$(echo "${DuplicateReads}/${AlignedReads}" | bc -l)
 
 # Estimated average coverage, values for this metric should be above 12 for a single lane. IHEC required.
 genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
