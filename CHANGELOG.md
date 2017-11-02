@@ -1,11 +1,13 @@
-33 tags, 370 commits
+33 tags, 373 commits
 
-HEAD        Wed Oct 25 12:06:52 2017 -0400        0 commits
+HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
 
-2.1.9        Wed Oct 25 14:41:55 2017 -0400        54 commits
+2.1.9        Thu Nov 2 15:15:41 2017 -0400        57 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      18 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      20 commits
 
+       85f5cd4 adding tools/IHEC_chipseq_metrics_max.sh
+       1ff0790 new CHANGELOG.md
        c1ed44a Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        09fc149 BFXDEV-674 - updated MethylSeq metrics scripts to reflect changes in MethylSeq pipeline regarding the deduplication step (which now uses Picard MarkDuplicates)
        a79b874 new CHANGELOG.md
@@ -72,6 +74,10 @@ HEAD        Wed Oct 25 12:06:52 2017 -0400        0 commits
   Mathieu Bourgey <mbourgey@cedar5.cedar.computecanada.ca>      1 commits
 
        4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
+
+  robert.eveleigh@mcgill.ca <reveleig@abacus2.ferrier.genome.mcgill.ca>      1 commits
+
+       aaf5581 Update sequenza script and add sCNAphase script
 
   Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
 
