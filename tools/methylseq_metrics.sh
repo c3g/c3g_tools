@@ -19,12 +19,17 @@ do
   trimmedReads=`cat trim/$sample/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$2;} END {printf "%d\n", sum}'`
   a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && SurvivalRate=`echo $nr`;
 
-  AlignedReads=`cat alignment/$sample/$sample.readset_sorted.deduplication_report.txt |grep -e "Total number of alignments analysed"|awk '{print $NF}'`
+  # The number of aligned reads :
+  samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt
+  AlignedReads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
   a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && AlignedRate2=`echo $nr`;
 
-  DuplicateReads=`cat alignment/$sample/$sample.readset_sorted.deduplication_report.txt |grep -e "Total number duplicated alignments removed:"|awk -F "\t" '{print $2}' |awk '{print $1}'`
-  a=`echo $DuplicateReads` && b=`echo $AlignedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && DuplicationRate=`echo $nr`;
-  a=`echo $DuplicateReads` && b=`echo $AlignedReads` && DeduplicatedAlignRreads=$(echo " ($b-$a)" |bc)
+  # The number of deduplicated aligned reads:
+  samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt
+  DeduplicatedAlignRreads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+
+  DuplicateReads=$(echo " ($AlignedReads-$DeduplicatedAlignRreads)" | bc)
+  DuplicationRate=$(echo "${DuplicateReads}/${AlignedReads}" | bc -l)
   a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
   coverage=`sed 1d alignment/$sample/$sample.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
