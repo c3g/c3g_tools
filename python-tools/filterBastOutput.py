@@ -156,8 +156,8 @@ def run_blastres_filter(options, blast_file, output_filter_file):
         identity=float(entry[4])
         align_size=int(entry[5])
         mismatches=int(entry[6])
-        query_start=int(entry[8])
-        query_end=int(entry[9])
+        query_start=int(entry[7])
+        query_end=int(entry[8])
 
         if(int(align_size)>=int(options.align_length_min) and float(identity)>=float(options.perc_identity_min) and int(mismatches)<=int(options.mismatches_max)):
             logging.debug("WRITING OUTPUT")
