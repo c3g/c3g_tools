@@ -5,8 +5,7 @@ args = commandArgs(trailingOnly=TRUE)
 # args[2] total number of reads sampled
 
 file_name=args[1]
-data=read.delim(file_name, as.is=TRUE)
-#check that not empty
+data=read.delim(file_name, as.is=TRUE) #check that not empty?
 tags=data[,"Tag"]
 total_tags=nrow(data)
 alignments=data[,"Alignment"]
@@ -17,7 +16,7 @@ samples_size=as.integer(args[2])
 tags.table.count=table(tags)
 tags.table.count=tags.table.count[order(tags.table.count, decreasing=T)]
 tags.table=tags.table.count/samples_size*100
-tag_color=c("lightblue",rainbow(length(tags.table)-1, alpha = 1))
+tag_color=c("lightblue",rainbow(length(tags.table)-1, alpha = 1, v=0.8))
 alignments.table=table(tags,alignments)/total_tags*100
 alignments.table=alignments.table[names(tags.table), ,drop=F] #to avoid losing one dimension if only 1 column
 identity.table=table(tags,identity)/total_tags*100
@@ -31,7 +30,9 @@ IC95_bn<-function(p, n){
 	ic=c(p-d, p+d)
 	return(ic)}
 
-
+###########################
+#plot blast results
+###########################
 pdf(paste0(file_name,".pdf"))
 if(nrow(data)>0) {
 	tags.ic95.count=sapply(tags.table.count, function(x) {IC95_bn(x/samples_size, samples_size)})*samples_size
@@ -59,7 +60,6 @@ if(nrow(data)>0) {
 	suppressWarnings(arrows(tags.bp, tags.ic95[1,], tags.bp, tags.ic95[2,], angle=90, code=3, length=0.1))
 	#aligment length
 	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments")
-	# barplot(identity.table, main="Identity", col=tag_color, ylab="% of alignments", names.arg=signif(as.numeric(colnames(identity.table)),3))
 	#mismatches
 	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments")
 	par(mar=c(5, 4, 4, 2) + 0.1)
@@ -75,6 +75,9 @@ if(nrow(data)>0) {
 }
 out <- dev.off()
 
+###########################
+#print info summary
+###########################
 tags.summary=data.frame(matrix(NA, ncol=4, nrow=length(tags.table)))
 colnames(tags.summary)=c("Tag", "Count", "Estimate_%" ,"IC95")
 if(nrow(data)>0) {
@@ -84,5 +87,40 @@ if(nrow(data)>0) {
 	tags.summary[,"IC95"]=paste0("[",signif(tags.ic95[1,],3),",", signif(tags.ic95[2,],3),"]")
 }
 write.table(tags.summary, file=paste0(file_name,".summary"), quote=F, sep="\t", col.names=T, row.names=F)
+
+###########################
+# print tag distribution
+###########################
+ggplot2 <- require(ggplot2)
+if (ggplot2){
+	out_pdf=paste0(file_name,"tagDistribution.pdf")
+
+	read_length=NA
+	biostrings=require("Biostrings")
+	fasta_file=gsub("blast.*","fasta",file_name)
+	if(biostrings & file.exists(fasta_file)){
+		fasta=readDNAStringSet(fasta_file)
+		if(length(unique(width(fasta)))==1){
+			read_length=unique(width(fasta))
+		} else{
+			warning("Non uniform read length, tag distribution might be incorrect.")
+		}
+	}
+	if(is.na(read_length)){
+		read_length=max(data[,"Query_end"]) #assume all reads have the same length!
+		warning(paste("Setting read length to", read_length, "bp."))
+	}
+
+	pdf_out=paste0(file_name,".tagDistribution.pdf")
+	data_query=apply(data[,c("Tag","Query_start","Query_end")], 1, function(x) {data.frame(Tag=x[[1]],Pos=seq(as.integer(x[[2]]),as.integer(x[[3]])))}) #create a list of 1's for each position with a tag
+	data_query=do.call("rbind", data_query)
+	p <- ggplot(data_query, aes(Pos, fill=Tag)) +  geom_histogram(binwidth = 1, show.legend=FALSE) + xlim(0, read_length) + facet_grid(Tag ~ ., scales="free_y") + scale_fill_manual(values=tag_color)
+	# ggsave(out_pdf)
+	p <- p + ggtitle("Distribution of tags along the reads") + ylab("Tag count") + xlab("Position")
+	p
+	ggsave(pdf_out)
+}
+
+
 
 print("PDF and summary files successfully generated")
