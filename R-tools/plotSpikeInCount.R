@@ -16,13 +16,17 @@ samples_size=as.integer(args[2])
 tags.table.count=table(tags)
 tags.table.count=tags.table.count[order(tags.table.count, decreasing=T)]
 tags.table=tags.table.count/samples_size*100
-tag_color=c("lightblue",rainbow(length(tags.table)-1, alpha = 1, v=0.8))
-alignments.table=table(tags,alignments)/total_tags*100
+tag_color=c("lightblue",rainbow(length(tags.table)-1, alpha = 1, v=0.8, s=0.8))
+names(tag_color)=names(tags.table.count)
+alignments.table=table(tags,alignments)
 alignments.table=alignments.table[names(tags.table), ,drop=F] #to avoid losing one dimension if only 1 column
-identity.table=table(tags,identity)/total_tags*100
+alignments.table=alignments.table/as.integer(tags.table.count)*100
+identity.table=table(tags,identity)
 identity.table=identity.table[names(tags.table), , drop=F]
-mismatches.table=table(tags,mismatches)/total_tags*100
+identity.table=identity.table/as.integer(tags.table.count)*100
+mismatches.table=table(tags,mismatches)
 mismatches.table=mismatches.table[names(tags.table), ,drop=F]
+mismatches.table=mismatches.table/as.integer(tags.table.count)*100
 
 # IC at 95% for binomial distribution
 IC95_bn<-function(p, n){
@@ -59,9 +63,9 @@ if(nrow(data)>0) {
 	}
 	suppressWarnings(arrows(tags.bp, tags.ic95[1,], tags.bp, tags.ic95[2,], angle=90, code=3, length=0.1))
 	#aligment length
-	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments")
+	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
 	#mismatches
-	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments")
+	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
 	par(mar=c(5, 4, 4, 2) + 0.1)
 } else {
 	m <- matrix(c(1,1,2,3,4,5),nrow = 3,ncol = 2, byrow = TRUE)
@@ -114,7 +118,8 @@ if (ggplot2){
 	pdf_out=paste0(file_name,".tagDistribution.pdf")
 	data_query=apply(data[,c("Tag","Query_start","Query_end")], 1, function(x) {data.frame(Tag=x[[1]],Pos=seq(as.integer(x[[2]]),as.integer(x[[3]])))}) #create a list of 1's for each position with a tag
 	data_query=do.call("rbind", data_query)
-	p <- ggplot(data_query, aes(Pos, fill=Tag)) +  geom_histogram(binwidth = 1, show.legend=FALSE) + xlim(0, read_length) + facet_grid(Tag ~ ., scales="free_y") + scale_fill_manual(values=tag_color)
+	data_query$Tag_f = factor(data_query$Tag, levels=names(tags.table.count))
+	p <- ggplot(data_query, aes(Pos, fill=Tag)) +  geom_histogram(binwidth = 1, show.legend=FALSE) + xlim(0, read_length) + facet_grid(Tag_f ~ ., scales="free_y") + scale_fill_manual(values=tag_color)
 	# ggsave(out_pdf)
 	p <- p + ggtitle("Distribution of tags along the reads") + ylab("Tag count") + xlab("Position")
 	p
