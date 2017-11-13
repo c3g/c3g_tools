@@ -47,23 +47,17 @@ if(nrow(data)>0) {
 	par(mar = c(0,0,2,0))
 	plot(1, type = "n", axes=FALSE, xlab="", ylab="", main=basename(file_name),cex.main=1)
 	legend(x = "top",inset = 0, legend = names(tags.table), fill=tag_color, border=tag_color, horiz = TRUE, title=paste0(samples_size, " sampled reads"))
-	par(mar=c(4, 4, 4, 2) + 0.1)
-	#tag count
-	if (length(tags.table)>5){
-		tags.bp<-barplot(tags.table.count,main="Tags", col=tag_color,border=tag_color, ylab="Read count", names.arg=tags.table.count, ylim=c(0, max(tags.table.count,tags.ic95.count[2,])), las=3)
-	} else {
-		tags.bp<-barplot(tags.table.count,main="Tags", col=tag_color,border=tag_color, ylab="Read count", names.arg=paste(tags.table.count, names(tags.table),sep="\n"), ylim=c(0, max(tags.table.count,tags.ic95.count[2,])))
-	}
+	par(mar=c(4, 4, 4, 3) + 0.1)
+	tags.bp<-barplot(tags.table.count,main="Tags", col=tag_color,border=tag_color, ylab="Read count", names.arg=tags.table.count, ylim=c(0, max(tags.table.count,tags.ic95.count[2,])), las=3, mgp=c(3,2,1))
 	suppressWarnings(arrows(tags.bp, tags.ic95.count[1,], tags.bp, tags.ic95.count[2,], angle=90, code=3, length=0.1))
-	#tag proportion
-	if (length(tags.table)>5){
-		tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste0(signif(tags.table,3),"%"), ylim=c(0, max(tags.table,tags.ic95[2,])), las=2)
-	} else {
-		tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste(paste0(signif(tags.table,3),"%"), names(tags.table),sep="\n"), ylim=c(0, max(tags.table,tags.ic95[2,])))
-	}
-	suppressWarnings(arrows(tags.bp, tags.ic95[1,], tags.bp, tags.ic95[2,], angle=90, code=3, length=0.1))
+	tag_percent=paste0(signif(axTicks(2)/samples_size*100,2),"%") #add axis in percentage
+	axis(side = 2, at=axTicks(2),labels=tag_percent, las=3,  mgp=c(3,2,1), pad=4.2, tcl=0.5)
+	grid(ny=NULL, nx=NA)
+
 	#aligment length
 	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	#identity length
+	barplot(identity.table, main="Identity", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
 	#mismatches
 	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
 	par(mar=c(5, 4, 4, 2) + 0.1)
@@ -77,28 +71,20 @@ if(nrow(data)>0) {
 		plot(1, type = "n", axes=FALSE, xlab="", ylab="", main="",cex.main=0.7)
 	}
 }
-out <- dev.off()
 
-###########################
-#print info summary
-###########################
-tags.summary=data.frame(matrix(NA, ncol=4, nrow=length(tags.table)))
-colnames(tags.summary)=c("Tag", "Count", "Estimate_%" ,"IC95")
-if(nrow(data)>0) {
-	tags.summary[,"Tag"]=names(tags.table)
-	tags.summary[,"Count"]=tags.table.count
-	tags.summary[,"Estimate_%"]=tags.table
-	tags.summary[,"IC95"]=paste0("[",signif(tags.ic95[1,],3),",", signif(tags.ic95[2,],3),"]")
-}
-write.table(tags.summary, file=paste0(file_name,".summary"), quote=F, sep="\t", col.names=T, row.names=F)
+
+#tag proportion
+	# if (length(tags.table)>5){
+		# tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste0(signif(tags.table,3),"%"), ylim=c(0, max(tags.table,tags.ic95[2,])), las=2)
+	# } else {
+	# 	tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste(paste0(signif(tags.table,3),"%"), names(tags.table),sep="\n"), ylim=c(0, max(tags.table,tags.ic95[2,])))
+	# }
 
 ###########################
 # print tag distribution
 ###########################
 ggplot2 <- require(ggplot2)
-if (ggplot2){
-	out_pdf=paste0(file_name,"tagDistribution.pdf")
-
+if (ggplot2 & nrow(data)>0){
 	read_length=NA
 	biostrings=require("Biostrings")
 	fasta_file=gsub("blast.*","fasta",file_name)
@@ -120,12 +106,23 @@ if (ggplot2){
 	data_query=do.call("rbind", data_query)
 	data_query$Tag_f = factor(data_query$Tag, levels=names(tags.table.count))
 	p <- ggplot(data_query, aes(Pos, fill=Tag)) +  geom_histogram(binwidth = 1, show.legend=FALSE) + xlim(0, read_length) + facet_grid(Tag_f ~ ., scales="free_y") + scale_fill_manual(values=tag_color)
-	# ggsave(out_pdf)
 	p <- p + ggtitle("Distribution of tags along the reads") + ylab("Tag count") + xlab("Position")
-	p
-	ggsave(pdf_out)
+	print(p)
 }
 
+out <- dev.off()
 
+###########################
+#print info summary
+###########################
+tags.summary=data.frame(matrix(NA, ncol=4, nrow=length(tags.table)))
+colnames(tags.summary)=c("Tag", "Count", "Estimate_%" ,"IC95")
+if(nrow(data)>0) {
+	tags.summary[,"Tag"]=names(tags.table)
+	tags.summary[,"Count"]=tags.table.count
+	tags.summary[,"Estimate_%"]=tags.table
+	tags.summary[,"IC95"]=paste0("[",signif(tags.ic95[1,],3),",", signif(tags.ic95[2,],3),"]")
+}
+write.table(tags.summary, file=paste0(file_name,".summary"), quote=F, sep="\t", col.names=T, row.names=F)
 
 print("PDF and summary files successfully generated")
