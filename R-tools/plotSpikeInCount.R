@@ -99,7 +99,6 @@ if (ggplot2 & nrow(data)>0){
 		warning(paste("Setting read length to", read_length, "bp."))
 	}
 
-	pdf_out=paste0(file_name,".tagDistribution.pdf")
 	data_query=apply(data[,c("Tag","Query_start","Query_end")], 1, function(x) {data.frame(Tag=x[[1]],Pos=seq(as.integer(x[[2]]),as.integer(x[[3]])))}) #create a list of 1's for each position with a tag
 	data_query=do.call("rbind", data_query)
 	data_query$Tag_f = factor(data_query$Tag, levels=names(tags.table.count))
