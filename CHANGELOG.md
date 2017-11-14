@@ -1,11 +1,13 @@
-33 tags, 373 commits
+33 tags, 383 commits
 
-HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
+HEAD        Tue Nov 14 12:57:30 2017 -0500        0 commits
 
-2.1.9        Thu Nov 2 15:15:41 2017 -0400        57 commits
+2.1.9        Tue Nov 14 12:58:29 2017 -0500        67 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      20 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      22 commits
 
+       f68d795 added run_spp.R to make proper use of 'spp' R library
+       88e1287 new CHANGELOG.md
        85f5cd4 adding tools/IHEC_chipseq_metrics_max.sh
        1ff0790 new CHANGELOG.md
        c1ed44a Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
@@ -27,8 +29,16 @@ HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
        e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
        b1efd80 updated CHANGELOG.md from 2.1.8 release
 
-  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      12 commits
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      20 commits
 
+       0afad0a in plotSpikeCount.R, round identity percentage for clarity
+       b8f1cfa in plotSpikeCount.R, remove border of barplots
+       f489b1c in plotSpikeCount.R, move percentaage axis to the right, add grid to plots
+       035f999 In plotSpikeInCount, add identity barplot and grou tag count and tag percentage into one plot
+       ce65309 In plotSpikeInCount, add option beside=T to barplots
+       cb0f8cd add plot showing distribution of spike in tag
+       5a57302 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       3a5a7f7 fix an error with query start and end when filtering blast output
        06beb03 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        2938dcf adding scripts for spike-in step in illumina pipeline: plotSpikeInCount.R, filterBastOutput.py, estimateSpikeInCount.sh
        5892d79 remove a call to a non defined variable
