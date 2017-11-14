@@ -57,13 +57,13 @@ if(nrow(data)>0) {
 
 	par(mar=c(4, 5, 4, 2) + 0.1)
 	#aligment length
-	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	barplot(alignments.table, main="Alignment length", col=tag_color, border=NA, ylab="% of alignments", beside=T)
 	grid(ny=NULL, nx=NA)
 	#identity length
-	barplot(identity.table, main="Identity", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	barplot(identity.table, main="Identity", col=tag_color, border=NA, ylab="% of alignments", beside=T)
 	grid(ny=NULL, nx=NA)
 	#mismatches
-	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	barplot(mismatches.table, main="Mismatches", col=tag_color, border=NA, ylab="% of alignments", beside=T)
 	grid(ny=NULL, nx=NA)
 	par(mar=c(5, 4, 4, 2) + 0.1)
 } else {
