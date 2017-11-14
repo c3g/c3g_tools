@@ -47,19 +47,24 @@ if(nrow(data)>0) {
 	par(mar = c(0,0,2,0))
 	plot(1, type = "n", axes=FALSE, xlab="", ylab="", main=basename(file_name),cex.main=1)
 	legend(x = "top",inset = 0, legend = names(tags.table), fill=tag_color, border=tag_color, horiz = TRUE, title=paste0(samples_size, " sampled reads"))
-	par(mar=c(4, 4, 4, 3) + 0.1)
-	tags.bp<-barplot(tags.table.count,main="Tags", col=tag_color,border=tag_color, ylab="Read count", names.arg=tags.table.count, ylim=c(0, max(tags.table.count,tags.ic95.count[2,])), las=3, mgp=c(3,2,1))
+	par(mar=c(4, 5, 4, 4) + 0.1)
+	tags.bp<-barplot(tags.table.count,main="Tags", col=tag_color,border=tag_color, ylab="Read count", names.arg=tags.table.count, ylim=c(0, max(tags.table.count,tags.ic95.count[2,])), las=3)
 	suppressWarnings(arrows(tags.bp, tags.ic95.count[1,], tags.bp, tags.ic95.count[2,], angle=90, code=3, length=0.1))
 	tag_percent=paste0(signif(axTicks(2)/samples_size*100,2),"%") #add axis in percentage
-	axis(side = 2, at=axTicks(2),labels=tag_percent, las=3,  mgp=c(3,2,1), pad=4.2, tcl=0.5)
+	axis(side = 4, at=axTicks(2),labels=tag_percent, las=3,  mgp=c(3,1,0))
+	mtext("% of reads", side=4, line=2, cex=0.7)
 	grid(ny=NULL, nx=NA)
 
+	par(mar=c(4, 5, 4, 2) + 0.1)
 	#aligment length
 	barplot(alignments.table, main="Alignment length", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	grid(ny=NULL, nx=NA)
 	#identity length
 	barplot(identity.table, main="Identity", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	grid(ny=NULL, nx=NA)
 	#mismatches
 	barplot(mismatches.table, main="Mismatches", col=tag_color, border=tag_color, ylab="% of alignments", beside=T)
+	grid(ny=NULL, nx=NA)
 	par(mar=c(5, 4, 4, 2) + 0.1)
 } else {
 	m <- matrix(c(1,1,2,3,4,5),nrow = 3,ncol = 2, byrow = TRUE)
@@ -72,13 +77,6 @@ if(nrow(data)>0) {
 	}
 }
 
-
-#tag proportion
-	# if (length(tags.table)>5){
-		# tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste0(signif(tags.table,3),"%"), ylim=c(0, max(tags.table,tags.ic95[2,])), las=2)
-	# } else {
-	# 	tags.bp<-barplot(tags.table,main="Tags", col=tag_color,border=tag_color, ylab="% of reads", names.arg=paste(paste0(signif(tags.table,3),"%"), names(tags.table),sep="\n"), ylim=c(0, max(tags.table,tags.ic95[2,])))
-	# }
 
 ###########################
 # print tag distribution
