@@ -9,7 +9,7 @@ data=read.delim(file_name, as.is=TRUE) #check that not empty?
 tags=data[,"Tag"]
 total_tags=nrow(data)
 alignments=data[,"Alignment"]
-identity=data[,"Identity"]
+identity=signif(data[,"Identity"],3)
 mismatches=data[,"Mismatches"]
 samples_size=as.integer(args[2])
 
