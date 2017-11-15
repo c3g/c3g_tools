@@ -178,14 +178,68 @@ nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
 frip=$(echo "${reads_under_peaks}/${final_reads_chip}" | bc -l)
 
+#5. extract NSC and RSC from run_spp
 
+nsc_chip=$(cut -f 9 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
+rsc_chip=$(cut -f 10 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
+quality_chip_num=$(cut -f 11 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
+
+## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
+
+if [[ "$quality_chip_num" == "-2" ]]
+  then
+    quality_chip=veryLow
+elif [[ "$quality_chip_num" == "-1" ]]
+  then
+    quality_chip=Low
+elif [[ "$quality_chip_num" == "0" ]]
+  then
+    quality_chip=Medium
+elif [[ "$quality_chip_num" == "1" ]]
+  then
+    quality_chip=High
+elif [[ "$quality_chip_num" == "2" ]]
+  then
+    quality_chip=veryHigh
+fi
+
+
+
+
+
+if [[ -s $INPUT_BAM ]]
+then
+nsc_input=$(cut -f 9 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+rsc_input=$(cut -f 10 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+quality_input_num=$(cut -f 11 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+
+
+if [[ "$quality_input_num" == "-2" ]]
+  then
+    quality_input=veryLow
+elif [[ "$quality_input_num" == "-1" ]]
+  then
+    quality_input=Low
+elif [[ "$quality_input_num" == "0" ]]
+  then
+    quality_input=Medium
+elif [[ "$quality_input_num" == "1" ]]
+  then
+    quality_input=High
+elif [[ "$quality_input_num" == "2" ]]
+  then
+    quality_input=veryHigh
+fi
+
+
+
+fi
+
+
+LC_NUMERIC="en_US.UTF-8"
 # printf "ChIP_name\tInput_name\ttotal_reads\tmapped_reads\tdupped_reads\tdup_rate\tsingletons\tfinal_reads\tjs_dist\tchance_div\tfrip\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 # printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "${SAMPLE_NAME}" "$iname" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
-printf "genome_assembly\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_mapped_reads\tctl_raw_reads\tclt_mapped_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$mapped_reads_chip" "$total_reads_input" "$mapped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-
-
-
-
+printf "genome_assembly\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\tctl_raw_reads\tclt_filtered_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$dupped_reads_chip" "$total_reads_input" "$dupped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
