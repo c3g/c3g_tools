@@ -243,7 +243,3 @@ LC_NUMERIC="en_US.UTF-8"
 printf "genome_assembly\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\tctl_raw_reads\tclt_filtered_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$dupped_reads_chip" "$total_reads_input" "$dupped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
-
-
-
-

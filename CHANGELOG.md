@@ -1,6 +1,99 @@
-32 tags, 316 commits
+33 tags, 383 commits
 
-HEAD        Sat Apr 22 14:48:35 2017 -0400        0 commits
+HEAD        Tue Nov 14 12:57:30 2017 -0500        0 commits
+
+2.1.9        Tue Nov 14 12:58:29 2017 -0500        67 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      22 commits
+
+       f68d795 added run_spp.R to make proper use of 'spp' R library
+       88e1287 new CHANGELOG.md
+       85f5cd4 adding tools/IHEC_chipseq_metrics_max.sh
+       1ff0790 new CHANGELOG.md
+       c1ed44a Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       09fc149 BFXDEV-674 - updated MethylSeq metrics scripts to reflect changes in MethylSeq pipeline regarding the deduplication step (which now uses Picard MarkDuplicates)
+       a79b874 new CHANGELOG.md
+       f27476c BFXDEV-674 - added a comment mark to the header line of the output combined file
+       2c1edba BFXDEV-674 - corrected unset variable in cpgStats.sh
+       b49cd5d BFXDEV-674 - added tools/cpgStats.sh for CpG metrics computing within the methylSeq pipeline
+       ce53fe2 BFXDEV-674 - adding bash tools for methylSeq metrics
+       019df95 releasing README and CHANGELOG for verion 2.1.9
+       a119ec4 added header line in GC content file
+       957de36 BFXDEV-674 - perl tool methylProfile.bismark.pl minor update
+       bf43c15 while working on BFXDEV-172, did a minor review or goseq.R and edger.R : updated indentation for more clarity when reading the code
+       1da92ed BFXDEV-674 - added python tool to assess the CpG coverage stats in the MethylSeq pipeline
+       f40eaf3 BFXDEV-674 - added R tool for the calculation of the GC bias in the MethylSeq pipeline
+       2e271d4 BFXDEV-674 - added python tool to calculate GC content from a given fasta file (e.g. reference), mainly used to produced GC content reference file needed by the MethylSeq pipeline when calculating the GC bias
+       e2f3ed7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b7a09d5 MethylSeq - added perl tool to compute methylation profile
+       e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
+       b1efd80 updated CHANGELOG.md from 2.1.8 release
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      20 commits
+
+       0afad0a in plotSpikeCount.R, round identity percentage for clarity
+       b8f1cfa in plotSpikeCount.R, remove border of barplots
+       f489b1c in plotSpikeCount.R, move percentaage axis to the right, add grid to plots
+       035f999 In plotSpikeInCount, add identity barplot and grou tag count and tag percentage into one plot
+       ce65309 In plotSpikeInCount, add option beside=T to barplots
+       cb0f8cd add plot showing distribution of spike in tag
+       5a57302 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       3a5a7f7 fix an error with query start and end when filtering blast output
+       06beb03 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2938dcf adding scripts for spike-in step in illumina pipeline: plotSpikeInCount.R, filterBastOutput.py, estimateSpikeInCount.sh
+       5892d79 remove a call to a non defined variable
+       9e6f5c4 fix unused parameter in abundanceTrancript2gene.R
+       6040b75 added new parameters to kallisto script to handle single reads
+       54a0f98 replaced mentions of samples to readsets
+       717ffcc fix spelling
+       5638e15 fix output of abundanceTranscript2geneLevel function
+       2a7446d added direct call to R_TOOLS variable
+       cbf698f added a step for merging individual abundance files
+       1d393c1 Add R function to convert transcript to gene level abundance
+       aa7ae30 added new function for RNAseq_light
+
+  eloi.mercier@mcgill.ca <eloi.mercier@mcgill.ca>      1 commits
+
+       9de32e1 Merged in RNAseq_light_dev (pull request #1)
+
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
+
+       b84d9e8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b8acd7b IHEC_chips metrics tool - correct typo
+       8591e6f tool -  ihec metrics debug -  BFXDEV-675
+       a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      14 commits
+
+       d76a8f8 tools - cpgStats add more info to stdout and correct for the exit code 1 when grep do not find a match
+       ca5603b tools - Methylseq ihec metrics adjustement to the new dedup step
+       a21eb00 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       5010cb8 tools - Methylseq ihec metrics adjustement to the new dedup step
+       e5d11d8 add tool to recoded sample name in the reedset file based on project.nanuq file (library Name, lane, run)
+       2631f72 change ihec methylseq metrics to work on single sample and add GC_bias
+       ffa02e5 python tools - add script to extract cancer SNVs from gemini db to xls
+       d8cc34b  RNAseq & ChIPseq-   Update (chip) and debug (Rna) IHEC metrics tools - BFXDEV-668  - BFXDEV-675
+       456de6c tools -  implement IHEC ChIPseq metrics script - BFXDEV-675
+       3fb02cc tools -  implement IHEC RNA metrics script - BFXDEV-668
+       3d2e2af Add IHEC rnaseq metrics generation script
+       3a8ab8d update axiom dev suite
+       a1ea573 correct plateQC graphs resolution
+       787a517 correct plateQC graphs
+
+  Mathieu Bourgey <mbourgey@cedar5.cedar.computecanada.ca>      1 commits
+
+       4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
+
+  robert.eveleigh@mcgill.ca <reveleig@abacus2.ferrier.genome.mcgill.ca>      1 commits
+
+       aaf5581 Update sequenza script and add sCNAphase script
+
+  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+
+       092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       c1040bf adding CreateHicFileInput.sh for .hic file creation in hicseq BFXDEV-670
+       aa6c18f added hicseq related scripts BFXDEV-670
 
 2.1.8        Mon Apr 24 09:55:28 2017 -0400        18 commits
 

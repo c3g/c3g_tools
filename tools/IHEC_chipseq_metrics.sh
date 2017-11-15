@@ -135,8 +135,8 @@ echo "Experiment type: ${CHIP_TYPE} and bin size: $bin_size" >&2
 
 plotFingerprint -b ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam -bs ${bin_size} -l ${SAMPLE_NAME} INPUT_${CHIP_TYPE} --JSDsample ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam --outQualityMetrics ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.png -p $n
 
-js_dist=`grep ${cname} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 8`
-chance_div=`grep ${cname} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 12`
+js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 8`
+chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 12`
 
 #4.     Calculating FRiP scores
 reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
@@ -144,5 +144,5 @@ frip=$(echo "${reads_under_peaks}/${final_reads}" | bc -l)
 
 
 printf "ChIP_name\tInput_name\ttotal_reads\tmapped_reads\tdupped_reads\tdup_rate\tsingletons\tfinal_reads\tjs_dist\tchance_div\tfrip\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "${SAMPLE_NAME}" "$iname" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
