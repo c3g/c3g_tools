@@ -1,11 +1,14 @@
-33 tags, 383 commits
+33 tags, 388 commits
 
-HEAD        Tue Nov 14 12:57:30 2017 -0500        0 commits
+HEAD        Wed Nov 15 15:07:28 2017 -0500        0 commits
 
-2.1.9        Tue Nov 14 12:58:29 2017 -0500        67 commits
+2.1.9        Wed Nov 15 15:08:37 2017 -0500        72 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      22 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      25 commits
 
+       a8c8180 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       e9bb399 updates on IHEC metrics for ChipSeq
+       fd6b95b new CHANGELOG.md
        f68d795 added run_spp.R to make proper use of 'spp' R library
        88e1287 new CHANGELOG.md
        85f5cd4 adding tools/IHEC_chipseq_metrics_max.sh
@@ -89,8 +92,10 @@ HEAD        Tue Nov 14 12:57:30 2017 -0500        0 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      5 commits
 
+       987da9e rosolving merge conflitct
+       28d96a9 adding NSC and RSC
        092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        c1040bf adding CreateHicFileInput.sh for .hic file creation in hicseq BFXDEV-670
        aa6c18f added hicseq related scripts BFXDEV-670
