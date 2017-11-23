@@ -29,6 +29,9 @@ Nseq=$(zcat $FILE_1 | awk ' { if (substr($0,0,1) == "+") { print $0} }' | wc -l)
 echo "$sample has $Nseq sequences"
 #Get the threshold of random picking
 thrC=$(echo " scale=6; $SAMPLE_TO / $Nseq" | bc)
+if [ $thrC == 0 ]; then
+  thrC=0.000001
+fi
 echo "$sample has 0$thrC rdp threshold"
 
 #Random pick
