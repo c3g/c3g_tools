@@ -8,9 +8,9 @@ TABLE_OUTFILE=$2
 TARGET_FLAG=$3
 
 if [ $TARGET_FLAG == 1 ]; then
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\t%_total_aln\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\tOntargetReads\t%Ontarget\t%onTargetvsRawRead\tlambdaConversion\tmean_genomecoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\t%_total_aln\tduplicated_reads\t%_aligned_duplicate\tdeduplicated_align_reads\t%_useful_align_rate\ton_target_reads\t%_on_target_rate\t%_on_target_vs_raw_reads\t%_lambda_conversion_rate\testimated_mean_genome_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
 else
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\t%_total_aln\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\tlambdaConversion\tmean_genomecoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\t%_total_aln\tduplicated_reads\t%_aligned_duplicate\tdeduplicated_align_reads\t%_useful_align_rate\t%_lambda_conversion_rate\testimated_mean_genome_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
 fi
 
 for sample in `echo $SAMPLE_LIST | sed 's/,/ /g'`
