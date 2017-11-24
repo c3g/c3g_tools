@@ -104,9 +104,16 @@ header = ['genomeAssembly', 'Sample', 'RawReads', 'SurvivingReads', 'SurvivingRe
 
 All = All.loc[:,header]
 
-file_name = 'report/ihec_metrics_rnaseq.tsv'
+file_name = 'report/IHEC_metrics_rnaseq_All.txt'
 All.to_csv(file_name, sep='\t', index=False)
 
+
+### write one file per sample:
+
+for sample in samples:   
+    file_name = 'report/IHEC_metrics_rnaseq_' + sample +'.txt'
+    sub = All.loc[All['Sample'] == sample] 
+    sub.to_csv(file_name, sep='\t', index=False)
 
 
 
