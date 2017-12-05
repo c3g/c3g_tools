@@ -1,11 +1,14 @@
-33 tags, 388 commits
+33 tags, 397 commits
 
-HEAD        Wed Nov 15 15:07:28 2017 -0500        0 commits
+HEAD        Fri Nov 24 12:44:30 2017 -0500        0 commits
 
-2.1.9        Wed Nov 15 15:08:37 2017 -0500        72 commits
+2.1.9        Tue Nov 28 15:41:20 2017 -0500        81 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      25 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      28 commits
 
+       5b25386 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       496f8fb BFXDEV-674 - review the metrics step, especially the IHEC metrics step, and updated header labels to be more standard
+       21b5428 new CHANGELOG.md
        a8c8180 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        e9bb399 updates on IHEC metrics for ChipSeq
        fd6b95b new CHANGELOG.md
@@ -88,12 +91,21 @@ HEAD        Wed Nov 15 15:07:28 2017 -0500        0 commits
 
        4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
 
+  mmichaud <marc.michaud@mail.mcgill.ca>      1 commits
+
+       9df614a Allow a minimum subsampling threshold (1x10e-6) to blast even with a lot of source reads. BFXDEV-698
+
   robert.eveleigh@mcgill.ca <reveleig@abacus2.ferrier.genome.mcgill.ca>      1 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      5 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      10 commits
 
+       5ccb9d2 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       0199656 IHEC format changes
+       a98798a chipseq modification: add rawreads
+       73fbca8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       e66dc77 ihec_metrics_rnaseq.py for rnaseq metrics
        987da9e rosolving merge conflitct
        28d96a9 adding NSC and RSC
        092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
@@ -162,32 +174,32 @@ HEAD        Wed Nov 15 15:07:28 2017 -0500        0 commits
        026180c removed subset line from script PopSV
        8e0170c Added PopSV script(beta)
 
-2.1.6        Tue May 3 14:55:43 2016 -0400        11 commits
+2.1.6        Tue May 3 14:55:43 2016 -0400        5 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      7 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
 
        a929638 new CHANGE LOG prior to new release 2.1.6
        39ac81a resolve conflicts
        362d40a commiting changes prior to new release
        1c82601 new CHANGELOG.md
-       354ce82 corrected a bug in chipSeqgenerateAnnotationGraphs.R that caused a blank exon annotation graph - BFXDEV-501
-       b0c47cc mugqic_tools - up-to-date CHANGELOG.md
-       ab85318 ading a changelog to mugqic_tools (since v2.1.5)
 
   Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
 
        df62d30 dict2bed - correct bug and add feature - BFXDEV-521
 
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
+2.1.5        Tue Jan 26 11:57:08 2016 -0500        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       354ce82 corrected a bug in chipSeqgenerateAnnotationGraphs.R that caused a blank exon annotation graph - BFXDEV-501
+       b0c47cc mugqic_tools - up-to-date CHANGELOG.md
+       ab85318 ading a changelog to mugqic_tools (since v2.1.5)
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
 
        96eadd0 R-tools - update SNV metrics to the new stats output fromat from snpEff - BFXDEV-490
        99b25f3 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        e45cf73 Rtools - remove typo and allow to skip insert size when working on single end library - BFXDEV-502
-
-2.1.5        Thu Jan 21 14:47:39 2016 -0500        2 commits
-
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
-
        b7a6767 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        6863562 perltools - remove # character from blast hit results - BFXDEV-500
 
