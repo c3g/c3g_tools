@@ -1,11 +1,13 @@
-33 tags, 397 commits
+33 tags, 401 commits
 
-HEAD        Fri Nov 24 12:44:30 2017 -0500        0 commits
+HEAD        Thu Dec 7 13:36:49 2017 -0500        0 commits
 
-2.1.9        Tue Nov 28 15:41:20 2017 -0500        81 commits
+2.1.9        Thu Dec 7 13:56:21 2017 -0500        85 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      28 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      30 commits
 
+       fc8753d minor updates in metrics (& IHEC metrics) scripts for MethylSeq pipeline
+       7558a25 new CHANGELOG.md
        5b25386 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        496f8fb BFXDEV-674 - review the metrics step, especially the IHEC metrics step, and updated header labels to be more standard
        21b5428 new CHANGELOG.md
@@ -99,8 +101,10 @@ HEAD        Fri Nov 24 12:44:30 2017 -0500        0 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      10 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      12 commits
 
+       7bb9b0f Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       42ef372 fixing rRNA matrics for IHEC
        5ccb9d2 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        0199656 IHEC format changes
        a98798a chipseq modification: add rawreads
