@@ -7,7 +7,7 @@
 # module to load samtools mugqic_dev/deeptools/2.5.3 
 
 usage() { 
-  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t <H3K27ac|H3K27me3|H3K36me3|H3K4me1|H3K4me3|H3K9me3|Input|H2AFZ|H3ac|H3K4me2|H3K9ac>]"
+  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t <H3K27ac|H3K27me3|H3K36me3|H3K4me1|H3K4me3|H3K9me3|Input|H2AFZ|H3ac|H3K4me2|H3K9ac|TF>]"
   echo "          [-d <ChIP markDup bam>]"
   echo "          [-i <Input markDup bam]" 
   echo "          [-s <ChIp Sample name]" 
@@ -83,10 +83,10 @@ then
   usage
 fi
 
-if [[ ! ( "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K27me3" || "${CHIP_TYPE}" == "H3K36me3" || "${CHIP_TYPE}" == "H3K4me1" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H3K9me3" || "${CHIP_TYPE}" == "Input" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" ) ]]
+if [[ ! ( "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K27me3" || "${CHIP_TYPE}" == "H3K36me3" || "${CHIP_TYPE}" == "H3K4me1" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H3K9me3" || "${CHIP_TYPE}" == "Input" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" || "${CHIP_TYPE}" == "TF") ]]
 then
   echo "The experiment type defined isn't one of the following." >&2
-  echo "H3K27ac | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Input | H2AFZ | H3ac | H3K4me2 | H3K9ac" >&2
+  echo "H3K27ac | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Input | H2AFZ | H3ac | H3K4me2 | H3K9ac | TF" >&2
   exit 1;
 fi 
 
