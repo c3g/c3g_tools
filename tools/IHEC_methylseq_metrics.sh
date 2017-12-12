@@ -73,10 +73,10 @@ cg10x=`cat $file | awk -F"," '{print $2}'`
 cg30x=`cat $file | awk -F"," '{print $3}'`
 
 # Calculate for the human conversion rate, estimated from bismark alignment reports, IHEC required.
-TotalmCHG=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total methylated C's in CHG context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalmCHH=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total methylated C's in CHH context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalumCHG=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total unmethylated C's in CHG context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalumCHH=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total unmethylated C's in CHH context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
+TotalmCHG=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total methylated C's in CHG context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalmCHH=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total methylated C's in CHH context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalumCHG=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total unmethylated C's in CHG context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalumCHH=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total unmethylated C's in CHH context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
 a=`echo $TotalmCHG` && b=`echo $TotalmCHH` && c=`echo $TotalumCHG` && d=`echo $TotalumCHH` &&  nr=$(echo "scale=4;( ($c+$d) / ($a+$b+$c+$d)) * 100;" | bc) && humanConversion=`echo $nr`;
 
 if [ $TARGET_FLAG == 1 ]; then
