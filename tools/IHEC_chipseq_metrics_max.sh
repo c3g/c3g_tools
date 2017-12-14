@@ -7,7 +7,7 @@
 # module to load samtools mugqic_dev/deeptools/2.5.3 
 
 usage() { 
-  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t <H3K27ac|H3K27me3|H3K36me3|H3K4me1|H3K4me3|H3K9me3|Input|H2AFZ|H3ac|H3K4me2|H3K9ac>]"
+  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t narrow|broad|Input]"
   echo "          [-d <ChIP markDup bam>]"
   echo "          [-i <Input markDup bam]" 
   echo "          [-s <ChIp Sample name]" 
@@ -83,10 +83,10 @@ then
   usage
 fi
 
-if [[ ! ( "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K27me3" || "${CHIP_TYPE}" == "H3K36me3" || "${CHIP_TYPE}" == "H3K4me1" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H3K9me3" || "${CHIP_TYPE}" == "Input" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" ) ]]
+if [[ ! ( "${CHIP_TYPE}" == "narrow" || "${CHIP_TYPE}" == "broad" || "${CHIP_TYPE}" == "Input" ) ]]
 then
   echo "The experiment type defined isn't one of the following." >&2
-  echo "H3K27ac | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Input | H2AFZ | H3ac | H3K4me2 | H3K9ac" >&2
+  echo "narrow | broad | Input" >&2
   exit 1;
 fi 
 
@@ -157,7 +157,7 @@ final_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | gr
 ## Attention: Regarding the bin size (specified in the command below by the ‘-bs’ option) there hasn’t been an agreement on what the optimal bin size is yet. There have been discussions on adopting smaller bin sizes for the sharp peaks and larger bin sizes for the broad peaks.
 ## No need to remove the blacklisted regions for the JSD calculation.
 
-if [[ "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" || "${CHIP_TYPE}" == "TF" ]]
+if [[ "${CHIP_TYPE}" == "narrow" ]]
 then
   bin_size=200
 else
@@ -244,9 +244,8 @@ LC_NUMERIC="en_US.UTF-8"
 #printf "genome_assembly\ttreat_name\tctl_name\ttreat_filtered_reads\ttreat_mapped_reads\tclt_filtered_reads\tclt_mapped_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 #LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$mapped_reads_chip" "$total_reads_input" "$mapped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
 
-printf "genome_assembly\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\ttreat_mapped_reads\ttreat_duplicated_reads\ttreat_final_reads\tctl_raw_reads\tclt_filtered_reads\tclt_mapped_reads\tctl_duplicated_reads\tctl_final_reads\ttreat_filtered_frac\tctl_filtered_frac\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
-LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$raw_reads_chip" "$total_reads_chip" "$mapped_reads_chip" "$dupped_reads_chip" "$final_reads_chip" "$raw_reads_input" "$total_reads_input" "$mapped_reads_input" "$dupped_reads_input" "$final_reads_input" "$filt_rate_chip" "$filt_rate_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
-
+printf "genome_assembly\tChIP_type\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\ttreat_mapped_reads\ttreat_duplicated_reads\ttreat_final_reads\tctl_raw_reads\tclt_filtered_reads\tclt_mapped_reads\tctl_duplicated_reads\tctl_final_reads\ttreat_filtered_frac\tctl_filtered_frac\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
+LANG=C printf "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${CHIP_TYPE}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$raw_reads_chip" "$total_reads_chip" "$mapped_reads_chip" "$dupped_reads_chip" "$final_reads_chip" "$raw_reads_input" "$total_reads_input" "$mapped_reads_input" "$dupped_reads_input" "$final_reads_input" "$filt_rate_chip" "$filt_rate_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
 
 
 
