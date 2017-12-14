@@ -1,11 +1,15 @@
-33 tags, 401 commits
+33 tags, 407 commits
 
-HEAD        Thu Dec 7 13:36:49 2017 -0500        0 commits
+HEAD        Thu Dec 14 10:56:59 2017 -0500        0 commits
 
-2.1.9        Thu Dec 7 13:56:21 2017 -0500        85 commits
+2.1.9        Thu Dec 14 11:27:05 2017 -0500        91 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      30 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      34 commits
 
+       ac44095 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       68e8be3 very minor updates on the header of the methylseq metrics report
+       ad0c35d BFXDEV-674 - updated IHEC metrics report script : generalized way to find bismark alignment reports when computing the human conversion rate
+       3dac5d2 Version bump to 2.1.9
        fc8753d minor updates in metrics (& IHEC metrics) scripts for MethylSeq pipeline
        7558a25 new CHANGELOG.md
        5b25386 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
@@ -101,8 +105,10 @@ HEAD        Thu Dec 7 13:36:49 2017 -0500        0 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      12 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      14 commits
 
+       6069ee9 changing ihec_metrics to use chip_type N/B instead of chip mark
+       a868c97 IHEC_chipseq_metrics_max.sh edited online with Bitbucket
        7bb9b0f Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        42ef372 fixing rRNA matrics for IHEC
        5ccb9d2 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
