@@ -11,14 +11,14 @@ COUNT=$5
 
 
 if [ $TARGET_FLAG == 1 ]; then
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimate_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimate_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
   fi
 else
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimate_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimate_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
   fi
 fi
 
