@@ -1,11 +1,25 @@
-33 tags, 373 commits
+33 tags, 407 commits
 
-HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
+HEAD        Thu Dec 14 10:56:59 2017 -0500        0 commits
 
-2.1.9        Thu Nov 2 15:15:41 2017 -0400        57 commits
+2.1.9        Thu Dec 14 11:27:05 2017 -0500        91 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      20 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      34 commits
 
+       ac44095 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       68e8be3 very minor updates on the header of the methylseq metrics report
+       ad0c35d BFXDEV-674 - updated IHEC metrics report script : generalized way to find bismark alignment reports when computing the human conversion rate
+       3dac5d2 Version bump to 2.1.9
+       fc8753d minor updates in metrics (& IHEC metrics) scripts for MethylSeq pipeline
+       7558a25 new CHANGELOG.md
+       5b25386 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       496f8fb BFXDEV-674 - review the metrics step, especially the IHEC metrics step, and updated header labels to be more standard
+       21b5428 new CHANGELOG.md
+       a8c8180 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       e9bb399 updates on IHEC metrics for ChipSeq
+       fd6b95b new CHANGELOG.md
+       f68d795 added run_spp.R to make proper use of 'spp' R library
+       88e1287 new CHANGELOG.md
        85f5cd4 adding tools/IHEC_chipseq_metrics_max.sh
        1ff0790 new CHANGELOG.md
        c1ed44a Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
@@ -27,8 +41,16 @@ HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
        e8689b8 BFXDEV-172 - implemented DESeq2 R-tool and added it to mugqic_tools
        b1efd80 updated CHANGELOG.md from 2.1.8 release
 
-  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      12 commits
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      20 commits
 
+       0afad0a in plotSpikeCount.R, round identity percentage for clarity
+       b8f1cfa in plotSpikeCount.R, remove border of barplots
+       f489b1c in plotSpikeCount.R, move percentaage axis to the right, add grid to plots
+       035f999 In plotSpikeInCount, add identity barplot and grou tag count and tag percentage into one plot
+       ce65309 In plotSpikeInCount, add option beside=T to barplots
+       cb0f8cd add plot showing distribution of spike in tag
+       5a57302 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       3a5a7f7 fix an error with query start and end when filtering blast output
        06beb03 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        2938dcf adding scripts for spike-in step in illumina pipeline: plotSpikeInCount.R, filterBastOutput.py, estimateSpikeInCount.sh
        5892d79 remove a call to a non defined variable
@@ -75,12 +97,27 @@ HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
 
        4493877 cadjust permission of tools/IHEC_chipseq_metrics.sh tools/IHEC_rnaseq_metrics.sh - BFXDEV-668  - BFXDEV-675
 
+  mmichaud <marc.michaud@mail.mcgill.ca>      1 commits
+
+       9df614a Allow a minimum subsampling threshold (1x10e-6) to blast even with a lot of source reads. BFXDEV-698
+
   robert.eveleigh@mcgill.ca <reveleig@abacus2.ferrier.genome.mcgill.ca>      1 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      14 commits
 
+       6069ee9 changing ihec_metrics to use chip_type N/B instead of chip mark
+       a868c97 IHEC_chipseq_metrics_max.sh edited online with Bitbucket
+       7bb9b0f Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       42ef372 fixing rRNA matrics for IHEC
+       5ccb9d2 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       0199656 IHEC format changes
+       a98798a chipseq modification: add rawreads
+       73fbca8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       e66dc77 ihec_metrics_rnaseq.py for rnaseq metrics
+       987da9e rosolving merge conflitct
+       28d96a9 adding NSC and RSC
        092451b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        c1040bf adding CreateHicFileInput.sh for .hic file creation in hicseq BFXDEV-670
        aa6c18f added hicseq related scripts BFXDEV-670
@@ -147,32 +184,32 @@ HEAD        Thu Nov 2 15:00:25 2017 -0400        0 commits
        026180c removed subset line from script PopSV
        8e0170c Added PopSV script(beta)
 
-2.1.6        Tue May 3 14:55:43 2016 -0400        11 commits
+2.1.6        Tue May 3 14:55:43 2016 -0400        5 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      7 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
 
        a929638 new CHANGE LOG prior to new release 2.1.6
        39ac81a resolve conflicts
        362d40a commiting changes prior to new release
        1c82601 new CHANGELOG.md
-       354ce82 corrected a bug in chipSeqgenerateAnnotationGraphs.R that caused a blank exon annotation graph - BFXDEV-501
-       b0c47cc mugqic_tools - up-to-date CHANGELOG.md
-       ab85318 ading a changelog to mugqic_tools (since v2.1.5)
 
   Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
 
        df62d30 dict2bed - correct bug and add feature - BFXDEV-521
 
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
+2.1.5        Tue Jan 26 11:57:08 2016 -0500        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       354ce82 corrected a bug in chipSeqgenerateAnnotationGraphs.R that caused a blank exon annotation graph - BFXDEV-501
+       b0c47cc mugqic_tools - up-to-date CHANGELOG.md
+       ab85318 ading a changelog to mugqic_tools (since v2.1.5)
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
 
        96eadd0 R-tools - update SNV metrics to the new stats output fromat from snpEff - BFXDEV-490
        99b25f3 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        e45cf73 Rtools - remove typo and allow to skip insert size when working on single end library - BFXDEV-502
-
-2.1.5        Thu Jan 21 14:47:39 2016 -0500        2 commits
-
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
-
        b7a6767 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        6863562 perltools - remove # character from blast hit results - BFXDEV-500
 

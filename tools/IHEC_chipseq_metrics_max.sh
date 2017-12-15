@@ -7,7 +7,7 @@
 # module to load samtools mugqic_dev/deeptools/2.5.3 
 
 usage() { 
-  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t <H3K27ac|H3K27me3|H3K36me3|H3K4me1|H3K4me3|H3K9me3|Input|H2AFZ|H3ac|H3K4me2|H3K9ac>]"
+  echo "Usage: IHEC_chipseq_metrics.sh [option] [-t narrow|broad|Input]"
   echo "          [-d <ChIP markDup bam>]"
   echo "          [-i <Input markDup bam]" 
   echo "          [-s <ChIp Sample name]" 
@@ -83,10 +83,10 @@ then
   usage
 fi
 
-if [[ ! ( "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K27me3" || "${CHIP_TYPE}" == "H3K36me3" || "${CHIP_TYPE}" == "H3K4me1" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H3K9me3" || "${CHIP_TYPE}" == "Input" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" ) ]]
+if [[ ! ( "${CHIP_TYPE}" == "narrow" || "${CHIP_TYPE}" == "broad" || "${CHIP_TYPE}" == "Input" ) ]]
 then
   echo "The experiment type defined isn't one of the following." >&2
-  echo "H3K27ac | H3K27me3 | H3K36me3 | H3K4me1 | H3K4me3 | H3K9me3 | Input | H2AFZ | H3ac | H3K4me2 | H3K9ac" >&2
+  echo "narrow | broad | Input" >&2
   exit 1;
 fi 
 
@@ -108,12 +108,13 @@ fi
 ## The original number of reads and the number of those aligned:
 samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 
-
+raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
 total_reads_chip=`grep "in total" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
 mapped_reads_chip=`grep "mapped (" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 dupped_reads_chip=`grep "duplicates" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
 dup_rate_chip=$(echo "${dupped_reads_chip}/${mapped_reads_chip}" | bc -l)
 aln_rate_chip=$(echo "${mapped_reads_chip}/${total_reads_chip}" | bc -l)
+filt_rate_chip=$(echo "${total_reads_chip}/${raw_reads_chip}" | bc -l)
 
 ## Finally, the number of singletons for paired-end data sets can be calculated using:
 singletons_chip=`grep "singletons" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
@@ -130,11 +131,13 @@ if [[ -s $INPUT_BAM ]]
 then
   samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
 
+  raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
   total_reads_input=`grep "in total" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
   mapped_reads_input=`grep "mapped (" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
   dupped_reads_input=`grep "duplicates" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
   dup_rate_input=$(echo "${dupped_reads_input}/${mapped_reads_input}" | bc -l)
   aln_rate_input=$(echo "${mapped_reads_input}/${total_reads_input}" | bc -l)
+  filt_rate_input=$(echo "${total_reads_input}/${raw_reads_input}" | bc -l)
 
   ## Finally, the number of singletons for paired-end data sets can be calculated using:
   singletons_input=`grep "singletons" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
@@ -154,7 +157,7 @@ final_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | gr
 ## Attention: Regarding the bin size (specified in the command below by the ‘-bs’ option) there hasn’t been an agreement on what the optimal bin size is yet. There have been discussions on adopting smaller bin sizes for the sharp peaks and larger bin sizes for the broad peaks.
 ## No need to remove the blacklisted regions for the JSD calculation.
 
-if [[ "${CHIP_TYPE}" == "H3K27ac" || "${CHIP_TYPE}" == "H3K4me3" || "${CHIP_TYPE}" == "H2AFZ" || "${CHIP_TYPE}" == "H3ac" || "${CHIP_TYPE}" == "H3K4me2" || "${CHIP_TYPE}" == "H3K9ac" ]]
+if [[ "${CHIP_TYPE}" == "narrow" ]]
 then
   bin_size=200
 else
@@ -178,13 +181,71 @@ nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
 frip=$(echo "${reads_under_peaks}/${final_reads_chip}" | bc -l)
 
+#5. extract NSC and RSC from run_spp
 
-# printf "ChIP_name\tInput_name\ttotal_reads\tmapped_reads\tdupped_reads\tdup_rate\tsingletons\tfinal_reads\tjs_dist\tchance_div\tfrip\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-# printf "%s\t%s\t%d\t%d\t%d\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\n" "${SAMPLE_NAME}" "$iname" "$total_reads" "$mapped_reads" "$dupped_reads" "$dup_rate" "$singletons" "$final_reads" "$js_dist" "$chance_div" "$frip" >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+nsc_chip=$(cut -f 9 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
+rsc_chip=$(cut -f 10 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
+quality_chip_num=$(cut -f 11 ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | head -n 1)
 
-printf "genome_assembly\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_mapped_reads\tctl_raw_reads\tclt_mapped_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$mapped_reads_chip" "$total_reads_input" "$mapped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
+if [[ "$quality_chip_num" == "-2" ]]
+  then
+    quality_chip=veryLow
+elif [[ "$quality_chip_num" == "-1" ]]
+  then
+    quality_chip=Low
+elif [[ "$quality_chip_num" == "0" ]]
+  then
+    quality_chip=Medium
+elif [[ "$quality_chip_num" == "1" ]]
+  then
+    quality_chip=High
+elif [[ "$quality_chip_num" == "2" ]]
+  then
+    quality_chip=veryHigh
+fi
+
+
+
+
+
+if [[ -s $INPUT_BAM ]]
+then
+nsc_input=$(cut -f 9 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+rsc_input=$(cut -f 10 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+quality_input_num=$(cut -f 11 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+
+
+if [[ "$quality_input_num" == "-2" ]]
+  then
+    quality_input=veryLow
+elif [[ "$quality_input_num" == "-1" ]]
+  then
+    quality_input=Low
+elif [[ "$quality_input_num" == "0" ]]
+  then
+    quality_input=Medium
+elif [[ "$quality_input_num" == "1" ]]
+  then
+    quality_input=High
+elif [[ "$quality_input_num" == "2" ]]
+  then
+    quality_input=veryHigh
+fi
+
+
+
+fi
+
+
+LC_NUMERIC="en_US.UTF-8"
+
+#printf "genome_assembly\ttreat_name\tctl_name\ttreat_filtered_reads\ttreat_mapped_reads\tclt_filtered_reads\tclt_mapped_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+#LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$mapped_reads_chip" "$total_reads_input" "$mapped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
+
+printf "genome_assembly\tChIP_type\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\ttreat_mapped_reads\ttreat_duplicated_reads\ttreat_final_reads\tctl_raw_reads\tclt_filtered_reads\tclt_mapped_reads\tctl_duplicated_reads\tctl_final_reads\ttreat_filtered_frac\tctl_filtered_frac\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
+LANG=C printf "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${CHIP_TYPE}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$raw_reads_chip" "$total_reads_chip" "$mapped_reads_chip" "$dupped_reads_chip" "$final_reads_chip" "$raw_reads_input" "$total_reads_input" "$mapped_reads_input" "$dupped_reads_input" "$final_reads_input" "$filt_rate_chip" "$filt_rate_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
 
 
 

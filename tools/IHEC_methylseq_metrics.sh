@@ -11,20 +11,20 @@ COUNT=$5
 
 
 if [ $TARGET_FLAG == 1 ]; then
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\tMappingEfficiency\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\t%Proportion_Unique_filteredReads\tOntargetReads\t%Ontarget\t%onTargetvsRawRead\tGC_bias\tpUC19_meth\tlambdaConversion\thumanConversion\tmean_genomecoverage\tmedianCpGcoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\tMappingEfficiency\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\t%Proportion_Unique_filteredReads\tOntargetReads\t%Ontarget\t%onTargetvsRawRead\tGC_bias\tpUC19_meth\tlambdaConversion\thumanConversion\tmean_genomecoverage\tmedianCpGcoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
   fi
 else
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\tMappingEfficiency\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\t%Proportion_Unique_filteredReads\tGC_bias\tpUC19_meth\tlambdaConversion\thumanConversion\tmean_genomecoverage\tmedianCpGcoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survivalrate\taln_reads\tMappingEfficiency\tDuplicatedReads\t%aligned_duplicate\tDeduplicatedAlignRreads\t%_UsefulAlignRate\t%Proportion_Unique_filteredReads\tGC_bias\tpUC19_meth\tlambdaConversion\thumanConversion\tmean_genomecoverage\tmedianCpGcoverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
   fi
 fi
 
 # Calculate the survival rate : #reads after trimming
-rawReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-trimmedReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$2;} END {printf "%d\n", sum}'`
+rawReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$1;} END {printf "%d\n", sum*2}'`
+trimmedReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Read Pairs: "//g|sed s/"Both Surviving:"//g|awk '{sum+=$2;} END {printf "%d\n", sum*2}'`
 a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && SurvivalRate=`echo $nr`;
 
 # The number of aligned reads :
@@ -36,7 +36,9 @@ samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.bam > ali
 DeduplicatedAlignRreads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 
 DuplicateReads=$(echo " ($AlignedReads-$DeduplicatedAlignRreads)" | bc)
-DuplicationRate=$(echo "${DuplicateReads}/${AlignedReads}" | bc -l)
+DuplicationRate=$(echo "scale=4;(${DuplicateReads} / ${AlignedReads}) * 100;" | bc -l)
+
+a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
 # Estimated average coverage, values for this metric should be above 12 for a single lane. IHEC required.
 genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
@@ -71,10 +73,10 @@ cg10x=`cat $file | awk -F"," '{print $2}'`
 cg30x=`cat $file | awk -F"," '{print $3}'`
 
 # Calculate for the human conversion rate, estimated from bismark alignment reports, IHEC required.
-TotalmCHG=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total methylated C's in CHG context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalmCHH=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total methylated C's in CHH context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalumCHG=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total unmethylated C's in CHG context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
-TotalumCHH=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}*/${SAMPLE_NAME}.*sorted_noRG_bismark_bt2_PE_report.txt|grep "Total unmethylated C's in CHH context:"|awk '{print $NF}'|awk '{sum+=$1;} END {printf "%d\n", sum}'`
+TotalmCHG=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total methylated C's in CHG context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalmCHH=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total methylated C's in CHH context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalumCHG=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total unmethylated C's in CHG context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
+TotalumCHH=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bismark_bt2_PE_report.txt"`; do cat $report | grep "Total unmethylated C's in CHH context:" | awk '{print $NF}'; done | awk '{sum+=$1;} END {printf "%d\n", sum}')
 a=`echo $TotalmCHG` && b=`echo $TotalmCHH` && c=`echo $TotalumCHG` && d=`echo $TotalumCHH` &&  nr=$(echo "scale=4;( ($c+$d) / ($a+$b+$c+$d)) * 100;" | bc) && humanConversion=`echo $nr`;
 
 if [ $TARGET_FLAG == 1 ]; then
