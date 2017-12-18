@@ -8,6 +8,8 @@ The main repo dir organization is:
 
   mugqic_tools - root dir
 
+  root/java-tools - dir containing all java programs.
+
   root/perl-tools - dir containing all perl scripts.
 
   root/python-tools - dir containing all python scripts.
