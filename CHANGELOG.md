@@ -1,6 +1,22 @@
-33 tags, 407 commits
+34 tags, 412 commits
 
-HEAD        Thu Dec 14 10:56:59 2017 -0500        0 commits
+HEAD        Tue Dec 19 14:38:45 2017 -0500        0 commits
+
+2.1.10        Wed Dec 20 13:29:55 2017 -0500        5 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       89605c5 BFXDEV-674 - MethylSeq pipeline - updated metrics scprits for MethylSeq pipeline : standardized header and some reviewed calculations
+       f421c9b Version 2.1.9 updated
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      2 commits
+
+       e433367 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       a1719b9 in plotSpikeCount.R remove unused variable pdf_out
+
+  mmichaud <marc.michaud@mail.mcgill.ca>      1 commits
+
+       4cf22bd Add CountIlluminaBarcodes in java-tools; used in illumina run processing pipeline.
 
 2.1.9        Thu Dec 14 11:27:05 2017 -0500        91 commits
 
