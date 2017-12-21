@@ -1,11 +1,14 @@
-34 tags, 412 commits
+34 tags, 415 commits
 
-HEAD        Tue Dec 19 14:38:45 2017 -0500        0 commits
+HEAD        Thu Dec 21 15:46:07 2017 -0500        0 commits
 
-2.1.10        Wed Dec 20 13:29:55 2017 -0500        5 commits
+2.1.10        Thu Dec 21 15:49:09 2017 -0500        8 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      5 commits
 
+       970f924 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       16c8203 dict2bed - correction to avoid error message : "global name 'args' is not defined"
+       791827b Version bump to 2.1.10
        89605c5 BFXDEV-674 - MethylSeq pipeline - updated metrics scprits for MethylSeq pipeline : standardized header and some reviewed calculations
        f421c9b Version 2.1.9 updated
 
