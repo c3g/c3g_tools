@@ -51,7 +51,7 @@ def main():
     parser.add_argument("-r", "--remove", help="remove alt contigs (optional ; Default all chromsomes + alts)", type=bool, default=0)
     args = parser.parse_args()
 
-    ordered_dict = parse_dictionary(args.dict)
+    ordered_dict = parse_dictionary(args.dict, args.remove)
 
     total_size = 0
     for seq in ordered_dict:
@@ -85,7 +85,7 @@ def main():
     currentBED.close()
     print('File ' + currentBED.name + ' ' + str(currentSize))
 
-def parse_dictionary(dict):
+def parse_dictionary(dict, remove):
     ordered_dict=[]
     #with open(dict) as dictFile:
     with dict as dictFile:
@@ -93,7 +93,7 @@ def parse_dictionary(dict):
         for line in dictFile:
             if line.startswith('@SQ'):
                 match = re.search('^\@SQ.+SN:([^\t]+)\t.*LN:(\d+)\t.*', line)
-                if args.remove:
+                if remove:
                     if "_" in match.group(1) or "." in match.group(1):
                         continue
                     else:

@@ -1,6 +1,5 @@
 #!/usr/bin/env sh
-set -e
-set -o pipefail
+set -euxo pipefail
 
 # Get args
 SAMPLE_NAME=$1
@@ -30,6 +29,7 @@ a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 1
 # The number of aligned reads :
 samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt
 AlignedReads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && MappingEfficiency=`echo $nr`;
 
 # The number of deduplicated aligned reads:
 samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt
@@ -45,14 +45,14 @@ genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.
 
 # Specific for targeted capture methylome (MCC-Seq) data, obtain the on-target rate, the final useful proportion of reads over the raw reads.
 if [ $TARGET_FLAG == 1 ]; then
-  OntargetReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.ontarget.bam.flagstat|grep mapped|head -1|awk '{printf "%d",$1/2}'`
+  OntargetReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.ontarget.bam.flagstat|grep mapped|head -1|awk '{printf "%d",$1}'`
   a=`echo $OntargetReads` && b=`echo $DeduplicatedAlignRreads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && OntargetRate=`echo $nr`;
   a=`echo $OntargetReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetvsRawRead=`echo $nr`;
 fi
 
 # Proportion of uniquely aligned reads without duplicates and a quality score > 10; for reference epigenome, values for this metric should exceed 85%. IHEC required.
 DedupMQ10filteredreads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.filtered_reads.counts.txt`
-a=`echo $DedupMQ10filteredreads` && b=`echo $trimmedReads` && nr=$(echo "scale=4; (($a / $b) /2)* 100;" | bc) && DedupMQ10Proportion=`echo $nr`;
+a=`echo $DedupMQ10filteredreads` && b=`echo $trimmedReads` && nr=$(echo "scale=4; (($a / $b) )* 100;" | bc) && DedupMQ10Proportion=`echo $nr`;
 
 # Median CpG coverage, values for this metrics should exceed 2. IHEC required.
 MedianCpGcov=`cat methylation_call/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.dedup.median_CpG_coverage.txt|head -1 |awk '{print $NF}'`
