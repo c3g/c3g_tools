@@ -120,6 +120,6 @@ if(nrow(data)>0) {
 	tags.summary[,"Estimate_%"]=tags.table
 	tags.summary[,"IC95"]=paste0("[",signif(tags.ic95[1,],3),",", signif(tags.ic95[2,],3),"]")
 }
-write.table(tags.summary, file=paste0(file_name,".summary"), quote=F, sep="\t", col.names=T, row.names=F)
+write.table(tags.summary, file=paste0(file_name,".summary.tsv"), quote=F, sep="\t", col.names=T, row.names=F)
 
 print("PDF and summary files successfully generated")
