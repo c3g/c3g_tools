@@ -86,6 +86,10 @@ MTreads={}
 for sample in samples:
     cmd = "samtools view -c alignment/{sample}/{sample}.sorted.mdup.bam MT".format(sample =sample)
     MTreads[sample] = int(os.popen(cmd).read().strip())
+    if MTreads[sample] == 0:
+        cmd = "samtools view -c alignment/{sample}/{sample}.sorted.mdup.bam chrM".format(sample =sample)
+        MTreads[sample] = int(os.popen(cmd).read().strip())
+
 
 
 MTreads = pd.DataFrame.from_dict(MTreads, 
