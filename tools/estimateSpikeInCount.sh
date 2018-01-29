@@ -73,6 +73,6 @@ if [[ $IDENTITY != *.* ]]; then #treat 0 and 1 cases -> 0.0 and 1.1
 fi
 IDENTITY_PERC=${IDENTITY//./} #0.0 -> 00
 ########REMOVE HARD CODED PATH
-Rscript --vanilla /home/emercier/bitbucket/spikein_dev/mugqic_tools/R-tools/plotSpikeInCount.R $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.${ALIGN_SIZE}bp_${MISTMATCHES}MM_${IDENTITY_PERC}id.tsv $SAMPLE_TO
+Rscript --vanilla /home/emercier/bitbucket/spikein_dev/mugqic_tools/R-tools/plotSpikeInCount.R $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.tsv.${ALIGN_SIZE}bp_${MISTMATCHES}MM_${IDENTITY_PERC}id.tsv $SAMPLE_TO
 
 
