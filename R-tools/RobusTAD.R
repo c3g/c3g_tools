@@ -55,8 +55,8 @@ leftRightBoundaryScores <- function(data, minW, maxW, minRatio) {
   for (i in (maxW+2):(s-maxW-2)) {
     rightScore=0;
     leftScore =0;
-    leftBoundaryScore[i,1]=-99999;
-    rightBoundaryScore[i,1]=-99999;
+    leftBoundaryScore[i+1,1]=-99999;
+    rightBoundaryScore[i+1,1]=-99999;
     
     diag=matrix(NA,maxW,maxW);
     for (d in 1:maxW) {
@@ -71,8 +71,9 @@ leftRightBoundaryScores <- function(data, minW, maxW, minRatio) {
       }
       if (d>=minW) {
         z = rightScore/sqrt(maxiPossible);
-        if (z>rightBoundaryScore[i,1]) {
-          rightBoundaryScore[i,1]=z;
+        # note: the score calculated pertains to the presence of a boundary on the right end of bin i. However it is more convenient to report scores relating to the left end of bins, so we associate this score to bin i+1 instead of i.
+        if (z>rightBoundaryScore[i+1,1]) {
+          rightBoundaryScore[i+1,1]=z;
         }
       }
       
@@ -82,7 +83,8 @@ leftRightBoundaryScores <- function(data, minW, maxW, minRatio) {
       }
       if (d>=minW) {
         z = leftScore/sqrt(maxiPossible);
-        if (z>leftBoundaryScore[i,1]) leftBoundaryScore[i,1]=z;
+        # note: the score calculated pertains to the presence of a boundary on the right end of bin i. However it is more convenient to report scores relating to the left end of bins, so we associate this score to bin i+1 instead of i.
+        if (z>leftBoundaryScore[i+1,1]) leftBoundaryScore[i+1,1]=z;
       }
     }
   }
@@ -131,7 +133,7 @@ option_list = list(
   make_option(c("-b", "--binsize"), type="integer", default=50, 
               help="binsize or resolution used in Hi-C analysis in kb [default = %default]"),
   make_option(c("-r", "--minRatio"), type="double", default=1.5, 
-              help="the ratio of TAD to background required to assign a good score [default = %default]"),
+              help="minimum ratio of Within to Across IF values to contribute to boundary score calculation [default = %default]"),
   make_option(c("-w", "--minWin"), type="integer", default=250, 
               help="minimum window around the bin used to calculate the TAD score in kb [default = %default]"),
   make_option(c("-W", "--maxWin"), type="integer", default=500, 
