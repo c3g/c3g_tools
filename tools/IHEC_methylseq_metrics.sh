@@ -27,12 +27,10 @@ trimmedReads=`cat trim/${SAMPLE_NAME}/*.trim.log |grep "Input"| sed s/"Input Rea
 a=`echo $trimmedReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && SurvivalRate=`echo $nr`;
 
 # The number of aligned reads :
-samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt
 AlignedReads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 a=`echo $AlignedReads` && b=`echo $trimmedReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && MappingEfficiency=`echo $nr`;
 
 # The number of deduplicated aligned reads:
-samtools flagstat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.bam > alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt
 DeduplicatedAlignRreads=`grep "mapped (" alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 
 DuplicateReads=$(echo " ($AlignedReads-$DeduplicatedAlignRreads)" | bc)
