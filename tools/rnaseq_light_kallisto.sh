@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env sh
 #by Eloi Mercier
 
 set -e

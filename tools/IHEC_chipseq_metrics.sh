@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 
 # Computation of IHEC ChIP-seq quality metrics

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 if [ $# -ne 2 ]; then
     echo $0: usage: CreateMatA.sh myfile myRes

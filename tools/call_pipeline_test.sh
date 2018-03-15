@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env sh
 # Exit immediately on error
 #set -eu -o pipefail
 

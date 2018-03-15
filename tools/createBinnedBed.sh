@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env sh
 # 
 ##2011-09-20 - Mathieu Bourgey - mbourgey@genomequebec.com
 #Usage createBinnedBed.sh chormosomeSize($1) binSize($2) output($3)

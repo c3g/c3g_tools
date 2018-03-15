@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/env bash
 
 if [ $# -ne 3 ]; then
     echo $0: usage: CreateHicFile.sh myNameSortedbam sampleId tmpDir
