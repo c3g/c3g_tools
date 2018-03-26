@@ -1,6 +1,37 @@
-34 tags, 415 commits
+35 tags, 435 commits
 
-HEAD        Thu Dec 21 15:46:07 2017 -0500        0 commits
+HEAD        Tue Mar 20 12:25:30 2018 -0400        0 commits
+
+2.1.11        Mon Mar 26 14:22:46 2018 -0400        20 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      9 commits
+
+       8bcae89 changed permission to 'a+x' for some R-tools used by smallRNA pipeline
+       9c54695 added new bash tools used by HiC-Seq pipeline
+       fab5e28 minor updates regarding shebang of our bash tools and updated indentation
+       44fa837 minor indentations updats + removed flagstat calls from IHEC_methylseq_metrics since they are now made earlier in the methylseq pipeline
+       e2ad17b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       7e098c3 smallRNA pipeline - added some more R tools to handle data for/from mirdeep2
+       56f6f34 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       24d2b3a smallRNA pipeline - added R tool to prepare the inputs for mirdeep2
+       4f7b3d0 updates brought to version 2.1.10 dump
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      8 commits
+
+       72ab8a2 in mergeKnownAndNovelMiRNA.R: change variables name cleanup unused commands
+       e0cf384 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       dd065bd in plotSpikeInCount.R: add a column for percentage among tags and change column names of summary file
+       7310bf0 in abundanceTranscript2geneLevel.R: add parameter to ignore taxon version which fix error when gtf and fasta use different annotations
+       691ac26 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2acd2b6 in estimateSpikeInCount.sh, fix input file name when running plotSpikeInCount.R
+       802cdf9 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b2b91a7 in estimateSpikeInCount.sh, filterBlastOutput.py and plotSpikeInCount.R: add .tsv file extension
+
+  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+
+       74734b5 updating RobusTAD for TAD calling
+       a54b860 adding RobusTAD for hicseq.py
+       8c907d1 adding MT reads to IHEC metrics
 
 2.1.10        Thu Dec 21 15:49:09 2017 -0500        8 commits
 
