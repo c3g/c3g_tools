@@ -45,7 +45,7 @@ countsample <- function(samp_name, popsv_config_file, bin_file){
   message('Done')
 }
 
-preprefs <- function(popsv_config_file, ref_samps_file, ref_file, bins_file, graph_out, max_nb_refs){
+preprefs <- function(popsv_config_file, ref_samps_file, ref_file, cont_sample_file, bins_file, graph_out, max_nb_refs){
   load(bins_file)
   load(popsv_config_file)
   message('Read the list of reference sample names')
@@ -56,11 +56,19 @@ preprefs <- function(popsv_config_file, ref_samps_file, ref_file, bins_file, gra
   qc.o = qc.samples(files.df, bins.df, ref_file, nb.ref.samples=max_nb_refs)
   ## nb.cores=6 HOW TO SPECIFIY?
   dev.off()
+  write(qc.o$cont.sample, file=cont_sample_file)
   message('Done')
 }
 
-normrefs <- function(popsv_config_file, ref_file, chunk, res_file){
-
+normrefs <- function(ref_file, bin_file, cont_sample_file, chunk, res_file){
+  load(bin_file)
+  chunks = sort(unique(as.character(bins.df$sm.chunk)))
+  chunk = chunks[chunk]
+  bins.df.chunk = bins.df[which(bins.df$sm.chunk==chunk),]
+  bg.chunk = head(bins.df.chunk$bg.chunk, 1)
+  bc.df = read.bedix(ref_file, bins.df[which(bins.df$bg.chunk==bg.chunk),])
+  cont.sample = scan(cont_sample_file, '')
+  tn.norm(bc.df, cont.sample, bins=bins.df.chunk$bin)
 }
 
 mergeoutrefs <- function(popsv_config_file, norm_ref_prefix, nb_chunks, ref_prefix){
@@ -81,9 +89,9 @@ if(ARG[1] == 'initfilename'){
 } else if(ARG[1] == 'countsample'){
   countsample(ARG[2], ARG[3], ARG[4])
 } else if(ARG[1] == 'preprefs'){
-  preprefs(ARG[2], ARG[3], ARG[4], ARG[5], ARG[6], ARG[7])
+  preprefs(ARG[2], ARG[3], ARG[4], ARG[5], ARG[6], ARG[7], ARG[8])
 } else if(ARG[1] == 'normrefs'){
-  normrefs(ARG[2], ARG[3], ARG[4], ARG[5])
+  normrefs(ARG[2], ARG[3], ARG[4], ARG[5], ARG[6])
 } else if(ARG[1] == 'mergeoutrefs'){
   mergeoutrefs(ARG[2], ARG[3], ARG[4], ARG[5])
 } else if(ARG[1] == 'callsample'){
@@ -93,7 +101,7 @@ if(ARG[1] == 'initfilename'){
 }
 
 
-## TODO
+## TODO/QUESTIONS
 # hg19 vs GRCh38
 # multi-core jobs specification
 # make.names and pb with sample name conversion
