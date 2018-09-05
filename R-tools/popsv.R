@@ -22,7 +22,6 @@ getGC.hg19 <- function(bins.df){
   seq.max = 1e6
   bin.size = mean(bins.df$end-bins.df$start+1)
   reg.chunks = round(bin.size / seq.max)
-  message(reg.chunks, ' regions per chunks')
   bins.df$chunk = rep(1:ceiling(nrow(bins.df)/reg.chunks), each = reg.chunks)[1:nrow(bins.df)]
   addGC <- function(df) {
     if (!grepl("chr", df$chr[1])) {
@@ -128,12 +127,17 @@ callsample <- function(samp_name, popsv_config_file, bin_file, cont_sample_file,
   load(bin_file)
   cont.sample = scan(cont_sample_file, '')
   if(!file.exists(files.df$z[which(files.df$sample == samp_name)])){
+      if(!file.exists(ref_file)){
+          message('Adding bgz')
+          ref_file = paste0(ref_file, '.bgz')
+      }
     message('Normalize bin count and compute Z-score')
     tn.test.sample(samp_name, files.df, cont.sample, ref_file, paste0(ref_prefix, 'norm-stats.tsv'), z.poisson=TRUE, aberrant.cases=FALSE)
   }
   message('Call CNVs')
   stitch.dist = mean(bins.df$end-bins.df$start+1)*2
-  cnv.df = call.abnormal.cov(files.df=files.df, samp=samp_samp, FDR.th=FDR_th, merge.cons.bins="cbs", z.th="sdest", norm.stats=paste0(ref_prefix, 'norm-stats.tsv'), stitch.dist=stitch.dist, gc.df=bins.df,  min.normal.prop=.6, sub.z=1e3)
+  sub.z = min(1e3, nrow(bins.df)/3)
+  cnv.df = call.abnormal.cov(files.df=files.df, samp=samp_name, FDR.th=FDR_th, merge.cons.bins="cbs", z.th="sdest", norm.stats=paste0(ref_prefix, 'norm-stats.tsv'), stitch.dist=stitch.dist, gc.df=bins.df,  min.normal.prop=.6, sub.z=sub.z)
   message('Write CNV output')
   write.table(cnv.df, file=cnv_file, quote=FALSE, sep='\t', row.names=FALSE)
   message('Done')
