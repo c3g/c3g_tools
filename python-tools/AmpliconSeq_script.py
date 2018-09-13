@@ -25,7 +25,7 @@ def map_build(samples):
 
     out_map.close()
 
-def map_per_sample(sample,output):
+def map_per_sample(sample, output):
 
     """
     Make a basic map file for each sample.
@@ -324,7 +324,6 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     out_to_R.close()
 
-
 def main(argv):
 
     mod=[]
@@ -358,47 +357,38 @@ def main(argv):
     results = parser.parse_args()
 
     # Map build
-
     if results.fct_value == 'map_build' and results.sample_value:
         map_build(results.sample_value)
 
     # Krona chart
-
     if results.fct_value == 'krona' and results.input_value and results.input2_value:
         krona(results.input_value,results.input2_value)
 
     # Statistics at catenate step
-
     if results.fct_value == 'catenate_stat' and results.input_value and results.input2_value:
         catenate_stat(results.input_value,results.input2_value)
 
     # Statistics at uchime step
-
     if results.fct_value == 'uchime' and results.input_value and results.input2_value and results.sample_value:
         uchime(results.input_value,results.input2_value,(results.sample_value).replace('_','.'))
 
     # Sample name
-
     if results.fct_value == 'sample_name' and results.input_value and results.input2_value:
         sample_name(results.input_value,results.input2_value)
 
     # Sample rarefaction
-
     if results.fct_value == 'sample_rarefaction' and results.input_value and results.input2_value and results.sample_value:
         sample_rarefaction(results.input_value,results.input2_value,(results.sample_value).replace('_','.'))
 
     # Map file per sample
-
     if results.fct_value == 'map_per_sample' and results.sample_value and results.input2_value:
         map_per_sample((results.sample_value).replace('_','.'),results.input2_value)
 
     # Single rarefaction
-
     if results.fct_value == 'single_rarefaction' and results.input_value and results.input2_value and results.sample_value:
         single_rarefaction(results.input_value,results.input2_value,results.sample_value)
 
     # Plot heatmap
-
     if results.fct_value == 'plot_heatmap' and results.input_value and results.input2_value and results.sample_value:
         plot_heatmap(results.input_value,results.input2_value,results.sample_value)
 
