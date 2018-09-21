@@ -39,7 +39,7 @@ DuplicationRate=$(echo "scale=4;(${DuplicateReads} / ${AlignedReads}) * 100;" | 
 a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
 # Estimated average coverage, values for this metric should be above 12 for a single lane. IHEC required.
-genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
+genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | tail -1`
 
 # Specific for targeted capture methylome (MCC-Seq) data, obtain the on-target rate, the final useful proportion of reads over the raw reads.
 if [ $TARGET_FLAG == 1 ]; then
