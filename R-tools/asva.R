@@ -4,9 +4,9 @@ suppressMessages(library(ShortRead))
 paste("ShortRead version: ", packageVersion("ShortRead"))
 suppressMessages(library(ggplot2))
 paste("ggplot2 version: ", packageVersion("ggplot2"))
-suppressMessages(library(phyloseq)
+suppressMessages(library(phyloseq))
 paste("Phyloseq version: ", packageVersion("phyloseq"))
-suppressMessages(library(biomformat)
+suppressMessages(library(biomformat))
 paste("biomformat version: ", packageVersion("biomformat"))
 
 usage=function(errM) {
