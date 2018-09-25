@@ -1,4 +1,4 @@
-suppressMessages(library(dada2)
+suppressMessages(library(dada2))
 paste("Dada2 version: ", packageVersion("dada2"))
 suppressMessages(library(ShortRead))
 paste("ShortRead version: ", packageVersion("ShortRead"))
