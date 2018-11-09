@@ -18,7 +18,8 @@ usage=function(errM) {
   cat("     -o      : output directory\n")
   cat("     -tr     : database trainset\n")
   cat("     -tax    : taxonomy file\n")
-  cat("     -p    : pool parameter\n")
+  cat("     -p      : pool parameter\n")
+  cat("     -amp    : amplicon length file\n")
   cat("     -h      : this help\n\n")
   stop(errM)
 }
@@ -34,7 +35,7 @@ designFile_path=""
 trainset_path=""
 taxonomy_path=""
 pool_parameter=""
-ampliconLengthFile = paste(pipeDir, "/metrics/FlashLengths.tsv", sep="")
+ampliconLengthFile=""
 
 
 ## get arg variables
@@ -51,6 +52,8 @@ for (i in 1:length(ARG)) {
     taxonomy_path=ARG[i+1]
   } else if (ARG[i] == "-p") {
     pool_parameter=ARG[i+1]
+  } else if (ARG[i] == "-amp") {
+    ampliconLengthFile=ARG[i+1]
   } else if (ARG[i] == "-h") {
     usage("")
   }
@@ -69,7 +72,7 @@ if (output_directory == "") {
   usage("Error : Output directory not specified")
 }
 if (!(file.exists(ampliconLengthFile))) {
-  usage("Error : Parsed amplicon length file not found in metrics/FlashLengths.tsv")
+  usage("Error : Parsed amplicon length file not found")
 }
 #Force boolean character on the parameter
 pool_parameter=as.logical(pool_parameter)
