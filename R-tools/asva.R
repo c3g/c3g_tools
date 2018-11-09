@@ -6,6 +6,8 @@ suppressMessages(library(ggplot2))
 paste("ggplot2 version: ", packageVersion("ggplot2"))
 suppressMessages(library(phyloseq))
 paste("Phyloseq version: ", packageVersion("phyloseq"))
+suppressMessages(library(vegan))
+paste("Vegan version: ", packageVersion("vegan"))
 suppressMessages(library(biomformat))
 paste("biomformat version: ", packageVersion("biomformat"))
 
@@ -16,6 +18,7 @@ usage=function(errM) {
   cat("     -o      : output directory\n")
   cat("     -tr     : database trainset\n")
   cat("     -tax    : taxonomy file\n")
+  cat("     -p    : pool parameter\n")
   cat("     -h      : this help\n\n")
   stop(errM)
 }
@@ -30,6 +33,7 @@ output_directory=""
 designFile_path=""
 trainset_path=""
 taxonomy_path=""
+pool_parameter=""
 ampliconLengthFile = paste(pipeDir, "/metrics/FlashLengths.tsv", sep="")
 
 
@@ -45,6 +49,8 @@ for (i in 1:length(ARG)) {
     trainset_path=ARG[i+1]
   } else if (ARG[i] == "-tax") {
     taxonomy_path=ARG[i+1]
+  } else if (ARG[i] == "-p") {
+    pool_parameter=ARG[i+1]
   } else if (ARG[i] == "-h") {
     usage("")
   }
@@ -65,6 +71,8 @@ if (output_directory == "") {
 if (!(file.exists(ampliconLengthFile))) {
   usage("Error : Parsed amplicon length file not found in metrics/FlashLengths.tsv")
 }
+#Force boolean character on the parameter
+pool_parameter=as.logical(pool_parameter)
 
 #Parse ampliconLengthFile to get the minumunm and maximum lengths
 ampLen = read.table(file =ampliconLengthFile, header=T, sep = "\t", row.names=1, com='', check.names=FALSE)
@@ -560,8 +568,8 @@ if(!file.exists(checkfile)){
   
   
   
-  dadaFs <- dada(derepFs, err=errF, multithread=6, pool=FALSE)
-  dadaRs <- dada(derepRs, err=errR, multithread=6, pool=FALSE)
+  dadaFs <- dada(derepFs, err=errF, multithread=6, pool=pool_parameter)
+  dadaRs <- dada(derepRs, err=errR, multithread=6, pool=pool_parameter)
 
   try(system(sprintf("touch %s/SampleInference.ok",job_checks), intern = FALSE, ignore.stderr = FALSE))
   end_time <- Sys.time()
@@ -841,6 +849,49 @@ write.table(sample_data(ps) ,file =sprintf("%s/sample_data.txt",dada2outputFiles
 
 #temporary fix a bug in phyloseq when you only have one condition: see https://github.com/joey711/phyloseq/issues/541
 sample_data(ps)[ , 2] <- sample_data(ps)[ ,1]
+
+#FILTERING DATA
+print("FILTERING DATA")
+ps
+#filter low  relative abundance (<10^-5)
+ps = prune_samples(sample_sums(ps)>=1000, ps)
+ps
+#filter low variance
+ps = filter_taxa(ps, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
+ps
+
+#############################################RAREFACTION CURVES#################################
+print("RAREFACTION CURVES")
+samples_number = ncol(otu_table(ps))
+#samples_number
+#define the palette by the number of samples
+#pal= brewer.pal(samples_number,"Set1")
+#pal= viridis(samples_number, alpha = 1, begin = 0, end = 1, option = "D")
+
+#get maximum values (for the legend)
+ymax=0
+xmax = max(otu_table(ps)[,1])
+#xmax
+
+if(samples_number > 1) {
+  for (i in 2:samples_number) {
+    temp_ymax = max(otu_table(ps)[,i])
+    if (temp_ymax > ymax) {
+      ymax = temp_ymax
+    }
+  }
+}
+#ymax
+countTable=otu_table(ps)
+library(vegan)
+pdf(file=sprintf("%s/rarefaction_curves.pdf",savefolder), width=10, height=8)
+rarecurve(t(countTable), step = 100, cex = 0.6,xlab = "Sample Size (vertical line: smallest sample size)", ylab = "Species",  main = "Rarefaction curves", label = TRUE)
+#creating a line for the sample with the least size
+raremax <- min(rowSums(t(countTable)))
+#raremax
+abline(v = raremax)
+rareslope(t(countTable),raremax)
+dev.off()
 
 
 cat("\nAlpha diversity plots")
