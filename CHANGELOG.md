@@ -1,14 +1,14 @@
-36 tags, 450 commits
+36 tags, 453 commits
 
-HEAD        Fri Nov 16 14:12:49 2018 -0500        0 commits
+HEAD        Fri Nov 16 14:30:55 2018 -0500        0 commits
 
-2.1.12        Fri Nov 16 14:20:22 2018 -0500        15 commits
+2.1.12        Fri Nov 16 15:16:04 2018 -0500        18 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      9 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      12 commits
 
+       1912bd5 updated CHANGELOG
        aa27460 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        20b7ee0 Adding R-tools for Sleuth & FusionMetaCaller
-       a23b5da Version bump to 2.1.12
        5086606 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        581ebf7 Adding asva.R - used by of ampliconseq dada2 protocol
        2999f1f added ampliconLengthFile parameter to asva.R
