@@ -8,7 +8,6 @@ HEAD        Fri Nov 16 14:12:49 2018 -0500        0 commits
 
        aa27460 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        20b7ee0 Adding R-tools for Sleuth & FusionMetaCaller
-       03ef687 Version bump to 2.1.13-beta
        a23b5da Version bump to 2.1.12
        5086606 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        581ebf7 Adding asva.R - used by of ampliconseq dada2 protocol
