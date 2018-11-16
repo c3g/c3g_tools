@@ -10,14 +10,14 @@ COUNT=$5
 
 
 if [ $TARGET_FLAG == 1 ]; then
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_dedup_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X\testimate_library_size\t#_onTrarget_CG_1X\t#_onTrarget_CG_10X\t#_onTrarget_CG_15X\t#_onTrarget_CG_20X\t#_onTrarget_CG_25X\t#_onTrarget_CG_30X\ton_target_raw_reads\t%_onTrarget_duplication_rate" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\ton_target_dedup_reads\t%_on_target_rate\t%on_target_vs_raw_reads\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X\testimate_library_size\t#_onTrarget_CG_1X\t#_onTrarget_CG_10X\t#_onTrarget_CG_15X\t#_onTrarget_CG_20X\t#_onTrarget_CG_25X\t#_onTrarget_CG_30X\ton_target_raw_reads\t%_onTrarget_duplication_rate" > $TABLE_OUTFILE_ALL
   fi
 else
-  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE
+  echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X\testimate_library_size" > $TABLE_OUTFILE
   if [ $COUNT -eq 0 ]; then 
-    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X" > $TABLE_OUTFILE_ALL
+    echo -e "sample\traw_reads\ttrimmed_reads\t%_survival_rate\taligned_reads\t%_mapping_efficiency\tduplicated_reads\t%_duplication_rate\tdeduplicated_aligned_reads\t%_useful_aligned_rate\t%_proportion_unique_filtered_reads_MAPQ>10\tGC_bias\t%_pUC19_methylation_rate\t%_lambda_conversion_rate\t%_human_conversion\testimated_average_genome_coverage\tmedian_CpG_coverage\t#_CG_1X\t#_CG_10X\t#_CG_30X\testimate_library_size" > $TABLE_OUTFILE_ALL
   fi
 fi
 
@@ -39,13 +39,26 @@ DuplicationRate=$(echo "scale=4;(${DuplicateReads} / ${AlignedReads}) * 100;" | 
 a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
 # Estimated average coverage, values for this metric should be above 12 for a single lane. IHEC required.
-genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
+genomecoverage=`sed 1d alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | tail -1`
 
-# Specific for targeted capture methylome (MCC-Seq) data, obtain the on-target rate, the final useful proportion of reads over the raw reads.
+# Estimated library estimate library size 
+est_lib_size=`grep -A1 ESTIMATED_LIBRARY_SIZE alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.metrics | tail -1 | cut -f10`
+
+# Specific for targeted capture methylome (MCC-Seq) data, obtain the on-target rate (raw and dedup), the final useful proportion of reads over the raw reads.
 if [ $TARGET_FLAG == 1 ]; then
-  OntargetReads=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.ontarget.bam.flagstat|grep mapped|head -1|awk '{printf "%d",$1}'`
-  a=`echo $OntargetReads` && b=`echo $DeduplicatedAlignRreads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && OntargetRate=`echo $nr`;
-  a=`echo $OntargetReads` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetvsRawRead=`echo $nr`;
+  OntargetReadsDedup=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.ontar.onTarget.dedup.count | head -1 |awk '{printf "%d",$1}'`
+  a=`echo $OntargetReadsDedup` && b=`echo $DeduplicatedAlignRreads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && OntargetRate=`echo $nr`;
+  a=`echo $OntargetReadsDedup` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetvsRawRead=`echo $nr`;
+  OntargetReadsRaw=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.sorted.dedup.ontar.onTarget.raw.count | head -1 |awk '{printf "%d",$1}'`
+  a=`echo $OntargetReadsDedup` && b=`echo $OntargetReadsRaw` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetDedupRate=`echo $nr`;
+  file=methylation_call/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.dedup.CpG_profile.strand.combined.on_target.count
+  ot_cg1x=`tail -1  $file | awk -F"," '{print $1}'`
+  ot_cg10x=`tail -1 $file | awk -F"," '{print $2}'`
+  ot_cg15x=`tail -1 $file | awk -F"," '{print $3}'`
+  ot_cg20x=`tail -1 $file | awk -F"," '{print $4}'`
+  ot_cg25x=`tail -1 $file | awk -F"," '{print $5}'`
+  ot_cg30x=`tail -1 $file | awk -F"," '{print $6}'`
+  
 fi
 
 # Proportion of uniquely aligned reads without duplicates and a quality score > 10; for reference epigenome, values for this metric should exceed 85%. IHEC required.
@@ -78,10 +91,10 @@ TotalumCHH=$(for report in `find alignment/${SAMPLE_NAME} -name "*sorted_noRG_bi
 a=`echo $TotalmCHG` && b=`echo $TotalmCHH` && c=`echo $TotalumCHG` && d=`echo $TotalumCHH` &&  nr=$(echo "scale=4;( ($c+$d) / ($a+$b+$c+$d)) * 100;" | bc) && humanConversion=`echo $nr`;
 
 if [ $TARGET_FLAG == 1 ]; then
-  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$OntargetReads\t$OntargetRate\t$onTargetvsRawRead\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x" >> $TABLE_OUTFILE
-  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$OntargetReads\t$OntargetRate\t$onTargetvsRawRead\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x" >> $TABLE_OUTFILE_ALL
+  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$OntargetReads\t$OntargetRate\t$onTargetvsRawRead\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x\t$est_lib_size\t$ot_cg1x\t$ot_cg10x\t$ot_cg15x\t$ot_cg20x\t$ot_cg25x\t$ot_cg30x\t$OntargetReadsRaw\t$onTargetDedupRate" >> $TABLE_OUTFILE
+  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$OntargetReads\t$OntargetRate\t$onTargetvsRawRead\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x\t$est_lib_size\t$ot_cg1x\t$ot_cg10x\t$ot_cg15x\t$ot_cg20x\t$ot_cg25x\t$ot_cg30x\t$OntargetReadsRaw\t$onTargetDedupRate" >> $TABLE_OUTFILE_ALL
 else
-  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x" >> $TABLE_OUTFILE
-  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x" >> $TABLE_OUTFILE_ALL
+  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x\t$est_lib_size" >> $TABLE_OUTFILE
+  echo -e "${SAMPLE_NAME}\t$rawReads\t$trimmedReads\t$SurvivalRate\t$AlignedReads\t$MappingEfficiency\t$DuplicateReads\t$DuplicationRate\t$DeduplicatedAlignRreads\t$UsefulAlignRate\t$DedupMQ10Proportion\t$GCbias\t$puc19Meth\t$lambdaConversion\t$humanConversion\t$genomecoverage\t$MedianCpGcov\t$cg1x\t$cg10x\t$cg30x\t$est_lib_size" >> $TABLE_OUTFILE_ALL
 fi
 

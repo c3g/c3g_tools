@@ -84,6 +84,9 @@ while ($temp = <INFILE>) {
         } else {
             $CpGtotalReadsHash{$CpGid} = $CpGrvReadsHash{$CpGid};
             $CpGtotalMethReadsHash{$CpGid} = $temparray[3];
+            $CpGfwReadsHash{$CpGid} = 0;
+            $CpGfwMethReadsHash{$CpGid} = 0;
+            $fw_meth = 0;
         }
 
         if ($temparray[3] == 0) {

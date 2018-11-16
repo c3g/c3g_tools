@@ -31,7 +31,7 @@ do
   DuplicationRate=$(echo "scale=4;(${DuplicateReads} / ${AlignedReads}) * 100" | bc -l)
   a=`echo $DuplicateReads` && b=`echo $AlignedReads` && c=`echo $rawReads` && nr=$(echo "scale=4;( ($b-$a) / $c) * 100;" | bc) && UsefulAlignRate=`echo $nr`;
 
-  coverage=`sed 1d alignment/$sample/$sample.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | head -1`
+  coverage=`sed 1d alignment/$sample/$sample.sorted.dedup.all.coverage.sample_summary | awk '{print $3}' | tail -1`
 
   # Check if the ontarget flagstat file exists (i.e. captured analysis or not)
   if [ $TARGET_FLAG == 1 ]; then
