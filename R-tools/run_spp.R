@@ -647,6 +647,7 @@ if (! is.na(iparams$control.file)) {
 }
 
 # Load SPP library
+library(caTools)
 library(spp)
 
 # Read ChIP tagAlign/BAM files
