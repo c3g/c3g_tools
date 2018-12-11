@@ -4,7 +4,6 @@
 # Usage: Rscript sleuth.R -d path_design -o output_dir -t tx2gene
 
 library(readr)
-library(dplyr)
 library(sleuth)
 library(cowplot)
 library(methods)
@@ -66,11 +65,11 @@ perform_dge=function(d, current_design) {
     # Perform wald test (WT) 
     so <- sleuth_wt(so, "contrast2", "full") 
     wt_results <- sleuth_results(so, "contrast2", "wt", show_all=TRUE)
-    wt_results$fold_change <- log2(2^wt_results$b)
+    #wt_results$fold_change <- log2(2^wt_results$b)
 
     # Find top and bottom 20 genes by fold-change
     wt_uniq_results <- wt_results[!duplicated(wt_results$target_id),]
-    ordered_by_fc <- wt_uniq_results[order(-abs(wt_uniq_results$fold_change)),c("ext_gene","target_id")]
+    ordered_by_fc <- wt_uniq_results[,c("ext_gene","target_id")]
     top40 <- ordered_by_fc[1:40,]
     heatmap_subset <- so$bs_summary$obs_counts[top40$target_id,]
     row.names(heatmap_subset) <- top40$ext_gene
