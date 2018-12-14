@@ -90,7 +90,7 @@ for (i in 1:length(ARG)) {
     } else if (ARG[i] == "-h") {
         usage("")
     }
-}s
+}
 
 # Read in the design file
 design = read.csv2(design_file, header=T, sep="\t", na.strings= "0", check.names=F, colClasses = c('character', rep('numeric',unique(count.fields(design_file))-1)))
