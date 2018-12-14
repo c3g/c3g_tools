@@ -2,7 +2,7 @@
 # Compatible only with stringtie results. 
 # Written by Hector Galvez
 # Usage: Rscript ballgown.R -d path_design -o output_dir -g gtf
-# R module version: mugqic/R_Bioconductor/3.5.0_3.7 mugqic/R_Bioconductor/3.5.1_3.7
+# R module versions: mugqic/R_Bioconductor/3.5.0_3.7 or mugqic/R_Bioconductor/3.5.1_3.7
 
 library(ballgown)
 library(methods)
