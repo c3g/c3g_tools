@@ -1,19 +1,19 @@
-#!/bin/env sh
+#!/bin/bash
+set -eu -o pipefail
 #by Eloi Mercier
 
-set -e
 echo "STARTING: " $(date)
 
 #get args
-FASTQ1=$1
-FASTQ2=$2
+OUTPUT_DIR=$1
+PARAMETERS=$2
 TRANSCRIPTOME=$3
 TX2GENES=$4
-OUTPUT_DIR=$5
-PARAMETERS=$6
+FASTQ1=$5
+FASTQ2=$6
 
 mkdir -p $OUTPUT_DIR
-kallisto quant $PARAMETERS -i $TRANSCRIPTOME -o $OUTPUT_DIR $FASTQ1 $FASTQ2
+kallisto quant $PARAMETERS -i $TRANSCRIPTOME -o $OUTPUT_DIR $FASTQ1 $FASTQ2 > $OUTPUT_DIR/kallisto_quant.log
 mv $OUTPUT_DIR/abundance.tsv $OUTPUT_DIR/abundance_transcripts.tsv
 
 #R script transcript -> gene level
