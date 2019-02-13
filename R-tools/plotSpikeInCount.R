@@ -16,6 +16,7 @@ samples_size=as.integer(args[2])
 tags.table.count=table(tags)
 tags.table.count=tags.table.count[order(tags.table.count, decreasing=T)]
 tags.table=tags.table.count/samples_size*100
+tags.table_among_tags=round(tags.table.count/sum(tags.table.count)*100,2)
 tag_color=c("lightblue",rainbow(length(tags.table)-1, alpha = 1, v=0.8, s=0.8))
 names(tag_color)=names(tags.table.count)
 alignments.table=table(tags,alignments)
@@ -99,7 +100,6 @@ if (ggplot2 & nrow(data)>0){
 		warning(paste("Setting read length to", read_length, "bp."))
 	}
 
-	pdf_out=paste0(file_name,".tagDistribution.pdf")
 	data_query=apply(data[,c("Tag","Query_start","Query_end")], 1, function(x) {data.frame(Tag=x[[1]],Pos=seq(as.integer(x[[2]]),as.integer(x[[3]])))}) #create a list of 1's for each position with a tag
 	data_query=do.call("rbind", data_query)
 	data_query$Tag_f = factor(data_query$Tag, levels=names(tags.table.count))
@@ -113,14 +113,15 @@ out <- dev.off()
 ###########################
 #print info summary
 ###########################
-tags.summary=data.frame(matrix(NA, ncol=4, nrow=length(tags.table)))
-colnames(tags.summary)=c("Tag", "Count", "Estimate_%" ,"IC95")
+tags.summary=data.frame(matrix(NA, ncol=5, nrow=length(tags.table)))
+colnames(tags.summary)=c("Tag", "Count","AmongTags_%", "InSample_%" ,"IC95")
 if(nrow(data)>0) {
 	tags.summary[,"Tag"]=names(tags.table)
 	tags.summary[,"Count"]=tags.table.count
-	tags.summary[,"Estimate_%"]=tags.table
+	tags.summary[,"AmongTags_%"]=tags.table_among_tags
+	tags.summary[,"InSample_%"]=tags.table
 	tags.summary[,"IC95"]=paste0("[",signif(tags.ic95[1,],3),",", signif(tags.ic95[2,],3),"]")
 }
-write.table(tags.summary, file=paste0(file_name,".summary"), quote=F, sep="\t", col.names=T, row.names=F)
+write.table(tags.summary, file=paste0(file_name,".summary.tsv"), quote=F, sep="\t", col.names=T, row.names=F)
 
 print("PDF and summary files successfully generated")

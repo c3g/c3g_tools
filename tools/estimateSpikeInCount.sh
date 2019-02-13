@@ -57,13 +57,13 @@ $FQ2FA $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.fastq $OUTPUT_DIR/$FILE_NA
 ###################
 #3. Blast fasta
 ###################
-$BLAST $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.fasta -db $DATABASE -out $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast -max_target_seqs 1  -outfmt "6 qseqid qlen sseqid slen pident length mismatch qstart qend sstart send evalue bitscore" -ungapped
+$BLAST $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.fasta -db $DATABASE -out $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.tsv -max_target_seqs 1  -outfmt "6 qseqid qlen sseqid slen pident length mismatch qstart qend sstart send evalue bitscore" -ungapped
 
 ###################
 #4. Filter blast output
 ###################
 
-python /home/emercier/bitbucket/spikein_dev/mugqic_tools/python-tools/filterBastOutput.py --input_file $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast --tag_file $DATABASE --output_dir $OUTPUT_DIR --align_length_min $ALIGN_SIZE --mismatches_max $MISTMATCHES --perc_identity_min $IDENTITY #log file?
+python /home/emercier/bitbucket/spikein_dev/mugqic_tools/python-tools/filterBastOutput.py --input_file $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.tsv --tag_file $DATABASE --output_dir $OUTPUT_DIR --align_length_min $ALIGN_SIZE --mismatches_max $MISTMATCHES --perc_identity_min $IDENTITY #log file?
 
 ###################
 #5. Create report and graphs
@@ -73,6 +73,6 @@ if [[ $IDENTITY != *.* ]]; then #treat 0 and 1 cases -> 0.0 and 1.1
 fi
 IDENTITY_PERC=${IDENTITY//./} #0.0 -> 00
 ########REMOVE HARD CODED PATH
-Rscript --vanilla /home/emercier/bitbucket/spikein_dev/mugqic_tools/R-tools/plotSpikeInCount.R $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.${ALIGN_SIZE}bp_${MISTMATCHES}MM_${IDENTITY_PERC}id $SAMPLE_TO
+Rscript --vanilla /home/emercier/bitbucket/spikein_dev/mugqic_tools/R-tools/plotSpikeInCount.R $OUTPUT_DIR/$FILE_NAME.subSampled_${SAMPLE_TO}.blast.tsv.${ALIGN_SIZE}bp_${MISTMATCHES}MM_${IDENTITY_PERC}id.tsv $SAMPLE_TO
 
 

@@ -35,7 +35,7 @@ def main():
     ###################
     blast_file=options.input_file
     logging.debug("Blast file %s" %blast_file)
-    output_filter_file=blast_file + "." + str(options.align_length_min) + "bp_" + str(options.mismatches_max) + "MM_" + re.sub("\.", "",str(options.perc_identity_min)) + "id"
+    output_filter_file=blast_file + "." + str(options.align_length_min) + "bp_" + str(options.mismatches_max) + "MM_" + re.sub("\.", "",str(options.perc_identity_min)) + "id.tsv"
     logging.debug("Outout filter file %s" %output_filter_file)
 
     ###################

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/env sh
 
 ##2012-03-12 - Mathieu Bourgey - mbourgey@genomequebec.com
 # with help and use of scripts from Louis Letrouneau

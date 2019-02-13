@@ -25,6 +25,7 @@ import csv
 import numpy as np
 import pandas as pd
 import sys
+import glob
 
 # MUGQIC Modules
 
@@ -85,6 +86,10 @@ MTreads={}
 for sample in samples:
     cmd = "samtools view -c alignment/{sample}/{sample}.sorted.mdup.bam MT".format(sample =sample)
     MTreads[sample] = int(os.popen(cmd).read().strip())
+    if MTreads[sample] == 0:
+        cmd = "samtools view -c alignment/{sample}/{sample}.sorted.mdup.bam chrM".format(sample =sample)
+        MTreads[sample] = int(os.popen(cmd).read().strip())
+
 
 
 MTreads = pd.DataFrame.from_dict(MTreads, 
@@ -97,10 +102,39 @@ MTreads.columns = ['Sample','MitoReads']
 
 All = pd.merge(All, MTreads, on='Sample', how='outer')
 
+## calculate rRNA reads:
+
+rRNAreads={}
+
+for sample in samples:
+    TotalMapped = 0
+    rRNA_mapped = 0
+    ## get all the rRNA readsets per sample: metrics/Sample/Readset/Readset.rRNA.stats.tsv
+    readsetFile = "metrics/{sample}/*/*rRNA.stats.tsv".format(sample = sample)
+    for myfile in glob.glob(readsetFile):
+        with open(myfile) as f:
+            reader = csv.reader(f, delimiter="\t")
+            d = np.array(list(reader))
+            TotalMapped = TotalMapped + int(d[1,0])
+            rRNA_mapped = rRNA_mapped + int(d[1,1])
+    rRNAreads[sample] = (rRNA_mapped * 100.0)/TotalMapped
+
+
+rRNAreads = pd.DataFrame.from_dict(rRNAreads, 
+                            orient='index')
+
+rRNAreads.index.name = 'Sample'
+rRNAreads.reset_index(inplace=True)
+
+rRNAreads.columns = ['Sample','rRNA_perc']
+
+All = pd.merge(All, rRNAreads, on='Sample', how='outer')
+
+
 
 ## reorder columns:
 
-header = ['genomeAssembly', 'Sample', 'RawReads', 'SurvivingReads', 'SurvivingReads_perc', 'AlignedReads', 'AlignedReads_perc', 'AlternativeAlignments', 'AlternativeAlignments_perc', 'rRNAReads', 'rRNAReads_perc', 'DuplicationRate', 'Coverage', 'IntergenicRate', 'MitoReads', 'IntragenicRate', 'ExonicRate', 'IntronicRate', 'GenesDetected', 'StrandSpecificity']
+header = ['genomeAssembly', 'Sample', 'RawReads', 'SurvivingReads', 'SurvivingReads_perc', 'AlignedReads', 'AlignedReads_perc', 'AlternativeAlignments', 'AlternativeAlignments_perc', 'rRNA_perc', 'DuplicationRate', 'Coverage', 'IntergenicRate', 'MitoReads', 'IntragenicRate', 'ExonicRate', 'IntronicRate', 'GenesDetected', 'StrandSpecificity']
 
 All = All.loc[:,header]
 

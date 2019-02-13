@@ -1,11 +1,125 @@
-33 tags, 397 commits
+37 tags, 465 commits
 
-HEAD        Fri Nov 24 12:44:30 2017 -0500        0 commits
+HEAD        Tue Dec 18 09:52:02 2018 -0500        0 commits
 
-2.1.9        Tue Nov 28 15:41:20 2017 -0500        81 commits
+2.2.0        Tue Dec 18 10:42:31 2018 -0500        12 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      28 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
 
+       c37d23e added the loading of 'caTools' library in run_spp.R - avoid issues when loading spp library
+       ceda616 Added methylKit.R
+       bb4a410 Version bump to 2.1.13-beta
+       3bc4e64 Version bump to 2.1.12
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      4 commits
+
+       828509f Corrected added bug on line 92
+       83eb168 Clarified R versions commment
+       ac76e73 Added R version to header of script
+       dafd91f First commit of ballgown R script, compatible with StringTie protocol of GenPipes RNA-seq pipeline
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       0206e2f Merged ballgown into master
+       ccaf25f Merged in ballgown (pull request #2)
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
+
+       5bf8dd8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       c03602d correct bugs and add on target stats
+
+2.1.12        Fri Nov 16 15:16:04 2018 -0500        18 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      12 commits
+
+       95d7d73 Version bump to 2.1.13-beta
+       0f58aa5 updated CHANGELOG
+       1912bd5 updated CHANGELOG
+       aa27460 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       20b7ee0 Adding R-tools for Sleuth & FusionMetaCaller
+       03ef687 Version bump to 2.1.13-beta
+       a23b5da Version bump to 2.1.12
+       5086606 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       581ebf7 Adding asva.R - used by of ampliconseq dada2 protocol
+       2999f1f added ampliconLengthFile parameter to asva.R
+       0d53986 Ampliocon-Seq pipeline - dada2 protocol : add asva.R script to R-tools
+       a7c1ef0 Version bump to 2.1.11
+
+  edouard.henrion@mcgill.ca <ehenrion@abacus1.ferrier.genome.mcgill.ca>      4 commits
+
+       13f8106 corrected typo in R-tools/asva.R (missing parenthesis) and updated perl-tools/methylProfile.bismark.pl
+       83a5fb5 Corrected missing parenthesis in asva.R
+       25cce0d add asva.R : used by the dada2 protocol of the ampliconseq pipeline
+       0d11c07 minor corrections for the MethylSeq coverage stats
+
+  edouard.henrion@mcgill.ca <ehenrion@abacus2.ferrier.genome.mcgill.ca>      1 commits
+
+       15c2429 added clean_otu.sh script to mugqic_tools, used in ampliconseq pipeline to clean the OTU tables (remove lines containing undesired characters e.g. division, OP3, WS6...)
+
+  Mathieu Bourgey <mathieu.bourgey@mcgill.ca>      1 commits
+
+       bbfa8a2 update IHEC_metrics for methylSeq for targeted
+
+2.1.11        Mon Mar 26 14:22:46 2018 -0400        20 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      9 commits
+
+       8bcae89 changed permission to 'a+x' for some R-tools used by smallRNA pipeline
+       9c54695 added new bash tools used by HiC-Seq pipeline
+       fab5e28 minor updates regarding shebang of our bash tools and updated indentation
+       44fa837 minor indentations updats + removed flagstat calls from IHEC_methylseq_metrics since they are now made earlier in the methylseq pipeline
+       e2ad17b Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       7e098c3 smallRNA pipeline - added some more R tools to handle data for/from mirdeep2
+       56f6f34 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       24d2b3a smallRNA pipeline - added R tool to prepare the inputs for mirdeep2
+       4f7b3d0 updates brought to version 2.1.10 dump
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      8 commits
+
+       72ab8a2 in mergeKnownAndNovelMiRNA.R: change variables name cleanup unused commands
+       e0cf384 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       dd065bd in plotSpikeInCount.R: add a column for percentage among tags and change column names of summary file
+       7310bf0 in abundanceTranscript2geneLevel.R: add parameter to ignore taxon version which fix error when gtf and fasta use different annotations
+       691ac26 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2acd2b6 in estimateSpikeInCount.sh, fix input file name when running plotSpikeInCount.R
+       802cdf9 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b2b91a7 in estimateSpikeInCount.sh, filterBlastOutput.py and plotSpikeInCount.R: add .tsv file extension
+
+  Rola Dali <rola.dali@mail.mcgill.ca>      3 commits
+
+       74734b5 updating RobusTAD for TAD calling
+       a54b860 adding RobusTAD for hicseq.py
+       8c907d1 adding MT reads to IHEC metrics
+
+2.1.10        Thu Dec 21 15:49:09 2017 -0500        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      5 commits
+
+       970f924 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       16c8203 dict2bed - correction to avoid error message : "global name 'args' is not defined"
+       791827b Version bump to 2.1.10
+       89605c5 BFXDEV-674 - MethylSeq pipeline - updated metrics scprits for MethylSeq pipeline : standardized header and some reviewed calculations
+       f421c9b Version 2.1.9 updated
+
+  Eloi Mercier <emercier@jonquille.genome.mcgill.ca>      2 commits
+
+       e433367 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       a1719b9 in plotSpikeCount.R remove unused variable pdf_out
+
+  mmichaud <marc.michaud@mail.mcgill.ca>      1 commits
+
+       4cf22bd Add CountIlluminaBarcodes in java-tools; used in illumina run processing pipeline.
+
+2.1.9        Thu Dec 14 11:27:05 2017 -0500        91 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      34 commits
+
+       ac44095 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       68e8be3 very minor updates on the header of the methylseq metrics report
+       ad0c35d BFXDEV-674 - updated IHEC metrics report script : generalized way to find bismark alignment reports when computing the human conversion rate
+       3dac5d2 Version bump to 2.1.9
+       fc8753d minor updates in metrics (& IHEC metrics) scripts for MethylSeq pipeline
+       7558a25 new CHANGELOG.md
        5b25386 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        496f8fb BFXDEV-674 - review the metrics step, especially the IHEC metrics step, and updated header labels to be more standard
        21b5428 new CHANGELOG.md
@@ -99,8 +213,12 @@ HEAD        Fri Nov 24 12:44:30 2017 -0500        0 commits
 
        aaf5581 Update sequenza script and add sCNAphase script
 
-  Rola Dali <rola.dali@mail.mcgill.ca>      10 commits
+  Rola Dali <rola.dali@mail.mcgill.ca>      14 commits
 
+       6069ee9 changing ihec_metrics to use chip_type N/B instead of chip mark
+       a868c97 IHEC_chipseq_metrics_max.sh edited online with Bitbucket
+       7bb9b0f Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       42ef372 fixing rRNA matrics for IHEC
        5ccb9d2 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        0199656 IHEC format changes
        a98798a chipseq modification: add rawreads

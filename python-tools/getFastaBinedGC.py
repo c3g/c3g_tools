@@ -40,7 +40,7 @@ def usage():
     print "       -h :        this help \n"
 
 def main():
-    print "\n---------------------------------------------------------------------------------"
+    print "\n----------------------------------------------------------------------------------"
     print "getFastaBinedGC.py will generate a bed files with the GC content of each bin from "
     print "the given genome file."
     print "This program was written by Edouard HENRION"

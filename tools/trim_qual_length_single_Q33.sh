@@ -1,5 +1,4 @@
-
-#!/bin/sh
+#!/bin/env sh
 
 # This script was written by Louis Letourneau and Maxime Caron
 # Trims sequences for quality and length
