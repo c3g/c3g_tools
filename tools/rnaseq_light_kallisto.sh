@@ -13,7 +13,7 @@ FASTQ1=$5
 FASTQ2=$6
 
 mkdir -p $OUTPUT_DIR
-kallisto quant $PARAMETERS -i $TRANSCRIPTOME -o $OUTPUT_DIR $FASTQ1 $FASTQ2 > $OUTPUT_DIR/kallisto_quant.log
+kallisto quant $PARAMETERS -i $TRANSCRIPTOME -o $OUTPUT_DIR $FASTQ1 $FASTQ2 > ${OUTPUT_DIR}/kallisto_quant.log
 mv $OUTPUT_DIR/abundance.tsv $OUTPUT_DIR/abundance_transcripts.tsv
 
 #R script transcript -> gene level
