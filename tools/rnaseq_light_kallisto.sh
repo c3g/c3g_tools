@@ -1,7 +1,7 @@
-#!/bin/env sh
+#!/bin/bash
+set -eu -o pipefail
 #by Eloi Mercier
 
-set -e
 echo "STARTING: " $(date)
 
 #get args
