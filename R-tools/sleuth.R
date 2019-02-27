@@ -4,7 +4,6 @@
 # Usage: Rscript sleuth.R -d path_design -o output_dir -t tx2gene
 
 library(readr)
-library(dplyr)
 library(sleuth)
 library(cowplot)
 library(methods)
