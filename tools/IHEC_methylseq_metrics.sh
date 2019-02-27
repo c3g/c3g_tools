@@ -49,7 +49,7 @@ if [ $TARGET_FLAG == 1 ]; then
   a=`echo $OntargetReadsDedup` && b=`echo $DeduplicatedAlignRreads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && OntargetRate=`echo $nr`;
   a=`echo $OntargetReadsDedup` && b=`echo $rawReads` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetvsRawRead=`echo $nr`;
   OntargetReadsRaw=`cat alignment/${SAMPLE_NAME}/${SAMPLE_NAME}.onTarget.raw.count | head -1 |awk '{printf "%d",$1}'`
-  a=`echo $OntargetReadsDedup` && b=`echo $OntargetReadsRaw` && nr=$(echo "scale=4;($a / $b) * 100;" | bc) && onTargetDedupRate=`echo $nr`;
+  a=`echo $OntargetReadsDedup` && b=`echo $OntargetReadsRaw` && nr=$(echo "scale=4;1-($a / $b) * 100;" | bc) && onTargetDedupRate=`echo $nr`;
   file=methylation_call/${SAMPLE_NAME}/${SAMPLE_NAME}.readset_sorted.dedup.CpG_profile.strand.combined.on_target.count
   ot_cg1x=`tail -1  $file | awk '{print $2}'`
   ot_cg10x=`tail -1 $file | awk '{print $3}'`
