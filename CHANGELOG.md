@@ -1,6 +1,37 @@
-37 tags, 465 commits
+38 tags, 479 commits
 
-HEAD        Tue Dec 18 09:52:02 2018 -0500        0 commits
+HEAD        Wed Feb 27 16:07:03 2019 -0500        0 commits
+
+2.2.1        Thu Feb 28 11:43:00 2019 -0500        14 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       9ed419b Version bump to 2.2.1-beta
+       b06e519 Version bump to 2.2.0
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      7 commits
+
+       83bfc13 Fixed merge issues with sleuth script
+       e63ff6a Merge branch 'master' into rnaseq_light_jhg
+       04c4d4f Fixed merge conflit with kallisto script
+       a6f6d4b Added corrections to the kallisto script, to incorporate logs (for MultiQC) and reordering parameters to avoid conflicts.
+       f2bf76e Merge branch 'master' of https://bitbucket.org/mugqic/mugqic_tools
+       f9e276a Incorporated updates to the kallisto script to save log (for MultiQC) and to fix order of parameters
+       2fa54d3 Added initial sleuth scritp (incorporating corrections by Eloi M.)
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       5e740d1 Merged rnaseq_light_jhg into master
+       98c7f70 Merged master into sleuth
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
+
+       38adb2c Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       32c293b remove bug for OntargetReadsDedup calculation
+
+  robert.eveleigh@mcgill.ca <reveleig@abacus1.ferrier.genome.mcgill.ca>      1 commits
+
+       d0b724f add python script to add genotypes in strelka2 vcf
 
 2.2.0        Tue Dec 18 10:42:31 2018 -0500        12 commits
 
