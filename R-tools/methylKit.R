@@ -116,7 +116,7 @@ for (i in 2:ncol(design)) {
     nmbSamples <- length(condition1Samples) + length(condition2Samples)
     sampleNames <- c(condition1SampleNames, condition2SampleNames)
     file.list <- as.list(c(condition1Samples, condition2Samples))
-    conditions <- c(rep(1, length(condition1Samples)), rep(0, length(condition2Samples)))
+    conditions <- c(rep(0, length(condition1Samples)), rep(1, length(condition2Samples)))
     print(paste(sampleNames, collapse=" "))
     print(paste(conditions, collapse=" "))
 
