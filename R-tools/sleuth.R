@@ -8,6 +8,7 @@ library(sleuth)
 library(cowplot)
 library(methods)
 library(pheatmap)
+library(tibble)
 library(RColorBrewer)
 
 # Usage 
