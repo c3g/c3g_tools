@@ -244,8 +244,8 @@ for (i in 2:ncol(design)) {
 
     # Changing tiles between samples (methyl diff > 0.2 and significant t-test)
     print("Start to calcualte differentially methylated sites!")
-        meth <- select(meth,1:1000) ## for testing purpose
-        meth.tiles <- select(meth.tiles,1:1000)
+       # meth <- select(meth,1:1000) ## for testing purpose
+       # meth.tiles <- select(meth.tiles,1:1000)
 
     myDiff <- calculateDiffMeth(meth, num.cores=2, overdispersion=overdispersion_option, adjust=adjust_option) # overdispersion="shrinkMN", adjust="qvalue"
     myDiff.tiles <- calculateDiffMeth(meth.tiles, num.cores=2, overdispersion=overdispersion_option, adjust=adjust_option)
