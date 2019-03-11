@@ -1,6 +1,24 @@
-38 tags, 479 commits
+39 tags, 486 commits
 
-HEAD        Wed Feb 27 16:07:03 2019 -0500        0 commits
+HEAD        Mon Mar 11 15:18:35 2019 -0400        0 commits
+
+2.2.2        Mon Mar 11 15:24:56 2019 -0400        7 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       52bd87e commented some part of code used for testing purposes : were only considering part of input to speed-up the process
+       27bee98 MethylSeq DMR analysis - flip the case and control assignment in methylKit.R
+       b39724f Version bump to 2.2.2-beta
+       23676fa Version bump to 2.2.1
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      2 commits
+
+       76b4d0c Corrected error caused by sleuth version update, as well as other minor mistakes. Script now produces PCA plots as well as heatmap of top 40 genes by FC.
+       09b8a1b Corrected tibble error with the sleuth script
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       5fe716e Merged in rnaseq_light_jhg (pull request #5)
 
 2.2.1        Thu Feb 28 11:43:00 2019 -0500        14 commits
 
