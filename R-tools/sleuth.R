@@ -8,6 +8,7 @@ library(sleuth)
 library(cowplot)
 library(methods)
 library(pheatmap)
+library(tibble)
 library(RColorBrewer)
 
 # Usage 
@@ -46,7 +47,7 @@ perform_dte=function(d, current_design) {
     # Write results files and plots
     write.csv(lrt_results[order(lrt_results$qval),], file=lrt_out, row.names = FALSE) 
     write.csv(wt_results[order(wt_results$qval),], file=wt_out, row.names = FALSE)
-    #ggsave(pca_out, plot_pca(so, color_by = "contrast", text_labels = TRUE), dpi = 300) 
+    ggsave(pca_out, plot_pca(so, color_by = "contrast", text_labels = TRUE), dpi = 300) 
 }
 
 perform_dge=function(d, current_design) {
@@ -54,14 +55,14 @@ perform_dge=function(d, current_design) {
     lrt_out = paste("sleuth", current_design, paste("results", "lrt", "gene", "csv", sep="."), sep="/")
     wt_out = paste("sleuth", current_design, paste("results", "wt", "gene", "csv", sep="."), sep="/")
     pca_out = paste("sleuth", current_design, paste("pca_plot", "gene", "png", sep="."), sep="/") 
-    htmap_out = paste("sleuth", current_design, paste("heatmap", "topFCgenes", "pdf", sep="."), sep="/") 
+    htmap_out = paste("sleuth", current_design, paste("heatmap", "topFCgenes", "png", sep="."), sep="/") 
     # Prepare sleuth object. 
-    so <- sleuth_prep(d, ~ contrast, target_mapping = ttg, aggregation_column = 'ens_gene', transformation_function = function(x) log2(x + 0.5), num_cores=2)
+    so <- sleuth_prep(d, ~ contrast, gene_mode = TRUE, target_mapping = ttg, aggregation_column = 'ens_gene', transformation_function = function(x) log2(x + 0.5), num_cores=2)
     # Perform likelihood ratio test (LRT) 
     so <- sleuth_fit(so, ~ contrast, "full") 
     so <- sleuth_fit(so, ~ 1, "reduced") 
     so <- sleuth_lrt(so, "reduced", "full")
-    lrt_results <- sleuth_results(so, "reduced:full", "lrt", show_all = TRUE) 
+    lrt_results <- sleuth_results(so, "reduced:full", "lrt", show_all = TRUE )
     # Perform wald test (WT) 
     so <- sleuth_wt(so, "contrast2", "full") 
     wt_results <- sleuth_results(so, "contrast2", "wt", show_all=TRUE)
@@ -78,13 +79,12 @@ perform_dge=function(d, current_design) {
     write.csv(lrt_results[!duplicated(lrt_results$target_id), !names(lrt_results) %in% c("transcript_version","degrees_free")], file=lrt_out, row.names = FALSE) 
     write.csv(wt_results[!duplicated(wt_results$target_id), !names(wt_results) %in% c("transcript_version","degrees_free")], file=wt_out, row.names = FALSE) 
     # Save plots
-    #png(file=pca_out, height=7, width=7, units="in", res=500)
-    #plot_pca(so, color_by = "contrast", text_labels = TRUE)
-    #dev.off()
+    png(file=pca_out, height=7, width=7, units="in", res=500)
+    plot_pca(so, color_by = "contrast", text_labels = TRUE)
+    dev.off()
     #
-    #pdf(file = heatmap_out)
-    #pheatmap(heatmap_subset, color =colors, filename= htmap_out, silent)
-    #dev.off()
+    pheatmap(heatmap_subset, color =colors, filename= htmap_out)
+    #
 }
 
 
