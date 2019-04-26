@@ -94,7 +94,7 @@ for (i in 1:length(ARG)) {
 }
 
 # Read in the design file
-design = read.csv2(design_file, header=T, sep="\t", na.strings= "0", check.names=F, colClasses = c('character', rep('numeric',unique(count.fields(design_file))-1)))
+design = read.csv2(design_file, header=T, sep="\t", na.strings= "0", check.names=F, colClasses = c('character', rep('numeric',unique(count.fields(design_file, sep = "\t"))-1)))
 
 name_sample = as.character(as.vector(design[,1])) 
 
