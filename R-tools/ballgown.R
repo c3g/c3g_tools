@@ -8,9 +8,10 @@ library(ballgown)
 library(methods)
 library(dplyr)
 library(tibble)
+library(magrittr)
+library(readr)
 
 # Usage 
-
 usage=function(errM) { 
     cat("\nUsage : Rscript ballgown.R [option] <Value>\n")
     cat("       -d       : design file \n")
@@ -24,55 +25,71 @@ set.seed(123456789)
 contrast_oper=function(d, current_design, out_folder) {
     # SAVE EXPRESSION DATA (IN AVERAGE PER-BASE COVERAGE [cov] AND FPKM) 
     smpl_num = length(d$contrast)
-    # Define output names
+    ## Define output names
     trx_cov = file.path(out_folder, paste("transcript", "cov_table", sep="."))
     trx_fpkm = file.path(out_folder, paste("transcript", "fpkm_table", sep="."))
     trx_all = file.path(out_folder, paste("transcript", "attr_table", sep="."))
     gene_all = file.path(out_folder, paste("gene", "attr_table", sep="."))
 
-        # Prepare ballgown object
+    ## TODO: Double-check that the files actually exist at d$path. Give helpful error if files can't be found.
+    ## Prepare ballgown object
     bg <- ballgown(d$path, meas="all")
     bg.idx <- indexes(bg)
     pData(bg) <- data.frame(id=d$sample, group=d$contrast)
     
-    # Generate an index for trx ID, gene ID, and gene name
+    ## Generate an index for trx ID, gene ID, and gene name
     gnNames <- data.frame(geneNames(bg))
     gnNames <- add_column(gnNames, t_id = row.names(gnNames), .before = 1) 
     gnNames <- add_column(gnNames, g_id = geneIDs(bg), .after = 1) 
     colnames(gnNames) <- c("t_id", "gene_id", "gene_name")
     
-    # Produce expression data tables
+    ## Produce expression data tables
     trx_tbl = texpr(bg, 'all') 
     trx_tbl$t_id <- as.character(trx_tbl$t_id)
     gene_tbl = data.frame(gexpr(bg)) 
     gene_tbl = add_column(gene_tbl, gene_id = row.names(gene_tbl), .before = 1)     
 
-    # Save transcript expression data
-    write.table(dplyr::select(trx_tbl, t_id:gene_name, contains('cov.')), file=trx_cov, row.names=FALSE, quote=FALSE, sep="\t") 
-    write.table(dplyr::select(trx_tbl, t_id:gene_name, contains('FPKM.')), file=trx_fpkm, row.names=FALSE, quote=FALSE, sep="\t") 
-    write.table(texpr(bg, 'all'), file=trx_all, row.names=FALSE, quote=FALSE, sep="\t") 
-    # Save gene expression data
-    write.table(gene_tbl, file=gene_all, row.names=FALSE, quote=FALSE, sep="\t") 
+    ## Save transcript expression data
+    trx_tbl %>%
+        dplyr::select(t_id:gene_name, contains('cov.')) %>%
+        write_tsv(trx_cov)
     
+    trx_tbl %>%
+        dplyr::select(t_id:gene_name, contains('FPKM.')) %>%
+        write_tsv(trx_fpkm)
+    
+     write_tsv(texpr(bg, 'all'), trx_all)
+
+    ## Save gene expression data
+    write_tsv(gene_tbl, path = gene_all)
+
     # PERFORM DIFFERENTIAL ANALYSIS
-    # Define output names
+    ## Perform differential analysis
+    stattest(bg, feature='transcript', meas='FPKM', covariate='group', getFC = TRUE) %>%
+        dplyr::mutate(t_id = as.character(id)) %>%
+        select(-id) -> dte_results
+    
+    stattest(bg, feature='gene', meas='FPKM', covariate='group', getFC = TRUE) %>%
+        dplyr::mutate(gene_id = as.character(id)) %>%
+        select(-id) %>%
+        dplyr::left_join(gene_tbl, by="gene_id") -> out_dge
+    
+    ## Define output names
     dge = file.path(out_folder, "gene_exp.diff") 
     dte = file.path(out_folder, "transcript_exp.diff") 
-
-    # Perform differential analysis
-    dte_results = stattest(bg, feature='transcript', meas='FPKM', covariate='group', getFC = TRUE) 
-    colnames(dte_results)[2] <- "t_id"
-    dte_results$t_id <- as.character(dte_results$t_id)
-    out_dte <- dplyr::left_join(dte_results, dplyr::select(trx_tbl, t_id, gene_id, gene_name, contains('FPKM.')), by="t_id")
-
-    dge_results = stattest(bg, feature='gene', meas='FPKM', covariate='group', getFC = TRUE) 
-    colnames(dge_results)[2] <- "gene_id"
-    dge_results$gene_id <- as.character(dge_results$gene_id)
-    out_dge <- dplyr::left_join(dge_results, gene_tbl, by="gene_id")
-
-    # Write outputs
-    write.table(dplyr::arrange(dplyr::select(out_dte, -feature), qval), file=dte, row.names=FALSE, quote=FALSE, sep="\t")
-    write.table(dplyr::arrange(dplyr::select(out_dge, -feature), qval), file=dge, row.names=FALSE, quote=FALSE, sep="\t")
+    
+    ## Write outputs
+    trx_tbl %>%
+        dplyr::select(t_id, gene_id, gene_name, contains('FPKM.')) %>%
+        dplyr::left_join(dte_results, ., by="t_id") %>%
+        dplyr::select(-feature) %>%
+        dplyr::arrange(qval) %>%
+        write_tsv(dte)
+    
+    out_dge %>%
+        dplyr::select(-feature) %>%
+        dplyr::arrange(qval) %>%
+        write_tsv(dge)
 }
 
 #########################
@@ -117,7 +134,7 @@ for (i in 2:ncol(design)) {
     print(current_s2c)
 
     cat("Processing for the design\n")
-    cat(paste("Name folder: ", name_folder, "\n", sep=""))
+    cat(paste("Output folder: ", name_folder, "\n", sep=""))
     cat(paste("Design: ", paste(subsampleN, group,sep="=", collapse=" ; "), "\n", sep=""))
 
     contrast_oper(current_s2c, names(design[i]), name_folder)
