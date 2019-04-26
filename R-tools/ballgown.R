@@ -21,15 +21,16 @@ usage=function(errM) {
 
 set.seed(123456789) 
 
-contrast_oper=function(d, current_design) {
+contrast_oper=function(d, current_design, out_folder) {
     # SAVE EXPRESSION DATA (IN AVERAGE PER-BASE COVERAGE [cov] AND FPKM) 
     smpl_num = length(d$contrast)
     # Define output names
-    trx_cov = paste("ballgown",current_design, paste("transcript", "cov_table", sep="."), sep="/")
-    trx_fpkm = paste("ballgown",current_design, paste("transcript", "fpkm_table", sep="."), sep="/")
-    trx_all = paste("ballgown",current_design, paste("transcript", "attr_table", sep="."), sep="/")
-    gene_all = paste("ballgown",current_design, paste("gene", "attr_table", sep="."), sep="/")
-    # Prepare ballgown object
+    trx_cov = file.path(out_folder, paste("transcript", "cov_table", sep="."))
+    trx_fpkm = file.path(out_folder, paste("transcript", "fpkm_table", sep="."))
+    trx_all = file.path(out_folder, paste("transcript", "attr_table", sep="."))
+    gene_all = file.path(out_folder, paste("gene", "attr_table", sep="."))
+
+        # Prepare ballgown object
     bg <- ballgown(d$path, meas="all")
     bg.idx <- indexes(bg)
     pData(bg) <- data.frame(id=d$sample, group=d$contrast)
@@ -55,8 +56,8 @@ contrast_oper=function(d, current_design) {
     
     # PERFORM DIFFERENTIAL ANALYSIS
     # Define output names
-    dge = paste("ballgown", current_design, "gene_exp.diff", sep="/") 
-    dte = paste("ballgown", current_design, "transcript_exp.diff", sep="/") 
+    dge = file.path(out_folder, "gene_exp.diff") 
+    dte = file.path(out_folder, "transcript_exp.diff") 
 
     # Perform differential analysis
     dte_results = stattest(bg, feature='transcript', meas='FPKM', covariate='group', getFC = TRUE) 
@@ -99,7 +100,7 @@ name_sample = as.character(as.vector(design[,1]))
 
 for (i in 2:ncol(design)) {
 
-    name_folder <- paste(out_path, names(design[i]), sep="/")
+    name_folder <- file.path(out_path, names(design[i]))
 
     if (!file.exists(name_folder)) {
         dir.create(name_folder, showWarnings=F, recursive=T)
@@ -108,7 +109,7 @@ for (i in 2:ncol(design)) {
     current_design <- design[,i]
     subsampleN <- name_sample[!(is.na(current_design))]
     group <- as.character(current_design)[!(is.na(current_design))]
-    stringtiePaths <- paste("stringtie", subsampleN, sep = "/")
+    stringtiePaths <- file.path("stringtie", subsampleN)
     groupN <- unique(group)
     
     # Define current sample to contrast (s2c) table, which will be the main input for dte and dge functions
@@ -119,7 +120,7 @@ for (i in 2:ncol(design)) {
     cat(paste("Name folder: ", name_folder, "\n", sep=""))
     cat(paste("Design: ", paste(subsampleN, group,sep="=", collapse=" ; "), "\n", sep=""))
 
-    contrast_oper(current_s2c, names(design[i]))
+    contrast_oper(current_s2c, names(design[i]), name_folder)
 }
 
 
