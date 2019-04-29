@@ -51,14 +51,14 @@ contrast_oper=function(d, current_design, out_folder) {
 
     ## Save transcript expression data
     trx_tbl %>%
-        dplyr::select(t_id:gene_name, contains('cov.')) %>%
+        dplyr::select(t_id:gene_name, dplyr::contains('cov.')) %>%
         write_tsv(trx_cov)
     
     trx_tbl %>%
-        dplyr::select(t_id:gene_name, contains('FPKM.')) %>%
+        dplyr::select(t_id:gene_name, dplyr::contains('FPKM.')) %>%
         write_tsv(trx_fpkm)
     
-     write_tsv(texpr(bg, 'all'), trx_all)
+    write_tsv(texpr(bg, 'all'), trx_all)
 
     ## Save gene expression data
     write_tsv(gene_tbl, path = gene_all)
@@ -80,7 +80,7 @@ contrast_oper=function(d, current_design, out_folder) {
     
     ## Write outputs
     trx_tbl %>%
-        dplyr::select(t_id, gene_id, gene_name, contains('FPKM.')) %>%
+        dplyr::select(t_id, gene_id, gene_name, dplyr::contains('FPKM.')) %>%
         dplyr::left_join(dte_results, ., by="t_id") %>%
         dplyr::select(-feature) %>%
         dplyr::arrange(qval) %>%
@@ -139,5 +139,3 @@ for (i in 2:ncol(design)) {
 
     contrast_oper(current_s2c, names(design[i]), name_folder)
 }
-
-
