@@ -1,6 +1,23 @@
-39 tags, 486 commits
+40 tags, 492 commits
 
-HEAD        Mon Mar 11 15:18:35 2019 -0400        0 commits
+HEAD        Wed May 1 15:44:51 2019 -0400        0 commits
+
+2.2.3        Wed May 1 15:46:36 2019 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       96eef34 commit before release
+       630bca1 Version bump to 2.2.3-beta
+       d13833a Version bump to 2.2.2
+
+  Pierre-Olivier Quirion <pierre-olivier.quirion@computationalgenomics.ca>      1 commits
+
+       5859f60 Merged in fix_createRmapFile (pull request #7)
+
+  P-O Quirion <pioliqui@gmail.com>      2 commits
+
+       7654b6f update createRmapFile.sh
+       b04d6ef update createRmapFile.sh
 
 2.2.2        Mon Mar 11 15:24:56 2019 -0400        7 commits
 
