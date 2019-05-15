@@ -818,7 +818,7 @@ excelTable$Species = excelTable$NS
 excelTable$NS <- NULL
 #move ASV_name column to first column
 excelTable = excelTable[,c(which(colnames(excelTable)=="ASV_name"),which(colnames(excelTable)!="ASV_name"))]
-write.table(excelTable ,file =sprintf("%s/ASV_table .txt",excel_path), sep = "\t", quote = FALSE, row.names = FALSE)
+write.table(excelTable ,file =sprintf("%s/ASV_table.txt",excel_path), sep = "\t", quote = FALSE, row.names = FALSE)
 
 cat("\ndone!")
 
@@ -853,48 +853,8 @@ write.table(sample_data(ps) ,file =sprintf("%s/sample_data.txt",dada2outputFiles
 #temporary fix a bug in phyloseq when you only have one condition: see https://github.com/joey711/phyloseq/issues/541
 sample_data(ps)[ , 2] <- sample_data(ps)[ ,1]
 
-#FILTERING DATA
-print("FILTERING DATA")
-ps
-#filter low  relative abundance (<10^-5)
-ps = prune_samples(sample_sums(ps)>=1000, ps)
-ps
-#filter low variance
-ps = filter_taxa(ps, function(x) sum(x > 3) > (0.2*length(x)), TRUE)
-ps
-
-#############################################RAREFACTION CURVES#################################
-print("RAREFACTION CURVES")
-samples_number = ncol(otu_table(ps))
-#samples_number
-#define the palette by the number of samples
-#pal= brewer.pal(samples_number,"Set1")
-#pal= viridis(samples_number, alpha = 1, begin = 0, end = 1, option = "D")
-
-#get maximum values (for the legend)
-ymax=0
-xmax = max(otu_table(ps)[,1])
-#xmax
-
-if(samples_number > 1) {
-  for (i in 2:samples_number) {
-    temp_ymax = max(otu_table(ps)[,i])
-    if (temp_ymax > ymax) {
-      ymax = temp_ymax
-    }
-  }
-}
-#ymax
-countTable=otu_table(ps)
-library(vegan)
-pdf(file=sprintf("%s/rarefaction_curves.pdf",savefolder), width=10, height=8)
-rarecurve(t(countTable), step = 100, cex = 0.6,xlab = "Sample Size (vertical line: smallest sample size)", ylab = "Species",  main = "Rarefaction curves", label = TRUE)
-#creating a line for the sample with the least size
-raremax <- min(rowSums(t(countTable)))
-#raremax
-abline(v = raremax)
-rareslope(t(countTable),raremax)
-dev.off()
+#use as condition the first colummn of the design file
+mycond=names(sample_data(ps))[1]
 
 
 cat("\nAlpha diversity plots")
@@ -905,7 +865,7 @@ listTaxLevels=c("Phylum", "Class", "Order", "Family", "Genus")
 destfile=sprintf("%s/barCharts_top20.pdf",graphs_path)
 pdf(file=destfile, width=12, height=9)
 for(l in listTaxLevels) {
-  p = plot_bar(ps.top20, x=sprintf("%s",l), fill=sprintf("%s",l), facet_grid=~Condition, title=sprintf("%s level of the 20 most abundant ASVs", l))
+  p = plot_bar(ps.top20, x=sprintf("%s",l), fill=sprintf("%s",l), facet_grid=as.formula(paste("~", paste(mycond))), title=sprintf("%s level of the 20 most abundant ASVs", l))
   q= p + geom_bar(aes_string(color=sprintf("%s",l), fill=sprintf("%s",l)), stat="identity", position="stack")
   print(q)
 }
@@ -916,7 +876,7 @@ cat("\ndone!\n")
 cat("\nRichness plots")
 destfile=sprintf("%s/richness.pdf",graphs_path)
 pdf(file=destfile, width=12, height=12)
-plot_richness(ps, x = "Condition", color = "Condition", measures=c("Observed", "Shannon", "Simpson", "Fisher", "Chao1", "InvSimpson"), nrow=3) + 
+plot_richness(ps, x = mycond, color = mycond, measures=c("Observed", "Shannon", "Simpson", "Fisher", "Chao1", "InvSimpson"), nrow=3) + 
   geom_boxplot() + geom_point(size = 0.5, alpha = 0.5) +
   ggtitle("Richness plot") +
   theme_classic(base_size = 16)
@@ -933,21 +893,23 @@ destfile=sprintf("%s/ordination.pdf",graphs_path)
 pdf(file=destfile, width=10, height=7)
 print("PCoA")
 ps.pcoa <- ordinate(ps, method="PCoA", distance="bray")
-p=plot_ordination(ps, ps.pcoa, type="samples", color="Condition")
+p=plot_ordination(ps, ps.pcoa, type="samples", color=mycond)
 df=p$data
-ggplot(df, aes(df[,1], df[,2], color = Condition)) + ggtitle("PCoA plot") + xlab(colnames(df[1])) + ylab(colnames(df[2])) +
+ggplot(df, aes(df[,1], df[,2], color = df[,sprintf("%s",mycond)])) + ggtitle("PCoA plot") + xlab(colnames(df[1])) + ylab(colnames(df[2])) +
   geom_point(size = 3, alpha = 0.8) +geom_text(aes(label=row.names(df)),hjust=0, vjust=0, size = 3, color = 'grey') +  theme_classic(base_size = 16)
 print("CCA")
 ps.cca <- ordinate(ps, method="CCA", distance="bray")
-p=plot_ordination(ps, ps.cca, type="Sample", color="Condition")+
+p=plot_ordination(ps, ps.cca, type="Sample", color=mycond)+
   ggtitle("CCA")
 df=p$data
-ggplot(df, aes(df[,1], df[,2], color = Condition)) + 
+ggplot(df, aes(df[,1], df[,2], color = df[,sprintf("%s",mycond)])) + 
   ggtitle("CCA plot") + xlab(colnames(df[1])) + ylab(colnames(df[2])) +
   geom_point(size = 3, alpha = 0.8) +
   geom_text(aes(label=row.names(df)),hjust=0, vjust=0, size = 3, color = 'grey') +
   theme_classic(base_size = 16)
+dev.off()
+
 cat("\ndone!\n")
 
 
-cat("\nASVA is exiting normally\n\n")
+cat("\nASVA is exiting normally\n Well done dude!\n")
