@@ -1,6 +1,36 @@
-40 tags, 492 commits
+41 tags, 505 commits
 
-HEAD        Wed May 1 15:44:51 2019 -0400        0 commits
+HEAD        Wed May 15 16:50:23 2019 -0400        0 commits
+
+2.2.4        Thu May 16 11:01:29 2019 -0400        13 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       4e1b0f4 added tool to create the cluster preset for SMRTLink
+       93ea18e Version bump to 2.2.4-beta
+       af0d356 Version bump to 2.2.3
+
+  Pierre-Olivier Quirion <pierre-olivier.quirion@computationalgenomics.ca>      2 commits
+
+       9064f33 Merged in fix_asva_plot_error (pull request #9)
+       49fa3dd Merged in fix_createBaitMapFile (pull request #8)
+
+  P-O Quirion <pioliqui@gmail.com>      2 commits
+
+       3a6188e fix for the plotting at the end
+       2159261 rewrite escaping
+
+  Robert Syme <rob.syme@gmail.com>      5 commits
+
+       e9d2b20 Merged in ballgown_fix (pull request #6)
+       8cde138 Explicit use of dplyr::contains
+       6380b43 Non-essential stylistic changes
+       fc52621 Ensures that design files that use empty cells instead of '0' are read correctly.
+       f91478c Ignore basic R project files (just in case).
+
+  Robert Syme <rsyme@seychelles.genome.mcgill.ca>      1 commits
+
+       d47ccdb Remove hard-coded output name and use file.path
 
 2.2.3        Wed May 1 15:46:36 2019 -0400        6 commits
 
