@@ -29,7 +29,7 @@ def getarg(argument):
             usage()
             sys.exit()
     if not os.path.exists(refF) :
-        sys.exit("Error - reference file not found:\n"+refR)
+        sys.exit("Error - reference file not found:\n"+refF)
     return  bsi, refF, out
 
 def usage():
