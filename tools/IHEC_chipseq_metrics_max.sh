@@ -67,27 +67,27 @@ done
 
 ## If the ChIP bam file doesn't exist, then throw an error 
 if [[  ! -s $CHIP_BAM ]]
-then
-  echo "ERROR: The ${CHIP_BAM} file doesn't exist or is empty." >&2
-  exit 1;
+  then
+    echo "ERROR: The ${CHIP_BAM} file doesn't exist or is empty." >&2
+    exit 1;
 fi
 
 if [[ ( -z "${CHIP_BED_FILE}" || ! -s ${CHIP_BED_FILE} ) && ! "${CHIP_TYPE}" == "Input" ]]
-then
-  echo "ERROR: Your sample isn't of type Input but you're not providing a BED file with the peaks, or the file doesn't exist or is empty." >&2
-  exit 1;
+  then
+    echo "ERROR: Your sample isn't of type Input but you're not providing a BED file with the peaks, or the file doesn't exist or is empty." >&2
+    exit 1;
 fi
 
 if [[ -z "${CHIP_TYPE}" || -z "${SAMPLE_NAME}"  ]]
-then
-  usage
+  then
+    usage
 fi
 
 if [[ ! ( "${CHIP_TYPE}" == "narrow" || "${CHIP_TYPE}" == "broad" || "${CHIP_TYPE}" == "Input" ) ]]
-then
-  echo "The experiment type defined isn't one of the following." >&2
-  echo "narrow | broad | Input" >&2
-  exit 1;
+  then
+    echo "The experiment type defined isn't one of the following." >&2
+    echo "narrow | broad | Input" >&2
+    exit 1;
 fi 
 
 
@@ -99,9 +99,9 @@ fi
 # fi
 
 if [ $INPUT_NAME == "no_input" ]
-then
-  echo "... sample has no input ..."
-	INPUT_BAM=""
+  then
+    echo "... sample has no input ..."
+  	INPUT_BAM=""
 fi	
 
 
@@ -128,29 +128,29 @@ samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 
 ## run on the input if provided:
 if [[ -s $INPUT_BAM ]]
-then
-  samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
+  then
+    samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
 
-  raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
-  total_reads_input=`grep "in total" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
-  mapped_reads_input=`grep "mapped (" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-  dupped_reads_input=`grep "duplicates" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
-  dup_rate_input=$(echo "${dupped_reads_input}/${mapped_reads_input}" | bc -l)
-  aln_rate_input=$(echo "${mapped_reads_input}/${total_reads_input}" | bc -l)
-  filt_rate_input=$(echo "${total_reads_input}/${raw_reads_input}" | bc -l)
+    raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
+    total_reads_input=`grep "in total" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
+    mapped_reads_input=`grep "mapped (" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    dupped_reads_input=`grep "duplicates" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
+    dup_rate_input=$(echo "${dupped_reads_input}/${mapped_reads_input}" | bc -l)
+    aln_rate_input=$(echo "${mapped_reads_input}/${total_reads_input}" | bc -l)
+    filt_rate_input=$(echo "${total_reads_input}/${raw_reads_input}" | bc -l)
 
-  ## Finally, the number of singletons for paired-end data sets can be calculated using:
-  singletons_input=`grep "singletons" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
+    ## Finally, the number of singletons for paired-end data sets can be calculated using:
+    singletons_input=`grep "singletons" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
-  samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
-  samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam
-  final_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-  MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam MT)
+    samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
+    samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
+    final_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
 
-  if [ $MTreads_input -eq 0 ]
-    then
-    MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam chrM)
-  fi
+    if [ $MTreads_input -eq 0 ]
+      then
+        MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
+    fi
 fi
 
 
@@ -159,7 +159,7 @@ MTreads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 
 if [ $MTreads_chip -eq 0 ]
   then
-  MTreads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
+    MTreads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
 fi
 
 #3.     Calculating Jensen-Shannon distance (JSD)
@@ -169,22 +169,19 @@ fi
 ## No need to remove the blacklisted regions for the JSD calculation.
 
 if [[ "${CHIP_TYPE}" == "narrow" ]]
-then
-  bin_size=200
-else
-  bin_size=1000
+  then
+    bin_size=200
+  else
+    bin_size=1000
 fi
 
 echo "Experiment type: ${CHIP_TYPE} and bin size: $bin_size" >&2
 
 if [[ -s $INPUT_BAM ]]
-then
-
-plotFingerprint -b ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam -bs ${bin_size} -l ${SAMPLE_NAME} INPUT_${CHIP_TYPE} --JSDsample ${OUTPUT_DIR}/${SAMPLE_NAME}_IMPUT.dedup.bam --outQualityMetrics ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.png -p $n
-
-js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 8`
-chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 12`
-
+  then
+    plotFingerprint -b ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam -bs ${bin_size} -l ${SAMPLE_NAME} INPUT_${CHIP_TYPE} --JSDsample ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam --outQualityMetrics ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.png -p $n
+    js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 8`
+    chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.fingerprint.txt | cut -f 12`
 fi
 
 #4.     Calculating FRiP scores
@@ -222,31 +219,28 @@ fi
 
 
 if [[ -s $INPUT_BAM ]]
-then
-nsc_input=$(cut -f 9 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
-rsc_input=$(cut -f 10 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
-quality_input_num=$(cut -f 11 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+  then
+    nsc_input=$(cut -f 9 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+    rsc_input=$(cut -f 10 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
+    quality_input_num=$(cut -f 11 ${OUTPUT_DIR}/${INPUT_NAME}.crosscor | head -n 1)
 
 
-if [[ "$quality_input_num" == "-2" ]]
-  then
-    quality_input=veryLow
-elif [[ "$quality_input_num" == "-1" ]]
-  then
-    quality_input=Low
-elif [[ "$quality_input_num" == "0" ]]
-  then
-    quality_input=Medium
-elif [[ "$quality_input_num" == "1" ]]
-  then
-    quality_input=High
-elif [[ "$quality_input_num" == "2" ]]
-  then
-    quality_input=veryHigh
-fi
-
-
-
+    if [[ "$quality_input_num" == "-2" ]]
+      then
+        quality_input=veryLow
+    elif [[ "$quality_input_num" == "-1" ]]
+      then
+        quality_input=Low
+    elif [[ "$quality_input_num" == "0" ]]
+      then
+        quality_input=Medium
+    elif [[ "$quality_input_num" == "1" ]]
+      then
+        quality_input=High
+    elif [[ "$quality_input_num" == "2" ]]
+      then
+        quality_input=veryHigh
+    fi
 fi
 
 
