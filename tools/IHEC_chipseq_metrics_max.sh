@@ -168,8 +168,8 @@ fi
 # filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 filtered_reads_chip=`sambamba flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
-MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
-# MT_reads_chip=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
+# MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
+MT_reads_chip=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 
 if [ $MT_reads_chip -eq 0 ]
   then
