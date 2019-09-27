@@ -109,12 +109,13 @@ fi
 samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 
 raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
-total_reads_chip=`grep "in total" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
-mapped_reads_chip=`grep "mapped (" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-dupped_reads_chip=`grep "duplicates" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
-dup_rate_chip=$(echo "${dupped_reads_chip}/${mapped_reads_chip}" | bc -l)
-aln_rate_chip=$(echo "${mapped_reads_chip}/${total_reads_chip}" | bc -l)
-filt_rate_chip=$(echo "${total_reads_chip}/${raw_reads_chip}" | bc -l)
+supplementarysecondary_reads_chip=`bc <<< $(grep "secondary" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* supplementary.*//')`
+trimmed_reads_chip=`bc <<< $(grep "in total" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
+mapped_reads_chip=`bc <<< $(grep "mapped (" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_chip`
+dup_reads_chip=`grep "duplicates" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
+dup_rate_chip=$(echo "100*${dup_reads_chip}/${mapped_reads_chip}" | bc -l)
+mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
+trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
 
 ## Finally, the number of singletons for paired-end data sets can be calculated using:
 singletons_chip=`grep "singletons" ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
@@ -132,35 +133,39 @@ if [[ -s $INPUT_BAM ]]
     samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
 
     raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
-    total_reads_input=`grep "in total" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
+    trimmed_reads_input=`grep "in total" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* in total .*//'`
     mapped_reads_input=`grep "mapped (" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    dupped_reads_input=`grep "duplicates" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
-    dup_rate_input=$(echo "${dupped_reads_input}/${mapped_reads_input}" | bc -l)
-    aln_rate_input=$(echo "${mapped_reads_input}/${total_reads_input}" | bc -l)
-    filt_rate_input=$(echo "${total_reads_input}/${raw_reads_input}" | bc -l)
+    dup_reads_input=`grep "duplicates" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* duplicates$//'`
+    dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
+    mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
+    trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
 
     ## Finally, the number of singletons for paired-end data sets can be calculated using:
     singletons_input=`grep "singletons" ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
     samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
     samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    final_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
+    filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
+    MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
 
-    if [ $MTreads_input -eq 0 ]
+    if [ $MT_reads_input -eq 0 ]
       then
-        MTreads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
+        MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
     fi
+    MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
 fi
 
 
-final_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-MTreads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
+filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
+MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 
-if [ $MTreads_chip -eq 0 ]
+if [ $MT_reads_chip -eq 0 ]
   then
-    MTreads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
+    MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
 fi
+MT_rate_chip=$(echo "100*${MT_reads_chip}/${filtered_reads_chip}" | bc -l)
 
 #3.     Calculating Jensen-Shannon distance (JSD)
 
@@ -187,7 +192,7 @@ fi
 #4.     Calculating FRiP scores
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam`
-frip=$(echo "${reads_under_peaks}/${final_reads_chip}" | bc -l)
+frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC and RSC from run_spp
 
@@ -246,12 +251,5 @@ fi
 
 LC_NUMERIC="en_US.UTF-8"
 
-#printf "genome_assembly\ttreat_name\tctl_name\ttreat_filtered_reads\ttreat_mapped_reads\tclt_filtered_reads\tclt_mapped_reads\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-#LANG=C printf "%s\t%s\t%s\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$total_reads_chip" "$mapped_reads_chip" "$total_reads_input" "$mapped_reads_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  >> ${OUTPUT_DIR}/${SAMPLE_NAME}.read_stats.txt
-
-printf "genome_assembly\tChIP_type\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_filtered_reads\ttreat_mapped_reads\ttreat_duplicated_reads\ttreat_final_reads\tctl_raw_reads\tclt_filtered_reads\tclt_mapped_reads\tctl_duplicated_reads\tctl_final_reads\ttreat_filtered_frac\tctl_filtered_frac\ttreat_aln_frac\tctl_aln_frac\ttreat_dup_frac\tctl_dup_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctrl_nsc\ttreat_rsc\tctrl_rsc\ttreat_Quality\tctrl_Quality\tsingletons\tjs_dist\tchance_div\ttreat_MTreads\tctrl_MTreads\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
-LANG=C printf "%s\t%s\t%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\t%d\t%d\n" "${assembly}" "${CHIP_TYPE}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$raw_reads_chip" "$total_reads_chip" "$mapped_reads_chip" "$dupped_reads_chip" "$final_reads_chip" "$raw_reads_input" "$total_reads_input" "$mapped_reads_input" "$dupped_reads_input" "$final_reads_input" "$filt_rate_chip" "$filt_rate_input" "$aln_rate_chip" "$aln_rate_input" "$dup_rate_chip" "$dup_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input" "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div"  "$MTreads_chip" "$MTreads_input">> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
-
-
-
-
+printf "genome_assembly\tChIP_type\ttreat_name\tctl_name\ttreat_raw_reads\ttreat_trimmed_reads\ttreat_trimmed_frac\ttreat_mapped_reads\ttreat_mapped_frac\ttreat_dup_reads\ttreat_dup_frac\ttreat_filtered_reads\ttreat_filtered_frac\ttreat_MT_reads\ttreat_MT_frac\tctl_raw_reads\tctl_trimmed_reads\tctl_trimmed_frac\tclt_mapped_reads\tctl_mapped_frac\tctl_dup_reads\tctl_dup_frac\tctl_filtered_reads\tctl_filtered_frac\tctl_MT_reads\tctl_Mt_frac\tnmb_peaks\treads_in_peaks\tfrip\ttreat_nsc\tctl_nsc\ttreat_rsc\tctl_rsc\ttreat_Quality\tctl_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
+LANG=C printf "%s\t%s\t%s\t%s\t%d\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%.2f\t%d\t%d\t%.4f\t%.4f\t%.4f\t%.4f\t%.4f\t%s\t%s\t%d\t%.4f\t%.4f\n" "${assembly}" "${CHIP_TYPE}" "${SAMPLE_NAME}" "${INPUT_NAME}" "$raw_reads_chip" "$trimmed_reads_chip" "$trimmed_rate_chip" "$mapped_reads_chip" "$mapped_rate_chip" "$dup_reads_chip" "$dup_rate_chip" "$filtered_reads_chip" "$filtered_rate_chip" "$MT_reads_chip" "$MT_rate_chip" "$raw_reads_input" "$trimmed_reads_input" "$trimmed_rate_input" "$mapped_reads_input" "$mapped_rate_input" "$dup_reads_input" "$dup_rate_input" "$filtered_reads_input" "$filtered_rate_input" "$MT_reads_input" "$MT_rate_input" "$nmb_peaks" "$reads_under_peaks" "$frip" "$nsc_chip" "$nsc_input"  "$rsc_chip" "$rsc_input" "$quality_chip" "$quality_input" "$singletons_chip" "$js_dist" "$chance_div">> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.txt
