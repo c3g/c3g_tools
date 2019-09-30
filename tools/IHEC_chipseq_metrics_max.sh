@@ -156,7 +156,7 @@ if [[ -s $INPUT_BAM ]]
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
     MT_reads_input=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
 
-    if [ -z $MT_reads_chip || $MT_reads_input -eq 0 ]
+    if [ -z $MT_reads_chip ] || [ $MT_reads_input -eq 0 ]
       then
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
         MT_reads_input=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
@@ -171,7 +171,7 @@ filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | b
 # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 MT_reads_chip=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 
-if [ -z $MT_reads_chip || $MT_reads_chip -eq 0 ]
+if [ -z $MT_reads_chip ] || [ $MT_reads_chip -eq 0 ]
   then
     # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
     MT_reads_chip=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
