@@ -3,7 +3,7 @@
 # Computation of IHEC ChIP-seq quality metrics
 # Originally from https://github.com/IHEC/ihec-assay-standards/tree/master/ChIP-seq_QC
 # reimplemented by mathieu.bourgey@mcgill.ca - 31/07/2017
-# module to load sambamba samtools mugqic_dev/deeptools/2.5.3
+# module to load sambamba samtools mugqic/deeptools/2.5.3
 
 usage() { 
   echo "Usage: IHEC_chipseq_metrics.sh [option] [-t narrow|broad|Input]"
