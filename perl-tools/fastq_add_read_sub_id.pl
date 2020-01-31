@@ -19,7 +19,10 @@
 # along with MUGQIC Pipelines.  If not, see <http://www.gnu.org/licenses/>.
 ################################################################################
 
+# Script adding a read indicator (/1 or /2) at the end of the first and third line of each read entry
+
 for (my $i = 1; $i <= 2; $i++) {
+    # get arguments by pairs incrementing the read counter (max 2). The order of input must fit the read order.
     $infile = shift @ARGV;
     $outfile = shift @ARGV;
     print "Outputfile: $outfile\n";
@@ -30,7 +33,7 @@ for (my $i = 1; $i <= 2; $i++) {
     while  ( my $line = <INPUT>) {
         chomp($line);
         my @tmp1 = split(' ', $line);
-        my $read1 = join('/', $tmp1[0], $i);
+        my $read1 = join('/', $tmp1[0], $i); # Add the read indicator at the end of the first line of the read entry
 
         $line = <INPUT>;
         chomp($line);
@@ -39,13 +42,13 @@ for (my $i = 1; $i <= 2; $i++) {
         $line = <INPUT>;
         chomp($line);
         my @tmp2 = split(' ', $line);
-        my $read2 = join('/', $tmp2[0], $i);
+        my $read2 = join('/', $tmp2[0], $i); # Add the read indicator at the end of the third line of the read entry
 
         $line = <INPUT>;
         chomp($line);
         my $qual1 = $line;
 
-        print OUTPUT "$read1\n$seq1\n$read2\n$qual1\n";
+        print OUTPUT "$read1\n$seq1\n$read2\n$qual1\n"; # Format of the read entry. Indicators are in read1 and read2.
     }
     close INPUT;
     close OUTPUT;
