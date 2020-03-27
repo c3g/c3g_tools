@@ -132,8 +132,8 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
     
   }
   
-  print(paste("sample 1 new rows=",as.numeric(sum(mat1[,-c(1:3)])) ))
-  print(paste("sample 2 new rows=",as.numeric(sum(mat2[,-c(1:3)])) ))
+  print(paste("sample 1 new rows=",as.numeric(sum(mat1_h[,-c(1:3)])) ))
+  print(paste("sample 2 new rows=",as.numeric(sum(mat2_h[,-c(1:3)])) ))
   
   #if down_sampling==false no down-sampling will be performed
   
