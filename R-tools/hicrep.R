@@ -40,6 +40,43 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
   mat1[is.na(mat1)] <- 0;
   mat2[is.na(mat2)] <- 0;
   
+  #Rename the first column
+  colnames(mat1)[1] <- "var1"
+  colnames(mat2)[1] <- "var1"
+  
+  #create a new column with chromosome name
+  mat1$chr <- sub("\\-.*", "", mat1$var1)
+  mat2$chr <- sub("\\-.*", "", mat2$var1)
+  
+  #create a new column with bin start value
+  mat1$bin_start <- as.numeric(sub(".*\\-", "", mat1$var1))
+  mat2$bin_start <- as.numeric(sub(".*\\-", "", mat2$var1))
+  
+  #create a new column with bin end value
+  mat1$bin_end <- as.numeric(mat1$bin_start + bin)
+  mat2$bin_end <- as.numeric(mat2$bin_start + bin)
+  
+  mat1 <- as.data.frame(mat1)
+  mat2 <- as.data.frame(mat2)
+  
+  #Restructure the data frame acoording to the hicrep input format
+  #Required structure of the data set
+  ##       V1      V2       V3 V4 V5 V6 V7 V8 V9 V10
+  ## 1  chr22       0  1000000  0  0  0  0  0  0   0
+  ## 2  chr22 1000000  2000000  0  0  0  0  0  0   0
+  ## 3  chr22 2000000  3000000  0  0  0  0  0  0   0
+  ## 4  chr22 3000000  4000000  0  0  0  0  0  0   0
+  ## 5  chr22 4000000  5000000  0  0  0  0  0  0   0
+  ## 6  chr22 5000000  6000000  0  0  0  0  0  0   0
+  ## 7  chr22 6000000  7000000  0  0  0  0  0  0   0
+  ## 8  chr22 7000000  8000000  0  0  0  0  0  0   0
+  ## 9  chr22 8000000  9000000  0  0  0  0  0  0   0
+  ## 10 chr22 9000000 10000000  0  0  0  0  0  0   0
+  
+  
+  mat1 <- mat1[,c(dim(mat1)[2]-2,dim(mat1)[2]-1,dim(mat1)[2], 2:(dim(mat1)[2]-3))]
+  mat2 <- mat2[,c(dim(mat2)[2]-2,dim(mat2)[2]-1,dim(mat2)[2], 2:(dim(mat2)[2]-3))]
+  
   print(paste("matrix 1 size=", dim(mat1)))
   print(paste("matrix 2 size=", dim(mat2)))
   
@@ -95,8 +132,8 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
     
   }
   
-  print(paste("sample 1 new rows=",as.numeric(sum(mat1[,-c(1:3)])) ))
-  print(paste("sample 2 new rows=",as.numeric(sum(mat2[,-c(1:3)])) ))
+  print(paste("sample 1 new rows=",as.numeric(sum(mat1_h[,-c(1:3)])) ))
+  print(paste("sample 2 new rows=",as.numeric(sum(mat2_h[,-c(1:3)])) ))
   
   #if down_sampling==false no down-sampling will be performed
   

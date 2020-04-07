@@ -1,6 +1,43 @@
-41 tags, 505 commits
+42 tags, 522 commits
 
-HEAD        Wed May 15 16:50:23 2019 -0400        0 commits
+HEAD        Fri Feb 21 15:01:45 2020 -0500        0 commits
+
+2.3.0        Fri Feb 21 15:19:26 2020 -0500        17 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       aab730b correcting file permissions to some python tools
+       d9ba47c Version bump to 2.2.5-beta
+       5cba859 Version bump to 2.2.4
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      1 commits
+
+       4a2b153 Added a new python script to extract a certain number of bases from long nanopore reads, for use with BLAST QC.
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       8b61def Merged in nanopore_jhg (pull request #12)
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      10 commits
+
+       4febc34 Merged in IHEC_chipseq_metrics_fix (pull request #11)
+       2b4d612 IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fix typo
+       208edcd IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Ed comment
+       b57833b IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fixing sambamba issue
+       e3ad940 Using sambamba to speed up
+       6108b26 Using sambamba to speed up
+       cfd4925 Fixing metrics
+       89d50d5 Fixing typo
+       11e5f3d Merged in Paul-Stretenowich/getfastabinedgcpy-edited-online-with-bit-1558131034321 (pull request #10)
+       af4f10f Correcting minor bug issue
+
+  pubudumanoj <pnawarat@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       b85eb34 Added hicrep.R to R-tools which does the hicrep analysis
+
+  rami.coles@mail.mcgill.ca <rcoles@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       a83ea10 Added tool to compute signal to noise on ChIP-Seq signal tracks and EpiQC report tool
 
 2.2.4        Thu May 16 11:01:29 2019 -0400        13 commits
 
