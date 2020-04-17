@@ -1,6 +1,25 @@
-43 tags, 526 commits
+44 tags, 534 commits
 
-HEAD        Fri Mar 27 14:46:51 2020 -0400        0 commits
+HEAD        Fri Apr 17 13:21:20 2020 -0400        0 commits
+
+2.3.2        Fri Apr 17 13:26:36 2020 -0400        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       a6f9432 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       869d24a Version bump to 2.3.1
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      4 commits
+
+       40f63d8 Added a script to run BLAST for Nanopore QC
+       6f4c3fb Merge branch 'nanopore_jhg' of bitbucket.org:mugqic/mugqic_tools into nanopore_jhg
+       e977d55 Added a tool to trim nanopore reads to a set length of 1000bp
+       3ca36d4 Added a tool to trim nanopore reads to a set length of 1000bp
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       7c066b9 Merged in nanopore_jhg (pull request #14)
+       368915d Merged master into nanopore_jhg
 
 2.3.1        Mon Mar 30 09:34:18 2020 -0400        4 commits
 
