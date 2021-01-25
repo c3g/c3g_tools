@@ -141,7 +141,6 @@ if [[ -s $trimmomatic_table ]]
     trimmed_rate_chip="NULL"
 fi
 
-
 ## Finally, the number of singletons for paired-end data sets can be calculated using:
 singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
