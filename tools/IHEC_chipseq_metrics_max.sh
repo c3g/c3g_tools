@@ -112,7 +112,7 @@ fi
 ## The original number of reads and the number of those aligned:
 # samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 flagstat_file="${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
-sambamba flagstat ${CHIP_BAM} > $flagstat_file
+sambamba flagstat -t $n ${CHIP_BAM} > $flagstat_file
 
 
 # raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
@@ -145,18 +145,18 @@ singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* si
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
 # samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 dedup_bam="${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
-sambamba view -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
+sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
 
 ## Index the final deduplicated BAM file
 # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
-sambamba index $dedup_bam
+sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
 if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}.Input.markDup_flagstat.txt"
-    sambamba flagstat ${INPUT_BAM} > $input_flagstat_file
+    sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
 
     raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
     trimmed_reads_input=`grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
@@ -170,34 +170,34 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba view -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
+    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
     # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba index ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
+    sambamba index -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
     # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    filtered_reads_input=`sambamba flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    filtered_reads_input=`sambamba flagstat -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
-    MT_reads_input=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam MT)
+    MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam MT)
 
     if [ -z $MT_reads_chip ] || [ $MT_reads_input -eq 0 ]
       then
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
-        MT_reads_input=$(sambamba view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam chrM)
+        MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam chrM)
     fi
     MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
 fi
 
 
 # filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-filtered_reads_chip=`sambamba flagstat  $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
 # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
-MT_reads_chip=$(sambamba view -c $dedup_bam MT)
+MT_reads_chip=$(sambamba view -t $n -c $dedup_bam MT)
 
 if [ -z $MT_reads_chip ] || [ $MT_reads_chip -eq 0 ]
   then
     # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
-    MT_reads_chip=$(sambamba view -c $dedup_bam chrM)
+    MT_reads_chip=$(sambamba view -t $n -c $dedup_bam chrM)
 fi
 MT_rate_chip=$(echo "100*${MT_reads_chip}/${filtered_reads_chip}" | bc -l)
 
@@ -225,7 +225,7 @@ fi
 
 #4.     Calculating FRiP scores
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
-reads_under_peaks=`samtools view -c -L ${CHIP_BED_FILE} $dedup_bam`
+reads_under_peaks=`samtools view -@ $n -c -L ${CHIP_BED_FILE} $dedup_bam`
 frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC and RSC from run_spp
