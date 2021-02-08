@@ -68,6 +68,7 @@ while getopts "t:d:i:j:c:p:s:o:n:a::" o; do
     esac
 done
 
+scale=2
 
 ## If the ChIP bam file doesn't exist, then throw an error 
 if [[  ! -s $CHIP_BAM ]]
