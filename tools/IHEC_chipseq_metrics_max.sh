@@ -125,16 +125,16 @@ dup_rate_chip=$(echo "100*${dup_reads_chip}/${mapped_reads_chip}" | bc -l)
 # trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
 trimmomatic_table="metrics/trimSampleTable.tsv"
 if [[ -s $trimmomatic_table ]]
-then
-  raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' $trimmomatic_table | cut -f 2)
-  trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
-  mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
-  trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
-else
-  raw_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
-  trimmed_reads_chip="NULL"
-  mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${raw_reads_chip}" | bc -l)
-  trimmed_rate_chip="NULL"
+  then
+    raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' $trimmomatic_table | cut -f 2)
+    trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
+    mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
+    trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
+  else
+    raw_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
+    trimmed_reads_chip="NULL"
+    mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${raw_reads_chip}" | bc -l)
+    trimmed_rate_chip="NULL"
 fi
 
 
@@ -164,16 +164,16 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
 
     if [[ -s $trimmomatic_table ]]
-    then
-      raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
-      trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
-      mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
-      trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
-    else
-      raw_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
-      trimmed_reads_input="NULL"
-      mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
-      trimmed_rate_input="NULL"
+      then
+        raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
+        trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
+        mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
+        trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
+      else
+        raw_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
+        trimmed_reads_input="NULL"
+        mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
+        trimmed_rate_input="NULL"
     fi
     # raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
     # trimmed_reads_input=`grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
@@ -192,7 +192,13 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     sambamba index -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
     # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     filtered_reads_input=`sambamba flagstat -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
+    if [[ -s $trimmomatic_table ]]
+      then
+        filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
+      else
+        filtered_rate_input=$(echo "100*${filtered_reads_input}/${raw_reads_input}" | bc -l)
+    fi
+    # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
     MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam MT)
 
@@ -204,10 +210,16 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
 fi
 
-
-# filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
+if [[ -s $trimmomatic_table ]]
+  then
+    filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
+  else
+    filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${raw_reads_chip}" | bc -l)
+fi
+# filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+# filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+# filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
 # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 MT_reads_chip=$(sambamba view -t $n -c $dedup_bam MT)
 
