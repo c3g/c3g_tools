@@ -158,13 +158,30 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}.Input.markDup_flagstat.txt"
     sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
 
-    raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
-    trimmed_reads_input=`grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
-    mapped_reads_input=`grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    supplementarysecondary_reads_input=`bc <<< $(grep "secondary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
+    mapped_reads_input=`bc <<< $(grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_input`
     dup_reads_input=`grep "duplicates" $input_flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
     dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
-    mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
-    trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
+
+    if [[ -s $trimmomatic_table ]]
+    then
+      raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
+      trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
+      mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
+      trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
+    else
+      raw_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
+      trimmed_reads_input="NULL"
+      mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
+      trimmed_rate_input="NULL"
+    fi
+    # raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
+    # trimmed_reads_input=`grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
+    # mapped_reads_input=`grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    # dup_reads_input=`grep "duplicates" $input_flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
+    # dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
+    # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
+    # trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
 
     ## Finally, the number of singletons for paired-end data sets can be calculated using:
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
