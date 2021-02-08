@@ -145,7 +145,7 @@ singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* si
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
 # samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 dedup_bam="${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
-sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
+sambamba view -t $n -f bam -F \"not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5\" ${CHIP_BAM} > $dedup_bam
 
 ## Index the final deduplicated BAM file
 # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
