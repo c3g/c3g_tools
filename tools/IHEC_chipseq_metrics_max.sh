@@ -116,7 +116,7 @@ sambamba flagstat ${CHIP_BAM} > $flagstat_file
 
 
 # raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
-supplementarysecondary_reads_chip=`bc <<< $(grep "secondary" $flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" ${flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
+supplementarysecondary_reads_chip=`bc <<< $(grep "secondary" $flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
 # trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
 mapped_reads_chip=`bc <<< $(grep "mapped (" $flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_chip`
 dup_reads_chip=`grep "duplicates" $flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
