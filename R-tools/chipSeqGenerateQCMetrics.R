@@ -1,7 +1,5 @@
 # process.R
 
-
-
 args <- commandArgs(TRUE)
 design.list<-args[1]
 output_dir<-args[2]
