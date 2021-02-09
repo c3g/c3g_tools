@@ -12,6 +12,7 @@ for(i in 1:nrow(readsets)) {
 
     sample_name=readsets$Sample[i]
     mark_name=readsets$MarkName[i]
+    print(sample_name[i], mark_name[i])
     postscript(paste(output_dir, "/graphs/", sample_name[i], ".", mark_name[i], "_QC_Metrics.ps", sep=""))
     par(mfrow=c(2,2))
 
