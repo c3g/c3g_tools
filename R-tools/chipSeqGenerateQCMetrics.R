@@ -19,7 +19,6 @@ for (i in 1:nrow(readsets)) {
 }
 
 for (sample_name in ls(samples_hash_table)) {
-    print(sample_name)
     for (mark_name in samples_hash_table[[sample_name]]) {
         postscript(paste(output_dir, "/graphs/", sample_name, ".", mark_name, "_QC_Metrics.ps", sep=""))
         par(mfrow=c(2,2))
