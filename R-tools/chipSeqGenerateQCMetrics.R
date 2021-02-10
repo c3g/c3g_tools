@@ -1,17 +1,19 @@
 # process.R
 
+# Modified by Paul Stretenowich - Feb 2021
+
 args <- commandArgs(TRUE)
-readset.list<-args[1]
-output_dir<-args[2]
-readsets<-read.table(readset.list, header=T, sep="\t", check.names=F)
+readset.list <- args[1]
+output_dir <- args[2]
+readsets <- read.table(readset.list, header=T, sep="\t", check.names=F)
 
 # readset<-read.table("~/Mount_points/beluga/home/scratch/chipseq_design_change/IHEC_test/readset.IHEC_test.txt", header=T, sep="\t", check.names=F)
 # output_dir<-"~/Mount_points/beluga/home/scratch/chipseq_design_change/IHEC_test"
 
 for(i in 1:nrow(readsets)) {
 
-    sample_name=readsets$Sample[i]
-    mark_name=readsets$MarkName[i]
+    sample_name <- readsets$Sample[i]
+    mark_name <- readsets$MarkName[i]
     print(sample_name)
     print(mark_name)
     postscript(paste(output_dir, "/graphs/", sample_name, ".", mark_name, "_QC_Metrics.ps", sep=""))
