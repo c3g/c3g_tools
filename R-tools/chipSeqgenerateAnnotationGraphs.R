@@ -87,7 +87,7 @@ for (sample_name in ls(samples_hash_table)) {
 
 for (sample_name in ls(samples_hash_table)) {
     toPrint<-rbind(c("readset", "group" , "number of peaks", "percent near tss", "median peak height", "highest peak", "lowest peak", "avg peak width"))
-    for (mark_name in samples_hash_table[[sample_name]]) {
+    for (mark_name in ls(samples_hash_table[[sample_name]])) {
         mark_type <- samples_hash_table[[sample_name]][[mark_name]]
         if(mark_type == "N") {
             narrow.peaks=TRUE;
