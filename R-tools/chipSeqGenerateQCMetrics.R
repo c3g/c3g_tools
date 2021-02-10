@@ -19,7 +19,7 @@ for(i in 1:nrow(readsets)) {
 
     # Tag count distribution
 
-    countDist<-paste(output_dir, "/tags", sample_name, mark_name, "tagCountDistribution.txt", sep="/")
+    countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagCountDistribution.txt", sep="/")
     d2<-read.table(countDist, header=T, sep="\t")
     d2<-subset(d2, d2[,1]<=7)
     mean<-0
@@ -31,7 +31,7 @@ for(i in 1:nrow(readsets)) {
 
     # Tag auto correlation
 
-    countDist<-paste(output_dir, "/tags", sample_name, mark_name, "tagAutocorrelation.txt", sep="/")
+    countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagAutocorrelation.txt", sep="/")
     d1<-read.table(countDist, header=T, sep="\t")
     maxH<-max(max(d1[,2]),max(d1[,3]))
 
@@ -41,7 +41,7 @@ for(i in 1:nrow(readsets)) {
 
     # Sequence bias
 
-    countDist<-paste(output_dir, "/tags", sample_name, mark_name, "tagFreq.txt", sep="/")
+    countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagFreq.txt", sep="/")
     d1<-read.table(countDist, header=T, sep="\t")
     plot(d1[,1], d1[,2], xlab="Distance from 5' end of tags", ylab="Nucleotide Frequency", col="blue", xlim=c(-50,100), ylim=c(0,0.45), type='l', main=paste(sample_name, mark_name, "\nSequence bias", sep=" "))
     lines(d1[,1],d1[,3], col="red")
@@ -56,8 +56,8 @@ for(i in 1:nrow(readsets)) {
 
     # GC bias
 
-    countGenome<-paste(output_dir, "/tags", sample_name, mark_name, "tagGCcontent.txt", sep="/")
-    countIP<-paste(output_dir, "/tags", sample_name, mark_name, "genomeGCcontent.txt", sep="/")
+    countGenome<-paste(output_dir, "tags", sample_name, mark_name, "tagGCcontent.txt", sep="/")
+    countIP<-paste(output_dir, "tags", sample_name, mark_name, "genomeGCcontent.txt", sep="/")
     d1<-read.table(countGenome, header=T, sep="\t")
     d2<-read.table(countIP, header=T, sep="\t")
 
