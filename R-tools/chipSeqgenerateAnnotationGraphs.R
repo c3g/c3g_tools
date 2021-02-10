@@ -29,9 +29,9 @@ for(i in 1:nrow(readsets)) {
 		par(mfrow=c(2,2), cex.main=0.6)
 		fileDir=file.path(output_dir, "annotation")
 		listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
-    print(list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
-    print(designName)
-    print(listFile)
+    # print(list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
+    # print(designName)
+    # print(listFile)
 		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
 		for (tss in listFile){
       #tss<-paste(output_dir, "/annotation/", designName, "/", designName, ".tss.stats.csv",sep="")
@@ -80,15 +80,15 @@ for(i in 1:nrow(readsets)) {
 
 # Generate table stats with number of peaks, etc
 
-toPrint<-rbind(c("design", "group" , "number of peaks", "percent near tss", "median peak height", "highest peak", "lowest peak", "avg peak width"))
-for(i in 2:ncol(designs[1,])) {
-    design<-unlist(strsplit(as.character(designs[1,i]),","))
-    if(design[2] == "N") {
+toPrint<-rbind(c("readset", "group" , "number of peaks", "percent near tss", "median peak height", "highest peak", "lowest peak", "avg peak width"))
+for(i in 1:nrow(readsets)) {
+    # readset<-unlist(strsplit(as.character(readsets[1,i]),","))
+    if(mark_type == "N") {
       narrow.peaks=TRUE;
-      designName<-design[1]
+      designName<-paste(sample_name, mark_name, sep=".")
       fileDir=file.path(output_dir,"peak_call")
       annotationDir=file.path(output_dir,"annotation")
-      listFile=file.path(fileDir,list.files(fileDir,pattern=paste(designName,"_peaks.(narrow|broad)Peak","$",sep=""),recursive=T))
+      listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
       print(paste("NOTICE: Processing peaks files to generate stats: ", paste(listFile, collapse=","),sep=" "))      
       for(fi in listFile ){
         averagePeakWidth<-NA
