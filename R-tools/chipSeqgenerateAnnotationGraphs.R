@@ -118,6 +118,7 @@ for(i in 1:nrow(readsets)) {
           percentNearTSS<-round(nrow(d2)/nrow(d1), 2)*100
         }
         toPrint<-rbind(toPrint, c(designName, designGroup, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
+        print(toPrint)
      }    
    }
 }
