@@ -1,33 +1,40 @@
 # Generates graphs based on different annotation statistics
 # Maxime Caron - Jan 2012
 # Modified by Johanna Sandoval, 2013-11-05
+# Modified by Paul Stretenowich - Feb 2021
 
 library(plotrix)
 # args<-c("design.csv", "/lb/project/mugqic/projects/jsandoval_testsChipSeqPipeline_371/public_data")
 args <- commandArgs(TRUE)
 design.file<-args[1]
+readset.file<-args[1]
 output_dir<-args[2]
 designs<-read.table(design.file, header=F, sep="\t", check.names=F)
+readsets<-read.table(readset.file, header=T, sep="\t", check.names=F)
 
 narrow.peaks=FALSE;
 
-for(i in 2:ncol(designs[1,])) {
+for(i in 1:nrow(readsets)) {
 
-	design<-unlist(strsplit(as.character(designs[1,i]),","))
-	if(design[2] == "N") {
+  sample_name <- readsets$Sample[i]
+  mark_name <- readsets$MarkName[i]
+  mark_type <- readsets$MarkType[i]
+	# design<-unlist(strsplit(as.character(designs[1,i]),","))
+	if(mark_type == "N") {
 	  narrow.peaks=TRUE;
-		designName<-design[1]
+		designName<-paste(sample_name, mark_name, sep=".")
 
 		# TSS categories stats
 		postscript(paste("graphs/", designName, "_Misc_Graphs.ps", sep=""), paper="letter", horizontal=T)
 		par(mfrow=c(2,2), cex.main=0.6)
-		fileDir=file.path(output_dir,"annotation")
-		listFile=file.path(fileDir,list.files(fileDir,pattern=paste(designName,".tss.stats.csv","$",sep=""),recursive=T))
-		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","),sep=" "))
+		fileDir=file.path(output_dir, "annotation")
+		listFile=file.path(fileDir,list.files(fileDir, pattern=paste(designName, ".tss.stats.csv","$",sep=""), recursive=T))
+    print(listFile)
+		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
 		for (tss in listFile){
       #tss<-paste(output_dir, "/annotation/", designName, "/", designName, ".tss.stats.csv",sep="")
       prefix=gsub(".tss.stats.csv", "", tss , fixed=T)
-      words<-unlist(strsplit(tss,"/"));
+      words<-unlist(strsplit(tss, "/"));
       designGroup<-words[(length(words)-1)];
       d1<-read.table(tss, header=T, sep=",", check.names=F)
       for(i in 1:nrow(d1)) {
