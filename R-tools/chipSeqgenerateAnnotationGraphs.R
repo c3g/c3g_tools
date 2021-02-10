@@ -23,7 +23,7 @@ for (i in 1:nrow(readsets)) {
 }
 
 for (sample_name in ls(samples_hash_table)) {
-    for (mark_name in samples_hash_table[[sample_name]]) {
+    for (mark_name in ls(samples_hash_table[[sample_name]])) {
         # sample_name <- readsets$Sample[i]
         # mark_name <- readsets$MarkName[i]
         mark_type <- samples_hash_table[[sample_name]][[mark_name]]
