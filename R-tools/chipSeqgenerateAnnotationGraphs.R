@@ -84,8 +84,8 @@ for (sample_name in ls(samples_hash_table)) {
 
 # Generate table stats with number of peaks, etc
 
-toPrint<-rbind(c("readset", "group" , "number of peaks", "percent near tss", "median peak height", "highest peak", "lowest peak", "avg peak width"))
 for (sample_name in ls(samples_hash_table)) {
+    toPrint<-rbind(c("readset", "group" , "number of peaks", "percent near tss", "median peak height", "highest peak", "lowest peak", "avg peak width"))
     for (mark_name in samples_hash_table[[sample_name]]) {
         if(mark_type == "N") {
             narrow.peaks=TRUE;
@@ -126,8 +126,8 @@ for (sample_name in ls(samples_hash_table)) {
             }
         }
     }
+    if (narrow.peaks){
+        write.table(toPrint, paste(output_dir, "/annotation/", sample_name, "/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
+    }
 }
 
-if (narrow.peaks){
-    write.table(toPrint, paste(output_dir, "/annotation/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
-}
