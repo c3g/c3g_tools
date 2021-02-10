@@ -9,7 +9,7 @@ readsets <- read.table(readset.list, header=T, sep="\t", check.names=F)
 samples_hash_table <- new.env(hash=TRUE)
 # marks <- list(NA)
 
-readsets<-read.table("~/Mount_points/beluga/home/scratch/chipseq_design_change/IHEC_test/readset.IHEC_test.txt", header=T, sep="\t", check.names=F)
+# readsets<-read.table("~/Mount_points/beluga/home/scratch/chipseq_design_change/IHEC_test/readset.IHEC_test.txt", header=T, sep="\t", check.names=F)
 # output_dir<-"~/Mount_points/beluga/home/scratch/chipseq_design_change/IHEC_test"
 
 for (i in 1:nrow(readsets)) {
