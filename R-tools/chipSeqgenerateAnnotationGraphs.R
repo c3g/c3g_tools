@@ -18,14 +18,15 @@ narrow.peaks=FALSE
 for (i in 1:nrow(readsets)) {
     sample_name <- readsets$Sample[i]
     mark_name <- readsets$MarkName[i]
-    samples_hash_table[[sample_name]] <- unique(append(samples_hash_table[[sample_name]], mark_name))
+    mark_type <- readsets$MarkType[i]
+    samples_hash_table[[sample_name]][[mark_name]] <- unique(append(samples_hash_table[[sample_name]][[mark_name]], mark_type))
 }
 
 for (sample_name in ls(samples_hash_table)) {
     for (mark_name in samples_hash_table[[sample_name]]) {
-        sample_name <- readsets$Sample[i]
-        mark_name <- readsets$MarkName[i]
-        mark_type <- readsets$MarkType[i]
+        # sample_name <- readsets$Sample[i]
+        # mark_name <- readsets$MarkName[i]
+        mark_type <- samples_hash_table[[sample_name]][[mark_name]]
       	# design<-unlist(strsplit(as.character(designs[1,i]),","))
       	if(mark_type == "N") {
             narrow.peaks=TRUE
