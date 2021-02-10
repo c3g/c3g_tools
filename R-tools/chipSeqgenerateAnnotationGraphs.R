@@ -28,7 +28,9 @@ for(i in 1:nrow(readsets)) {
 		postscript(paste("graphs/", designName, "_Misc_Graphs.ps", sep=""), paper="letter", horizontal=T)
 		par(mfrow=c(2,2), cex.main=0.6)
 		fileDir=file.path(output_dir, "annotation")
-		listFile=file.path(fileDir,list.files(fileDir, pattern=paste(designName, ".tss.stats.csv","$",sep=""), recursive=T))
+		listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
+    print(list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""))
+    print(designName)
     print(listFile)
 		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
 		for (tss in listFile){
