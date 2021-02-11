@@ -86,7 +86,7 @@ for (sample_name in ls(samples_hash_table)) {
 # Generate table stats with number of peaks, etc
 
 for (sample_name in ls(samples_hash_table)) {
-    toPrint<-rbind(c("Sample", "Mark Name", "Group" , "Number of peaks", "Percent near tss", "Median peak height", "Highest peak", "Lowest peak", "Avg peak width"))
+    toPrint<-rbind(c("Sample", "Mark Name", "Number of peaks", "Percent near tss", "Median peak height", "Highest peak", "Lowest peak", "Avg peak width"))
     for (mark_name in ls(samples_hash_table[[sample_name]])) {
         mark_type <- samples_hash_table[[sample_name]][[mark_name]]
         if(mark_type == "N") {
@@ -125,7 +125,7 @@ for (sample_name in ls(samples_hash_table)) {
                     percentNearTSS<-round(nrow(d2)/nrow(d1), 2)*100
                 }
                 toPrint<-rbind(toPrint, c(sample_name, mark_name, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
-                print(toPrint)
+                # print(toPrint)
             }
         }
     }
