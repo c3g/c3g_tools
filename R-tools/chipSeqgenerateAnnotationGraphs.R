@@ -30,13 +30,13 @@ for (sample_name in ls(samples_hash_table)) {
       	# design<-unlist(strsplit(as.character(designs[1,i]),","))
       	if(mark_type == "N") {
             narrow.peaks=TRUE
-      		designName<-paste(sample_name, mark_name, sep=".")
+      		# designName<-paste(sample_name, mark_name, sep=".")
 
       		# TSS categories stats
-      		postscript(paste("graphs/", designName, "_Misc_Graphs.ps", sep=""), paper="letter", horizontal=T)
+      		postscript(paste("graphs/", sample_name, ".", mark_name, "_Misc_Graphs.ps", sep=""), paper="letter", horizontal=T)
       		par(mfrow=c(2,2), cex.main=0.6)
       		fileDir=file.path(output_dir, "annotation")
-      		listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
+      		listFile=file.path(fileDir, list.files(fileDir, pattern=paste(sample_name, ".", mark_name, ".tss.stats.csv", "$", sep=""), recursive=T))
       		print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
       		for (tss in listFile){
                 #tss<-paste(output_dir, "/annotation/", designName, "/", designName, ".tss.stats.csv",sep="")
@@ -50,7 +50,7 @@ for (sample_name in ls(samples_hash_table)) {
                     pct <- round(slices/sum(slices)*100)
                     lbls <- paste(lbls, "(",pct, sep="") # add percents to labels
                     lbls <- paste(lbls,"%)",sep="") # ad % to labels 
-                    pie(slices,labels=lbls, main=paste("Location analysis of binding sites\ndesign ", designName, "\ngroup ", designGroup, sep=""))
+                    pie(slices,labels=lbls, main=paste("Location analysis of binding sites\nSample ", sample_name, "\nMark Name ", mark_name, sep=""))
                 }
                 # Exon intron stats
                 exons<-paste(prefix, ".exon.stats.csv",sep="")
@@ -61,7 +61,7 @@ for (sample_name in ls(samples_hash_table)) {
                 else {
                     d1<-read.table(exons, header=F, sep=",", check.names=F)
                 }
-                hist(d1[,1], breaks=length(levels(as.factor(d1[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within exons\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Exon", ylab="Number of peaks")
+                hist(d1[,1], breaks=length(levels(as.factor(d1[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within exons\nSample ", sample_name, "\nMark Name ", mark_name, sep=""), xlab="Exon", ylab="Number of peaks")
                 introns=paste(prefix, ".intron.stats.csv",sep="")
                 print(paste("NOTICE: processing annotation intron stats files: ", paste(introns, collapse=","),sep=" "))
                 if(file.info(introns)$size == 0 || length(scan(introns)) == 0) {
@@ -70,13 +70,13 @@ for (sample_name in ls(samples_hash_table)) {
                 else {
                     d2<-read.table(introns, header=F, sep=",", check.names=F)
                 } 
-                hist(d2[,1], breaks=length(levels(as.factor(d2[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within introns\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Intron", ylab="Number of peaks")
+                hist(d2[,1], breaks=length(levels(as.factor(d2[,1]))), xlim=c(0,20), main=paste("Distribution of peaks found within introns\nSample ", sample_name, "\nMark Name ", mark_name, sep=""), xlab="Intron", ylab="Number of peaks")
                 # Distance to TSS
                 distance=paste(prefix, ".tss.distance.csv",sep="")
                 print(paste("NOTICE: processing annotation distance to tss stats files: ", paste(distance, collapse=","),sep=" "))      
                 d1<-read.table(distance, header=F, sep=",", check.names=F)
                 d1<-subset(d1, d1[,1] > -10000 & d1[,1] < 10000)
-                hist(d1[,1], breaks=seq(-10000,10000,1000), main=paste("Distribution of peak distances relative to TSS\ndesign ", designName, "\ngroup ", designGroup, sep=""), xlab="Distance to TSS (bp)", ylab="Number of peaks")
+                hist(d1[,1], breaks=seq(-10000,10000,1000), main=paste("Distribution of peak distances relative to TSS\nSample ", sample_name, "\nMark Name ", mark_name, sep=""), xlab="Distance to TSS (bp)", ylab="Number of peaks")
             }
             dev.off()
         }
@@ -105,7 +105,7 @@ for (sample_name in ls(samples_hash_table)) {
                 percentNearTSS<-NA
                 prefix=gsub("_peaks.(narrow|broad)Peak$", "", fi)
                 words<-unlist(strsplit(prefix,"/"));
-                designGroup<-words[c(length(words)-1)]
+                # designGroup<-words[c(length(words)-1)]
                 d1<-read.table(fi, header=F, sep="\t", check.names=F)
                 nPeaks<-nrow(d1)
                 averagePeakWidth<-round(mean(d1[,3]-d1[,2]),0)
@@ -124,7 +124,7 @@ for (sample_name in ls(samples_hash_table)) {
                     d2<-subset(d1, d1[,1]>-1000 & d1[,1]<1000)
                     percentNearTSS<-round(nrow(d2)/nrow(d1), 2)*100
                 }
-                toPrint<-rbind(toPrint, c(sample_name, mark_name, designGroup, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
+                toPrint<-rbind(toPrint, c(sample_name, mark_name, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
                 print(toPrint)
             }
         }
