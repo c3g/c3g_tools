@@ -84,18 +84,17 @@ for (sample_name in ls(samples_hash_table)) {
 }
 
 # Generate table stats with number of peaks, etc
-
 for (sample_name in ls(samples_hash_table)) {
-    toPrint<-rbind(c("Sample", "Mark Name", "Number of peaks", "Percent near tss", "Median peak height", "Highest peak", "Lowest peak", "Avg peak width"))
+    # toPrint<-rbind(c("Sample", "Mark Name", "Number of peaks", "Percent near tss", "Median peak height", "Highest peak", "Lowest peak", "Avg peak width"))
     for (mark_name in ls(samples_hash_table[[sample_name]])) {
         mark_type <- samples_hash_table[[sample_name]][[mark_name]]
         if(mark_type == "N") {
             narrow.peaks=TRUE;
             # designName<-paste(sample_name, mark_name, sep=".")
-            fileDir=file.path(output_dir,"peak_call")
-            annotationDir=file.path(output_dir,"annotation")
+            fileDir=file.path(output_dir, "peak_call")
+            annotationDir=file.path(output_dir "annotation")
             # listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
-            listFile=file.path(fileDir,list.files(fileDir, pattern=paste(mark_name,"_peaks.(narrow|broad)Peak", "$", sep=""), recursive=T))
+            listFile=file.path(fileDir,list.files(fileDir, pattern=paste(mark_name, "_peaks.(narrow|broad)Peak", "$", sep=""), recursive=T))
             print(paste("NOTICE: Processing peaks files to generate stats: ", paste(listFile, collapse=","),sep=" "))      
             for (fi in listFile){
                 averagePeakWidth<-NA
@@ -124,13 +123,14 @@ for (sample_name in ls(samples_hash_table)) {
                     d2<-subset(d1, d1[,1]>-1000 & d1[,1]<1000)
                     percentNearTSS<-round(nrow(d2)/nrow(d1), 2)*100
                 }
-                toPrint<-rbind(toPrint, c(sample_name, mark_name, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
+                toPrint<-rbind(c("Sample", "Mark Name", "Number of peaks", "Percent near tss", "Median peak height", "Highest peak", "Lowest peak", "Avg peak width"), c(sample_name, mark_name, nPeaks, percentNearTSS, medianPeakHeight, highestPeak, lowestPeak, averagePeakWidth))
                 # print(toPrint)
+                write.table(toPrint, paste(output_dir, "/annotation/", sample_name, "/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
             }
         }
     }
-    if (narrow.peaks){
-        write.table(toPrint, paste(output_dir, "/annotation/", sample_name, "/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
-    }
+    # if (narrow.peaks){
+    #     write.table(toPrint, paste(output_dir, "/annotation/", sample_name, "/peak_stats.csv", sep=""), row.names=F, col.names=F, quote=F, sep=",")
+    # }
 }
 
