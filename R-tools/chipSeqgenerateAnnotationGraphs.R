@@ -92,7 +92,7 @@ for (sample_name in ls(samples_hash_table)) {
             narrow.peaks=TRUE;
             # designName<-paste(sample_name, mark_name, sep=".")
             fileDir=file.path(output_dir, "peak_call")
-            annotationDir=file.path(output_dir "annotation")
+            annotationDir=file.path(output_dir, "annotation")
             # listFile=file.path(fileDir, list.files(fileDir, pattern=paste(designName, ".tss.stats.csv", "$", sep=""), recursive=T))
             listFile=file.path(fileDir,list.files(fileDir, pattern=paste(mark_name, "_peaks.(narrow|broad)Peak", "$", sep=""), recursive=T))
             print(paste("NOTICE: Processing peaks files to generate stats: ", paste(listFile, collapse=","),sep=" "))      
