@@ -113,6 +113,7 @@ fi
 ## The original number of reads and the number of those aligned:
 # samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 flagstat_file="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
+sambamba flagstat -t $n ${CHIP_BAM} > $flagstat_file
 
 
 # raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
