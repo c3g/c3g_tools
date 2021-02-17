@@ -25,7 +25,7 @@ for (sample_name in ls(samples_hash_table)) {
 
         # Tag count distribution
 
-        countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagCountDistribution.txt", sep="/")
+        countDist<-paste(output_dir, "tags", sample_name, paste(sample_name, mark_name, sep="."), "tagCountDistribution.txt", sep="/")
         d2<-read.table(countDist, header=T, sep="\t")
         d2<-subset(d2, d2[,1]<=7)
         mean<-0
@@ -37,7 +37,7 @@ for (sample_name in ls(samples_hash_table)) {
 
         # Tag auto correlation
 
-        countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagAutocorrelation.txt", sep="/")
+        countDist<-paste(output_dir, "tags", sample_name, paste(sample_name, mark_name, sep="."), "tagAutocorrelation.txt", sep="/")
         d1<-read.table(countDist, header=T, sep="\t")
         maxH<-max(max(d1[,2]),max(d1[,3]))
 
@@ -47,7 +47,7 @@ for (sample_name in ls(samples_hash_table)) {
 
         # Sequence bias
 
-        countDist<-paste(output_dir, "tags", sample_name, mark_name, "tagFreq.txt", sep="/")
+        countDist<-paste(output_dir, "tags", sample_name, paste(sample_name, mark_name, sep="."), "tagFreq.txt", sep="/")
         d1<-read.table(countDist, header=T, sep="\t")
         plot(d1[,1], d1[,2], xlab="Distance from 5' end of tags", ylab="Nucleotide Frequency", col="blue", xlim=c(-50,100), ylim=c(0,0.45), type='l', main=paste(sample_name, mark_name, "\nSequence bias", sep=" "))
         lines(d1[,1],d1[,3], col="red")
@@ -62,8 +62,8 @@ for (sample_name in ls(samples_hash_table)) {
 
         # GC bias
 
-        countGenome<-paste(output_dir, "tags", sample_name, mark_name, "tagGCcontent.txt", sep="/")
-        countIP<-paste(output_dir, "tags", sample_name, mark_name, "genomeGCcontent.txt", sep="/")
+        countGenome<-paste(output_dir, "tags", sample_name, paste(sample_name, mark_name, sep="."), "tagGCcontent.txt", sep="/")
+        countIP<-paste(output_dir, "tags", sample_name, paste(sample_name, mark_name, sep="."), "genomeGCcontent.txt", sep="/")
         d1<-read.table(countGenome, header=T, sep="\t")
         d2<-read.table(countIP, header=T, sep="\t")
 
