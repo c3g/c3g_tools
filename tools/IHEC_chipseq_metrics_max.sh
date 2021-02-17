@@ -187,12 +187,13 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPU
     ## Finally, the number of singletons for paired-end data sets can be calculated using:
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
+    dedup_bam_input="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam"
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam
+    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
     # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba index -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam
+    sambamba index -t $n $dedup_bam_input
     # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    filtered_reads_input=`sambamba flagstat -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    filtered_reads_input=`sambamba flagstat -t $n $dedup_bam_input | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     if [[ -s $trimmomatic_table ]]
       then
         filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
@@ -201,12 +202,12 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPU
     fi
     # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
-    MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam MT)
+    MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input MT)
 
     if [ -z $MT_reads_chip ] || [ $MT_reads_input -eq 0 ]
       then
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
-        MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam chrM)
+        MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input chrM)
     fi
     MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
 fi
@@ -248,7 +249,7 @@ echo "Experiment type: ${CHIP_TYPE} and bin size: $bin_size" >&2
 
 if [[ -s $INPUT_BAM ]]
   then
-    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
+    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
     js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 8`
     chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 12`
 fi
