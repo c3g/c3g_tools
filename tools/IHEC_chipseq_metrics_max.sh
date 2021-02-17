@@ -112,7 +112,7 @@ fi
 
 ## The original number of reads and the number of those aligned:
 # samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
-flagstat_file="${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
+flagstat_file="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
 sambamba flagstat -t $n ${CHIP_BAM} > $flagstat_file
 
 
@@ -145,7 +145,7 @@ singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* si
 
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
 # samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
-dedup_bam="${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
+dedup_bam="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
 sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
 
 ## Index the final deduplicated BAM file
@@ -153,10 +153,10 @@ sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not 
 sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
-if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
+if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam ]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
-    input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}.Input.markDup_flagstat.txt"
+    input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${INPUT_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
     sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
 
     supplementarysecondary_reads_input=`bc <<< $(grep "secondary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
@@ -188,11 +188,11 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
+    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam
     # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba index -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam
+    sambamba index -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam
     # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    filtered_reads_input=`sambamba flagstat -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
+    filtered_reads_input=`sambamba flagstat -t $n ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     if [[ -s $trimmomatic_table ]]
       then
         filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
@@ -201,12 +201,12 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam ]
     fi
     # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
-    MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam MT)
+    MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam MT)
 
     if [ -z $MT_reads_chip ] || [ $MT_reads_input -eq 0 ]
       then
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
-        MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.Input.dedup.bam chrM)
+        MT_reads_input=$(sambamba view -t $n -c ${OUTPUT_DIR}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam chrM)
     fi
     MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
 fi
@@ -248,9 +248,9 @@ echo "Experiment type: ${CHIP_TYPE} and bin size: $bin_size" >&2
 
 if [[ -s $INPUT_BAM ]]
   then
-    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.Input --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
-    js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 8`
-    chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 12`
+    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
+    js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 8`
+    chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 12`
 fi
 
 #4.     Calculating FRiP scores
@@ -289,9 +289,9 @@ fi
 
 if [[ -s $INPUT_BAM ]]
   then
-    nsc_input=$(grep Input ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
-    rsc_input=$(grep Input ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
-    quality_input_num=$(grep Input ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
+    nsc_input=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
+    rsc_input=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
+    quality_input_num=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
 
 
     if [[ "$quality_input_num" == "-2" ]]
@@ -315,5 +315,5 @@ fi
 
 LC_NUMERIC="en_US.UTF-8"
 
-echo -e "genome_assembly\tChIP_type\tmark_name\tinput_name\tmark_raw_reads\tmark_trimmed_reads\tmark_trimmed_frac\tmark_mapped_reads\tmark_mapped_frac\tmark_dup_reads\tmark_dup_frac\tmark_filtered_reads\tmark_filtered_frac\tmark_Mitochondrial_reads\tmark_Mitochondrial_frac\tinput_raw_reads\tinput_trimmed_reads\tinput_trimmed_frac\tclt_mapped_reads\tinput_mapped_frac\tinput_dup_reads\tinput_dup_frac\tinput_filtered_reads\tinput_filtered_frac\tinput_Mitochondrial_reads\tinput_Mitochondrial_frac\tnmb_peaks\treads_in_peaks\tfrip\tmark_nsc\tinput_nsc\tmark_rsc\tinput_rsc\tmark_Quality\tinput_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
-echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${INPUT_NAME}.Input\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div">> ${OUTPUT_DIR}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
+echo -e "genome_assembly\tChIP_type\tmark_name\tinput_name\tmark_raw_reads\tmark_trimmed_reads\tmark_trimmed_frac\tmark_mapped_reads\tmark_mapped_frac\tmark_dup_reads\tmark_dup_frac\tmark_filtered_reads\tmark_filtered_frac\tmark_Mitochondrial_reads\tmark_Mitochondrial_frac\tinput_raw_reads\tinput_trimmed_reads\tinput_trimmed_frac\tclt_mapped_reads\tinput_mapped_frac\tinput_dup_reads\tinput_dup_frac\tinput_filtered_reads\tinput_filtered_frac\tinput_Mitochondrial_reads\tinput_Mitochondrial_frac\tnmb_peaks\treads_in_peaks\tfrip\tmark_nsc\tinput_nsc\tmark_rsc\tinput_rsc\tmark_Quality\tinput_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
+echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${INPUT_NAME}.${INPUT_NAME}\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div">> ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
