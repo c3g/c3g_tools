@@ -261,9 +261,9 @@ frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC and RSC from run_spp
 
-nsc_chip=$(grep ${CHIP_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
-rsc_chip=$(grep ${CHIP_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
-quality_chip_num=$(grep ${CHIP_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
+nsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
+rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
+quality_chip_num=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
 
 ## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
@@ -290,9 +290,9 @@ fi
 
 if [[ -s $INPUT_BAM ]]
   then
-    nsc_input=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
-    rsc_input=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
-    quality_input_num=$(grep ${INPUT_NAME} ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
+    nsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
+    rsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
+    quality_input_num=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
 
 
     if [[ "$quality_input_num" == "-2" ]]
