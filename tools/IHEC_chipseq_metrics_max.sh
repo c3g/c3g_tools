@@ -156,11 +156,14 @@ sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not 
 sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
-if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam ]
+if [ -s $INPUT_BAM ]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
-    sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
+    if ! [ -s $input_flagstat_file ]
+      then
+        sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
+    fi
 
     supplementarysecondary_reads_input=`bc <<< $(grep "secondary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
     mapped_reads_input=`bc <<< $(grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_input`
@@ -195,10 +198,15 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPU
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
     dedup_bam_input="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam"
+    if ! [ -s $dedup_bam_input ]
+      then
+        sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
+        sambamba index -t $n $dedup_bam_input
+    fi
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
+    # sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
     # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    sambamba index -t $n $dedup_bam_input
+    # sambamba index -t $n $dedup_bam_input
     # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     filtered_reads_input=`sambamba flagstat -t $n $dedup_bam_input | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     if [[ -s $trimmomatic_table ]]
@@ -264,9 +272,9 @@ if [[ -s $INPUT_BAM ]]
   then
     plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv -plot ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
     js_dist=`grep "${SAMPLE_NAME}.${CHIP_NAME}" ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv | cut -f 8`
-    js_dist=`echo "scale=2; $js_dist" | bc -l`
+    js_dist=`echo "scale=2; $js_dist/1" | bc -l`
     chance_div=`grep "${SAMPLE_NAME}.${CHIP_NAME}" ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv | cut -f 12`
-    chance_div=`echo "scale=2; $chance_div" | bc -l`
+    chance_div=`echo "scale=2; $chance_div/1" | bc -l`
 fi
 
 #4.     Calculating FRiP scores
@@ -278,11 +286,11 @@ frip=`echo "scale=2; $reads_under_peaks/$filtered_reads_chip" | bc -l`
 #5. extract NSC and RSC from run_spp
 
 nsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
-nsc_chip=`echo "scale=2; $nsc_chip" | bc -l`
+nsc_chip=`echo "scale=2; $nsc_chip/1" | bc -l`
 rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
-rsc_chip=`echo "scale=2; $rsc_chip" | bc -l`
+rsc_chip=`echo "scale=2; $rsc_chip/1" | bc -l`
 quality_chip_num=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-quality_chip_num=`echo "scale=2; $quality_chip_num" | bc -l`
+quality_chip_num=`echo "scale=2; $quality_chip_num/1" | bc -l`
 
 ## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
@@ -310,11 +318,11 @@ fi
 if [[ -s $INPUT_BAM ]]
   then
     nsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
-    nsc_input=`echo "scale=2; $nsc_input" | bc -l`
+    nsc_input=`echo "scale=2; $nsc_input/1" | bc -l`
     rsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
-    rsc_input=`echo "scale=2; $rsc_input" | bc -l`
+    rsc_input=`echo "scale=2; $rsc_input/1" | bc -l`
     quality_input_num=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-    quality_input_num=`echo "scale=2; $quality_input_num" | bc -l`
+    quality_input_num=`echo "scale=2; $quality_input_num/1" | bc -l`
 
 
     if [[ "$quality_input_num" == "-2" ]]
