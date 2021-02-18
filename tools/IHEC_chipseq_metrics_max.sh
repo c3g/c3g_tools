@@ -121,7 +121,8 @@ supplementarysecondary_reads_chip=`bc <<< $(grep "secondary" $flagstat_file | se
 # trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
 mapped_reads_chip=`bc <<< $(grep "mapped (" $flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_chip`
 dup_reads_chip=`grep "duplicates" $flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
-dup_rate_chip=$(echo "100*${dup_reads_chip}/${mapped_reads_chip}" | bc -l)
+# dup_rate_chip=$(echo "100*${dup_reads_chip}/${mapped_reads_chip}" | bc -l)
+dup_rate_chip=`echo "scale=2; 100*$dup_reads_chip/$mapped_reads_chip" | bc -l`
 # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
 # trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
 trimmomatic_table="metrics/trimSampleTable.tsv"
@@ -129,12 +130,15 @@ if [[ -s $trimmomatic_table ]]
   then
     raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' $trimmomatic_table | cut -f 2)
     trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
-    mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
-    trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
+    # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
+    mapped_rate_chip=`echo "scale=2; 100*$mapped_reads_chip/$trimmed_reads_chip" | bc -l`
+    # trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
+    trimmed_rate_chip=`echo "scale=2; 100*$trimmed_reads_chip/$raw_reads_chip" | bc -l`
   else
     raw_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
     trimmed_reads_chip="NULL"
-    mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${raw_reads_chip}" | bc -l)
+    # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${raw_reads_chip}" | bc -l)
+    mapped_rate_chip=`echo "scale=2; 100*$mapped_reads_chip/$raw_reads_chip" | bc -l`
     trimmed_rate_chip="NULL"
 fi
 
@@ -156,24 +160,28 @@ sambamba index -t $n $dedup_bam
 if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam ]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
-    input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${INPUT_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
+    input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
     sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
 
     supplementarysecondary_reads_input=`bc <<< $(grep "secondary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $input_flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
     mapped_reads_input=`bc <<< $(grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_input`
     dup_reads_input=`grep "duplicates" $input_flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
-    dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
+    dup_rate_input=`echo "scale=2; 100*$dup_reads_input/$mapped_reads_input" | bc -l`
+    # dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
 
     if [[ -s $trimmomatic_table ]]
       then
         raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
         trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
-        mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
-        trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
+        mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$trimmed_reads_input" | bc -l`
+        # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
+        trimmed_rate_input=`echo "scale=2; 100*$trimmed_reads_input/$raw_reads_input" | bc -l`
+        # trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
       else
         raw_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
         trimmed_reads_input="NULL"
-        mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
+        mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$raw_reads_input" | bc -l`
+        # mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
         trimmed_rate_input="NULL"
     fi
     # raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
@@ -196,9 +204,11 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPU
     filtered_reads_input=`sambamba flagstat -t $n $dedup_bam_input | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     if [[ -s $trimmomatic_table ]]
       then
-        filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
+        # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
+        filtered_rate_input=`echo "scale=2; 100*$filtered_reads_input/$trimmed_reads_input" | bc -l`
       else
-        filtered_rate_input=$(echo "100*${filtered_reads_input}/${raw_reads_input}" | bc -l)
+        # filtered_rate_input=$(echo "100*${filtered_reads_input}/${raw_reads_input}" | bc -l)
+        filtered_rate_input=`echo "scale=2; 100*$filtered_reads_input/$raw_reads_input" | bc -l`
     fi
     # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
@@ -209,15 +219,18 @@ if [ -s $INPUT_BAM ] && ! [ -s ${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPU
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
         MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input chrM)
     fi
-    MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
+    # MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
+    MT_rate_input=`echo "scale=2; 100*$MT_reads_input/$filtered_reads_input" | bc -l`
 fi
 
 filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 if [[ -s $trimmomatic_table ]]
   then
-    filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
+    # filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
+    filtered_rate_chip=`echo "scale=2; 100*$filtered_reads_chip/$trimmed_reads_chip" | bc -l`
   else
-    filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${raw_reads_chip}" | bc -l)
+    # filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${raw_reads_chip}" | bc -l)
+    filtered_rate_chip=`echo "scale=2; 100*$filtered_reads_chip/$raw_reads_chip" | bc -l`
 fi
 # filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 # filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
@@ -230,7 +243,8 @@ if [ -z $MT_reads_chip ] || [ $MT_reads_chip -eq 0 ]
     # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
     MT_reads_chip=$(sambamba view -t $n -c $dedup_bam chrM)
 fi
-MT_rate_chip=$(echo "100*${MT_reads_chip}/${filtered_reads_chip}" | bc -l)
+# MT_rate_chip=$(echo "100*${MT_reads_chip}/${filtered_reads_chip}" | bc -l)
+MT_rate_chip=`echo "scale=2; 100*$MT_reads_chip/$filtered_reads_chip" | bc -l`
 
 #3.     Calculating Jensen-Shannon distance (JSD)
 
@@ -317,4 +331,4 @@ fi
 LC_NUMERIC="en_US.UTF-8"
 
 echo -e "genome_assembly\tChIP_type\tmark_name\tinput_name\tmark_raw_reads\tmark_trimmed_reads\tmark_trimmed_frac\tmark_mapped_reads\tmark_mapped_frac\tmark_dup_reads\tmark_dup_frac\tmark_filtered_reads\tmark_filtered_frac\tmark_Mitochondrial_reads\tmark_Mitochondrial_frac\tinput_raw_reads\tinput_trimmed_reads\tinput_trimmed_frac\tclt_mapped_reads\tinput_mapped_frac\tinput_dup_reads\tinput_dup_frac\tinput_filtered_reads\tinput_filtered_frac\tinput_Mitochondrial_reads\tinput_Mitochondrial_frac\tnmb_peaks\treads_in_peaks\tfrip\tmark_nsc\tinput_nsc\tmark_rsc\tinput_rsc\tmark_Quality\tinput_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
-echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${INPUT_NAME}.${INPUT_NAME}\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div">> ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
+echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${SAMPLE_NAME}.${INPUT_NAME}\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div" >> ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
