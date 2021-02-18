@@ -68,7 +68,6 @@ while getopts "t:d:i:j:c:p:s:o:n:a::" o; do
     esac
 done
 
-scale=2
 
 ## If the ChIP bam file doesn't exist, then throw an error 
 if [[  ! -s $CHIP_BAM ]]
@@ -263,21 +262,27 @@ echo "Experiment type: ${CHIP_TYPE} and bin size: $bin_size" >&2
 
 if [[ -s $INPUT_BAM ]]
   then
-    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt -plot ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
-    js_dist=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 8`
-    chance_div=`grep ${SAMPLE_NAME} ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.txt | cut -f 12`
+    plotFingerprint -b $dedup_bam $INPUT_BAM -bs ${bin_size} -l ${SAMPLE_NAME}.${CHIP_NAME} ${SAMPLE_NAME}.${INPUT_NAME} --JSDsample $INPUT_BAM --outQualityMetrics ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv -plot ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.png -p $n
+    js_dist=`grep "${SAMPLE_NAME}.${CHIP_NAME}" ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv | cut -f 8`
+    js_dist=`echo "scale=2; $js_dist" | bc -l`
+    chance_div=`grep "${SAMPLE_NAME}.${CHIP_NAME}" ${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.fingerprint.tsv | cut -f 12`
+    chance_div=`echo "scale=2; $chance_div" | bc -l`
 fi
 
 #4.     Calculating FRiP scores
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -@ $n -c -L ${CHIP_BED_FILE} $dedup_bam`
-frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
+frip=`echo "scale=2; $reads_under_peaks/$filtered_reads_chip" | bc -l`
+# frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC and RSC from run_spp
 
 nsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
+nsc_chip=`echo "scale=2; $nsc_chip" | bc -l`
 rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
+rsc_chip=`echo "scale=2; $rsc_chip" | bc -l`
 quality_chip_num=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
+quality_chip_num=`echo "scale=2; $quality_chip_num" | bc -l`
 
 ## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
@@ -305,8 +310,11 @@ fi
 if [[ -s $INPUT_BAM ]]
   then
     nsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
+    nsc_input=`echo "scale=2; $nsc_input" | bc -l`
     rsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
+    rsc_input=`echo "scale=2; $rsc_input" | bc -l`
     quality_input_num=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
+    quality_input_num=`echo "scale=2; $quality_input_num" | bc -l`
 
 
     if [[ "$quality_input_num" == "-2" ]]
@@ -330,5 +338,5 @@ fi
 
 LC_NUMERIC="en_US.UTF-8"
 
-echo -e "genome_assembly\tChIP_type\tmark_name\tinput_name\tmark_raw_reads\tmark_trimmed_reads\tmark_trimmed_frac\tmark_mapped_reads\tmark_mapped_frac\tmark_dup_reads\tmark_dup_frac\tmark_filtered_reads\tmark_filtered_frac\tmark_Mitochondrial_reads\tmark_Mitochondrial_frac\tinput_raw_reads\tinput_trimmed_reads\tinput_trimmed_frac\tclt_mapped_reads\tinput_mapped_frac\tinput_dup_reads\tinput_dup_frac\tinput_filtered_reads\tinput_filtered_frac\tinput_Mitochondrial_reads\tinput_Mitochondrial_frac\tnmb_peaks\treads_in_peaks\tfrip\tmark_nsc\tinput_nsc\tmark_rsc\tinput_rsc\tmark_Quality\tinput_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
-echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${SAMPLE_NAME}.${INPUT_NAME}\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div" >> ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.txt
+echo -e "genome_assembly\tChIP_type\tmark_name\tinput_name\tmark_raw_reads\tmark_trimmed_reads\tmark_trimmed_frac\tmark_mapped_reads\tmark_mapped_frac\tmark_dup_reads\tmark_dup_frac\tmark_filtered_reads\tmark_filtered_frac\tmark_Mitochondrial_reads\tmark_Mitochondrial_frac\tinput_raw_reads\tinput_trimmed_reads\tinput_trimmed_frac\tclt_mapped_reads\tinput_mapped_frac\tinput_dup_reads\tinput_dup_frac\tinput_filtered_reads\tinput_filtered_frac\tinput_Mitochondrial_reads\tinput_Mitochondrial_frac\tnmb_peaks\treads_in_peaks\tfrip\tmark_nsc\tinput_nsc\tmark_rsc\tinput_rsc\tmark_Quality\tinput_Quality\tsingletons\tjs_dist\tchance_div\n" > ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.tsv
+echo -e "${assembly}\t${CHIP_TYPE}\t${SAMPLE_NAME}.${CHIP_NAME}\t${SAMPLE_NAME}.${INPUT_NAME}\t$raw_reads_chip\t$trimmed_reads_chip\t$trimmed_rate_chip\t$mapped_reads_chip\t$mapped_rate_chip\t$dup_reads_chip\t$dup_rate_chip\t$filtered_reads_chip\t$filtered_rate_chip\t$MT_reads_chip\t$MT_rate_chip\t$raw_reads_input\t$trimmed_reads_input\t$trimmed_rate_input\t$mapped_reads_input\t$mapped_rate_input\t$dup_reads_input\t$dup_rate_input\t$filtered_reads_input\t$filtered_rate_input\t$MT_reads_input\t$MT_rate_input\t$nmb_peaks\t$reads_under_peaks\t$frip\t$nsc_chip\t$nsc_input\t$rsc_chip\t$rsc_input\t$quality_chip\t$quality_input\t$singletons_chip\t$js_dist\t$chance_div" >> ${OUTPUT_DIR}/${CHIP_NAME}/IHEC_metrics_chipseq_${SAMPLE_NAME}.${CHIP_NAME}.tsv
