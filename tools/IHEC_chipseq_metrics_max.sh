@@ -322,7 +322,7 @@ if [[ -s $INPUT_BAM ]]
     rsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
     rsc_input=`echo "scale=2; $rsc_input/1" | bc -l`
     quality_input_num=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-    quality_input_num=`echo "scale=2; $quality_input_num/1" | bc -l`
+    # quality_input_num=`echo "scale=2; $quality_input_num/1" | bc -l`
 
 
     if [[ "$quality_input_num" == "-2" ]]
