@@ -127,7 +127,7 @@ dup_rate_chip=`echo "scale=2; 100*$dup_reads_chip/$mapped_reads_chip" | bc -l`
 trimmomatic_table="metrics/trimSampleTable.tsv"
 if [[ -s $trimmomatic_table ]]
   then
-    raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' $trimmomatic_table | cut -f 2)
+    raw_reads_chip=$(grep "$CHIP_NAME" $trimmomatic_table | cut -f 3)
     trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
     # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
     mapped_rate_chip=`echo "scale=2; 100*$mapped_reads_chip/$trimmed_reads_chip" | bc -l`
@@ -173,7 +173,7 @@ if [ -s $INPUT_BAM ]
 
     if [[ -s $trimmomatic_table ]]
       then
-        raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
+        raw_reads_input=$(grep "$INPUT_NAME" $trimmomatic_table | cut -f 3)
         trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
         mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$trimmed_reads_input" | bc -l`
         # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
