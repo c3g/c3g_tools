@@ -290,7 +290,7 @@ nsc_chip=`echo "scale=2; $nsc_chip/1" | bc -l`
 rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
 rsc_chip=`echo "scale=2; $rsc_chip/1" | bc -l`
 quality_chip_num=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-quality_chip_num=`echo "scale=2; $quality_chip_num/1" | bc -l`
+# quality_chip_num=`echo "scale=2; $quality_chip_num/1" | bc -l`
 
 ## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
