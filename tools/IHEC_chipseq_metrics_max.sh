@@ -174,7 +174,7 @@ if [ -s $INPUT_BAM ]
     if [[ -s $trimmomatic_table ]]
       then
         raw_reads_input=$(grep "$INPUT_NAME" $trimmomatic_table | cut -f 3)
-        trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input` `grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
+        trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
         mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$trimmed_reads_input" | bc -l`
         # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
         trimmed_rate_input=`echo "scale=2; 100*$trimmed_reads_input/$raw_reads_input" | bc -l`
