@@ -203,6 +203,9 @@ if [ -s $INPUT_BAM ]
         sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
         sambamba index -t $n $dedup_bam_input
     fi
+    while [[ -s ${dedup_bam_input}.bai ]]; do
+      sleep 60
+    done
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
     # sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
     # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
@@ -228,6 +231,19 @@ if [ -s $INPUT_BAM ]
     fi
     # MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
     MT_rate_input=`echo "scale=2; 100*$MT_reads_input/$filtered_reads_input" | bc -l`
+  else
+    raw_reads_input="NA"
+    trimmed_reads_input="NA"
+    trimmed_rate_input="NA"
+    mapped_reads_input="NA"
+    mapped_rate_input="NA"
+    dup_reads_input="NA"
+    dup_rate_input="NA"
+    filtered_reads_input="NA"
+    filtered_rate_input="NA"
+    MT_reads_input="NA"
+    MT_rate_input="NA"
+    singletons_input="NA"
 fi
 
 filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
@@ -341,6 +357,10 @@ if [[ -s $INPUT_BAM ]]
       then
         quality_input=veryHigh
     fi
+  else
+    nsc_input="NA"
+    rsc_input="NA"
+    quality_input="NA"
 fi
 
 
