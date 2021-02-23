@@ -203,8 +203,9 @@ if [ -s $INPUT_BAM ]
         sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
         sambamba index -t $n $dedup_bam_input
     fi
-    while [[ -s ${dedup_bam_input}.bai ]]; do
-      sleep 60
+    while [ -s ${dedup_bam_input}.bai ]
+      do
+        sleep 60
     done
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
     # sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
