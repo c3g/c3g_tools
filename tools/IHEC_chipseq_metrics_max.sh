@@ -297,7 +297,7 @@ fi
 #4.     Calculating FRiP scores
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -@ $n -c -L ${CHIP_BED_FILE} $dedup_bam`
-frip=`echo "scale=2; $reads_under_peaks/$filtered_reads_chip" | bc -l`
+frip=`echo "scale=4; $reads_under_peaks/$filtered_reads_chip" | bc -l`
 # frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC (Normalized SCC) and RSC (Relative SCC) from run_spp (SCC Strand Cross-Correlation)
