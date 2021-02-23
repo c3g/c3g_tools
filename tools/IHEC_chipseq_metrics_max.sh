@@ -156,7 +156,7 @@ sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not 
 sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
-if [ -s $INPUT_BAM ]
+if [ -s $INPUT_BAM ] && [ $INPUT_BAM != "" ]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
