@@ -205,6 +205,7 @@ if [ -s $INPUT_BAM ]
     fi
     while [ -s ${dedup_bam_input}.bai ]
       do
+        echo "while loop"
         sleep 60
     done
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
