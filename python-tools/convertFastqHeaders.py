@@ -5,14 +5,10 @@
 
 import os
 import sys
-import string
 import getopt
-import re
 import itertools
 from Bio import SeqIO, bgzf
 import gzip
-import operator
-
 
 def getarg(argument):
     rlist=""
