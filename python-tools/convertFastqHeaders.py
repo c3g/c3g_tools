@@ -20,7 +20,7 @@ def getarg(argument):
     run=0
     i1_len=10
     i2_len=0
-    optli,arg = getopt.getopt(argument[1:],"i:m:o:g:x:y:s:r:h",['input','mate','output_prefix','gzip','I1_length','I2_lenght','instrument','run_number','help'])
+    optli,arg = getopt.getopt(argument[1:],"i:m:o:g:x:y:s:r:h",['input','mate','output_prefix','gzip','I1_length','I2_length','instrument','run_number','help'])
     if len(optli) < 1 :
         usage()
         sys.exit("Error : Missing argument(s)")
