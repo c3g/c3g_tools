@@ -126,7 +126,7 @@ def convertIllumina(
     header_dict
     ):
 
-    template_str = "@{instrument}:{run_number}:{flowcell_id}:{lane}:{tile}:{x_pos}:{y_pos} {read}:N:0:{sample_barcode}"
+    template_str = "{instrument}:{run_number}:{flowcell_id}:{lane}:{tile}:{x_pos}:{y_pos} {read}:N:0:{sample_barcode}"
     formatted_string = template_str.format(
         instrument = header_dict["instrument"],
         run_number = header_dict["run_number"],
@@ -189,17 +189,20 @@ def main():
 
         # Create the Illumina output record for R1
         illumina_record1 = mgi_record1
-        illumina_record1.id = illumina_header_R1
+        illumina_record1.description = illumina_header_R1
+        illumina_record1.id = illumina_header_R1.split(' ')[0]
+        illumina_record1.name = illumina_header_R1.split(' ')[0]
         # Create the Illumina output record for R2
         illumina_record2 = mgi_record2
-        illumina_record2.id = illumina_header_R2
+        illumina_record2.description = illumina_header_R2
+        illumina_record2.id = illumina_header_R2.split(' ')[0]
+        illumina_record2.name = illumina_header_R2.split(' ')[0]
 
         # write R1 record into output
         handle_out_R1.write(illumina_record1.format('fastq'))
         # write R2 record into output
         handle_out_R2.write(illumina_record2.format('fastq'))
         
-
     print "Fastq headers converted successfully !"
 
 main()
