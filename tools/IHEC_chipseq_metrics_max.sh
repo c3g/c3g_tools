@@ -112,6 +112,7 @@ fi
 ## The original number of reads and the number of those aligned:
 # samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 flagstat_file="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
+echo "... Computing flagstat file for $flagstat_file ..."
 sambamba flagstat -t $n ${CHIP_BAM} > $flagstat_file
 
 
@@ -148,6 +149,7 @@ singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* si
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
 # samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 dedup_bam="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
+echo "... Creating dedup file $dedup_bam and his index ..."
 sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
 
 ## Index the final deduplicated BAM file
@@ -161,6 +163,7 @@ if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
     if ! [ -s $input_flagstat_file ]
       then
+        echo "... Computing flagstat file for $input_flagstat_file ..."
         sambamba flagstat -t $n ${INPUT_BAM} > $input_flagstat_file
     fi
 
@@ -199,11 +202,13 @@ if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
     dedup_bam_input="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam"
     if ! [[ -s $dedup_bam_input ]]
       then
+        echo "... Creating dedup file $dedup_bam_input and his index ..."
         sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
         sambamba index -t $n $dedup_bam_input
     fi
     until [ -s ${dedup_bam_input}.bai ]
       do
+        echo "... Waiting 60s for another job to create $dedup_bam_input and his index ..."
         sleep 60
     done
     # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
@@ -270,11 +275,10 @@ fi
 MT_rate_chip=`echo "scale=2; 100*$MT_reads_chip/$filtered_reads_chip" | bc -l`
 
 #3.     Calculating Jensen-Shannon distance (JSD)
-
 #To calculate the Jensen-Shannon distance we run:
 ## Attention: Regarding the bin size (specified in the command below by the ‘-bs’ option) there hasn’t been an agreement on what the optimal bin size is yet. There have been discussions on adopting smaller bin sizes for the sharp peaks and larger bin sizes for the broad peaks.
 ## No need to remove the blacklisted regions for the JSD calculation.
-
+echo "... Calculating Jensen-Shannon distance ..."
 if [[ "${CHIP_TYPE}" == "narrow" ]]
   then
     bin_size=200
@@ -294,13 +298,14 @@ if [[ -s $INPUT_BAM ]]
 fi
 
 #4.     Calculating FRiP scores
+echo "... Calculating FRiP score ..."
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -@ $n -c -L ${CHIP_BED_FILE} $dedup_bam`
 frip=`echo "scale=4; $reads_under_peaks/$filtered_reads_chip" | bc -l`
 # frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC (Normalized SCC) and RSC (Relative SCC) from run_spp (SCC Strand Cross-Correlation)
-
+echo "... Extracting NSC and RSC ..."
 nsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
 nsc_chip=`echo "scale=2; $nsc_chip/1" | bc -l`
 rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
