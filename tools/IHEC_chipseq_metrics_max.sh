@@ -156,7 +156,7 @@ sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not 
 sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
-if [ -s $INPUT_BAM ] && [ $INPUT_BAM != "" ]
+if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
   then
     # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
@@ -198,7 +198,7 @@ if [ -s $INPUT_BAM ] && [ $INPUT_BAM != "" ]
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
 
     dedup_bam_input="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.dedup.bam"
-    if ! [ -s $dedup_bam_input ]
+    if ! [[ -s $dedup_bam_input ]]
       then
         sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
         sambamba index -t $n $dedup_bam_input
@@ -225,7 +225,7 @@ if [ -s $INPUT_BAM ] && [ $INPUT_BAM != "" ]
     # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
     MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input MT)
 
-    if [ -z $MT_reads_chip ] || [ $MT_reads_input -eq 0 ]
+    if [[ -z $MT_reads_chip ]] || [[ $MT_reads_input -eq 0 ]]
       then
         # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
         MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input chrM)
@@ -262,7 +262,7 @@ fi
 # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
 MT_reads_chip=$(sambamba view -t $n -c $dedup_bam MT)
 
-if [ -z $MT_reads_chip ] || [ $MT_reads_chip -eq 0 ]
+if [[ -z $MT_reads_chip ]] || [[ $MT_reads_chip -eq 0 ]]
   then
     # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
     MT_reads_chip=$(sambamba view -t $n -c $dedup_bam chrM)
