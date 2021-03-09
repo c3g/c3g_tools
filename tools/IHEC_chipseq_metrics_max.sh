@@ -94,14 +94,6 @@ if [[ ! ( "${CHIP_TYPE}" == "narrow" || "${CHIP_TYPE}" == "broad" || "${CHIP_TYP
     exit 1;
 fi 
 
-
-## need to run script with samples without an input
-# if [[  ! -s $INPUT_BAM ]]
-# then
-#   echo "ERROR: File ${INPUT_BAM} doesn't exist or is empty. The matched Input sample you provided doesn't seem to have been preprocessed yet." >&2
-#   exit 1;
-# fi
-
 if [ $INPUT_NAME == "no_input" ]
   then
     echo "... sample has no input ..."
@@ -110,34 +102,25 @@ fi
 
 
 ## The original number of reads and the number of those aligned:
-# samtools flagstat ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.markDup_flagstat.txt
 flagstat_file="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.markDup_flagstat.txt"
 echo "... Computing flagstat file for $flagstat_file ..."
 sambamba flagstat -t $n ${CHIP_BAM} > $flagstat_file
 
 
-# raw_reads_chip=$(awk -v SAMPLE_NAME=$SAMPLE_NAME '{if ($1 == SAMPLE_NAME) print $0}' metrics/trimSampleTable.tsv | cut -f 2)
 supplementarysecondary_reads_chip=`bc <<< $(grep "secondary" $flagstat_file | sed -e 's/ + [[:digit:]]* secondary.*//')+$(grep "supplementary" $flagstat_file | sed -e 's/ + [[:digit:]]* supplementary.*//')`
-# trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
 mapped_reads_chip=`bc <<< $(grep "mapped (" $flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_chip`
 dup_reads_chip=`grep "duplicates" $flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
-# dup_rate_chip=$(echo "100*${dup_reads_chip}/${mapped_reads_chip}" | bc -l)
 dup_rate_chip=`echo "scale=2; 100*$dup_reads_chip/$mapped_reads_chip" | bc -l`
-# mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
-# trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
 trimmomatic_table="metrics/trimSampleTable.tsv"
 if [[ -s $trimmomatic_table ]]
   then
     raw_reads_chip=$(grep -P "${SAMPLE_NAME}\t${CHIP_NAME}" $trimmomatic_table | cut -f 3)
     trimmed_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
-    # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${trimmed_reads_chip}" | bc -l)
     mapped_rate_chip=`echo "scale=2; 100*$mapped_reads_chip/$trimmed_reads_chip" | bc -l`
-    # trimmed_rate_chip=$(echo "100*${trimmed_reads_chip}/${raw_reads_chip}" | bc -l)
     trimmed_rate_chip=`echo "scale=2; 100*$trimmed_reads_chip/$raw_reads_chip" | bc -l`
   else
     raw_reads_chip=`bc <<< $(grep "in total" $flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_chip`
     trimmed_reads_chip="NULL"
-    # mapped_rate_chip=$(echo "100*${mapped_reads_chip}/${raw_reads_chip}" | bc -l)
     mapped_rate_chip=`echo "scale=2; 100*$mapped_reads_chip/$raw_reads_chip" | bc -l`
     trimmed_rate_chip="NULL"
 fi
@@ -147,19 +130,16 @@ singletons_chip=`grep "singletons" $flagstat_file | sed -e 's/ + [[:digit:]]* si
 
 
 ## Remove unmapped read, duplicate reads and those with mapping quality less than 5:
-# samtools view -b -F 3844 -q 5  ${CHIP_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 dedup_bam="${OUTPUT_DIR}/${CHIP_NAME}/${SAMPLE_NAME}.${CHIP_NAME}.dedup.bam"
 echo "... Creating dedup file $dedup_bam and his index ..."
 sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5" ${CHIP_BAM} > $dedup_bam
 
 ## Index the final deduplicated BAM file
-# samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam
 sambamba index -t $n $dedup_bam
 
 ## run on the input if provided:
 if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
   then
-    # samtools flagstat ${INPUT_BAM} > ${OUTPUT_DIR}/${INPUT_NAME}.markDup_flagstat.txt
     input_flagstat_file="${OUTPUT_DIR}/${INPUT_NAME}/${SAMPLE_NAME}.${INPUT_NAME}.markDup_flagstat.txt"
     if ! [ -s $input_flagstat_file ]
       then
@@ -171,30 +151,19 @@ if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
     mapped_reads_input=`bc <<< $(grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//')-$supplementarysecondary_reads_input`
     dup_reads_input=`grep "duplicates" $input_flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
     dup_rate_input=`echo "scale=2; 100*$dup_reads_input/$mapped_reads_input" | bc -l`
-    # dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
 
     if [[ -s $trimmomatic_table ]]
       then
         raw_reads_input=$(grep -P "${SAMPLE_NAME}\t${INPUT_NAME}" $trimmomatic_table | cut -f 3)
         trimmed_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
         mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$trimmed_reads_input" | bc -l`
-        # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
         trimmed_rate_input=`echo "scale=2; 100*$trimmed_reads_input/$raw_reads_input" | bc -l`
-        # trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
       else
         raw_reads_input=`bc <<< $(grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//')-$supplementarysecondary_reads_input`
         trimmed_reads_input="NULL"
         mapped_rate_input=`echo "scale=2; 100*$mapped_reads_input/$raw_reads_input" | bc -l`
-        # mapped_rate_input=$(echo "100*${mapped_reads_input}/${raw_reads_input}" | bc -l)
         trimmed_rate_input="NULL"
     fi
-    # raw_reads_input=$(awk -v INPUT_NAME=$INPUT_NAME '{if ($1 == INPUT_NAME) print $0}' $trimmomatic_table | cut -f 2)
-    # trimmed_reads_input=`grep "in total" $input_flagstat_file | sed -e 's/ + [[:digit:]]* in total .*//'`
-    # mapped_reads_input=`grep "mapped (" $input_flagstat_file | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-    # dup_reads_input=`grep "duplicates" $input_flagstat_file | sed -e 's/ + [[:digit:]]* duplicates$//'`
-    # dup_rate_input=$(echo "100*${dup_reads_input}/${mapped_reads_input}" | bc -l)
-    # mapped_rate_input=$(echo "100*${mapped_reads_input}/${trimmed_reads_input}" | bc -l)
-    # trimmed_rate_input=$(echo "100*${trimmed_reads_input}/${raw_reads_input}" | bc -l)
 
     ## Finally, the number of singletons for paired-end data sets can be calculated using:
     singletons_input=`grep "singletons" $input_flagstat_file | sed -e 's/ + [[:digit:]]* singletons .*//'`
@@ -211,30 +180,19 @@ if [[ -s $INPUT_BAM ]] && [[ $INPUT_BAM != "" ]]
         echo "... Waiting 60s for another job to create $dedup_bam_input and his index ..."
         sleep 60
     done
-    # samtools view -b -F 3844 -q 5  ${INPUT_BAM} > ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    # sambamba view -t $n -f bam -F "not unmapped and not secondary_alignment and not failed_quality_control and not duplicate and not supplementary and mapping_quality >= 5"  ${INPUT_BAM} > $dedup_bam_input
-    # samtools index ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam
-    # sambamba index -t $n $dedup_bam_input
-    # filtered_reads_input=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     filtered_reads_input=`sambamba flagstat -t $n $dedup_bam_input | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
     if [[ -s $trimmomatic_table ]]
       then
-        # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
         filtered_rate_input=`echo "scale=2; 100*$filtered_reads_input/$trimmed_reads_input" | bc -l`
       else
-        # filtered_rate_input=$(echo "100*${filtered_reads_input}/${raw_reads_input}" | bc -l)
         filtered_rate_input=`echo "scale=2; 100*$filtered_reads_input/$raw_reads_input" | bc -l`
     fi
-    # filtered_rate_input=$(echo "100*${filtered_reads_input}/${trimmed_reads_input}" | bc -l)
-    # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam MT)
     MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input MT)
 
     if [[ -z $MT_reads_chip ]] || [[ $MT_reads_input -eq 0 ]]
       then
-        # MT_reads_input=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}_INPUT.dedup.bam chrM)
         MT_reads_input=$(sambamba view -t $n -c $dedup_bam_input chrM)
     fi
-    # MT_rate_input=$(echo "100*${MT_reads_input}/${filtered_reads_input}" | bc -l)
     MT_rate_input=`echo "scale=2; 100*$MT_reads_input/$filtered_reads_input" | bc -l`
   else
     raw_reads_input="NA"
@@ -254,24 +212,18 @@ fi
 filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
 if [[ -s $trimmomatic_table ]]
   then
-    # filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
     filtered_rate_chip=`echo "scale=2; 100*$filtered_reads_chip/$trimmed_reads_chip" | bc -l`
   else
-    # filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${raw_reads_chip}" | bc -l)
     filtered_rate_chip=`echo "scale=2; 100*$filtered_reads_chip/$raw_reads_chip" | bc -l`
 fi
-# filtered_reads_chip=`samtools flagstat  ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-# filtered_reads_chip=`sambamba flagstat -t $n $dedup_bam | grep "mapped (" | sed -e 's/ + [[:digit:]]* mapped (.*)//'`
-# filtered_rate_chip=$(echo "100*${filtered_reads_chip}/${trimmed_reads_chip}" | bc -l)
-# MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam MT)
+
 MT_reads_chip=$(sambamba view -t $n -c $dedup_bam MT)
 
 if [[ -z $MT_reads_chip ]] || [[ $MT_reads_chip -eq 0 ]]
   then
-    # MT_reads_chip=$(samtools view -c ${OUTPUT_DIR}/${SAMPLE_NAME}.dedup.bam chrM)
     MT_reads_chip=$(sambamba view -t $n -c $dedup_bam chrM)
 fi
-# MT_rate_chip=$(echo "100*${MT_reads_chip}/${filtered_reads_chip}" | bc -l)
+
 MT_rate_chip=`echo "scale=2; 100*$MT_reads_chip/$filtered_reads_chip" | bc -l`
 
 #3.     Calculating Jensen-Shannon distance (JSD)
@@ -302,7 +254,6 @@ echo "... Calculating FRiP score ..."
 nmb_peaks=$(wc -l ${CHIP_BED_FILE} | cut -f 1 -d " ")
 reads_under_peaks=`samtools view -@ $n -c -L ${CHIP_BED_FILE} $dedup_bam`
 frip=`echo "scale=4; $reads_under_peaks/$filtered_reads_chip" | bc -l`
-# frip=$(echo "${reads_under_peaks}/${filtered_reads_chip}" | bc -l)
 
 #5. extract NSC (Normalized SCC) and RSC (Relative SCC) from run_spp (SCC Strand Cross-Correlation)
 echo "... Extracting NSC and RSC ..."
@@ -311,7 +262,6 @@ nsc_chip=`echo "scale=2; $nsc_chip/1" | bc -l`
 rsc_chip=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
 rsc_chip=`echo "scale=2; $rsc_chip/1" | bc -l`
 quality_chip_num=$(grep "${CHIP_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-# quality_chip_num=`echo "scale=2; $quality_chip_num/1" | bc -l`
 
 ## Quality tag based on thresholded RSC (codes= -2:veryLow, -1:Low, 0:Medium, 1:High, 2:veryHigh)
 
@@ -332,10 +282,6 @@ elif [[ "$quality_chip_num" == "2" ]]
     quality_chip=veryHigh
 fi
 
-
-
-
-
 if [[ -s $INPUT_BAM ]]
   then
     nsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 9)
@@ -343,8 +289,6 @@ if [[ -s $INPUT_BAM ]]
     rsc_input=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 10)
     rsc_input=`echo "scale=2; $rsc_input/1" | bc -l`
     quality_input_num=$(grep "${INPUT_NAME}" ${OUTPUT_DIR}/${SAMPLE_NAME}.crosscor | cut -f 11)
-    # quality_input_num=`echo "scale=2; $quality_input_num/1" | bc -l`
-
 
     if [[ "$quality_input_num" == "-2" ]]
       then
