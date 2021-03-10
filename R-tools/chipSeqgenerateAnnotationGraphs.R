@@ -33,7 +33,7 @@ for (sample_name in ls(samples_hash_table)) {
       		par(mfrow=c(2,2), cex.main=0.6)
       		annotationDir=file.path(output_dir, "annotation")
       		# listFile=file.path(fileDir, list.files(fileDir, pattern=paste(sample_name, ".", mark_name, ".tss.stats.csv", "$", sep=""), recursive=T))
-            tss<-paste(annotationDir, "/", sample_name, ".", mark_name, ".tss.stats.csv"
+            tss<-paste(annotationDir, "/", sample_name, ".", mark_name, ".tss.stats.csv")
       		# print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
             print(paste("NOTICE: processing annotation tss stats files: ", tss, sep=""))
 
