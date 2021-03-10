@@ -33,7 +33,7 @@ for (sample_name in ls(samples_hash_table)) {
       		par(mfrow=c(2,2), cex.main=0.6)
       		annotationDir=file.path(output_dir, "annotation")
       		# listFile=file.path(fileDir, list.files(fileDir, pattern=paste(sample_name, ".", mark_name, ".tss.stats.csv", "$", sep=""), recursive=T))
-            tss<-paste(annotationDir, "/", sample_name, ".", mark_name, ".tss.stats.csv", sep="")
+            tss<-paste(annotationDir, "/", sample_name, "/", mark_name, "/", sample_name, ".", mark_name, ".tss.stats.csv", sep="")
       		# print(paste("NOTICE: processing annotation tss stats files: ", paste(listFile, collapse=","), sep=" "))
             print(paste("NOTICE: processing annotation tss stats files: ", tss, sep=""))
 
@@ -114,7 +114,7 @@ for (sample_name in ls(samples_hash_table)) {
             dev.off()
             peakDir=file.path(output_dir, "peak_call")
             # listFile=file.path(fileDir,list.files(fileDir, pattern=paste(mark_name, "_peaks.(narrow|broad)Peak", "$", sep=""), recursive=T))
-            peakfile<-paste(peakDir, "/", mark_name, "_peaks.narrowPeak", sep="")
+            peakfile<-paste(peakDir, "/", sample_name, "/", mark_name, "/", mark_name, "_peaks.narrowPeak", sep="")
             print(paste("NOTICE: processing annotation tss stats files: ", tss, sep=""))
             # print(paste("NOTICE: Processing peaks files to generate stats: ", paste(listFile, collapse=","),sep=" "))
             averagePeakWidth<-NA
