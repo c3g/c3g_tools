@@ -1,14 +1,23 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 ### Edouard Henrion (2021/02/25)
 ### Convert headers of raw/undemultiplexed fastq files from MGI to Illumina format
 
 import os
 import sys
+import re
 import getopt
 import itertools
+from functools import partial
+from multiprocessing import Pool
+from Bio.SeqIO.QualityIO import FastqGeneralIterator
 from Bio import SeqIO, bgzf
 import gzip
+
+instrument_ID = ""
+run_number = 0
+index1_length = 0
+index2_length = 0
 
 def getarg(argument):
     rlist=""
@@ -20,7 +29,8 @@ def getarg(argument):
     run=0
     i1_len=10
     i2_len=0
-    optli,arg = getopt.getopt(argument[1:],"i:m:o:g:x:y:s:r:h",['input','mate','output_prefix','gzip','I1_length','I2_length','instrument','run_number','help'])
+    ncpus=4
+    optli,arg = getopt.getopt(argument[1:],"i:m:o:g:x:y:s:r:t:h",['input','mate','output_prefix','gzip','I1_length','I2_length','instrument','run_number','threads','help'])
     if len(optli) < 1 :
         usage()
         sys.exit("Error : Missing argument(s)")
@@ -41,6 +51,8 @@ def getarg(argument):
             instID=str(value)
         if option in ("-r","--run_number"):
             run=int(value)
+        if option in ("-t","--threads"):
+            ncpus=int(value)
         if option in ("-h","--help"):
             usage()
             sys.exit()
@@ -53,18 +65,30 @@ def getarg(argument):
     if run == 0 :
         sys.exit("Error - Run number is mandatory...\n")
     if op == "." :
-        output_f1 = os.path.splitext(fastq1)
-        output_f2 = os.path.splitext(fastq2)
+        output_f1 = os.path.splitext(fastq1)[0]
+        output_f2 = os.path.splitext(fastq2)[0]
         if gz == 0 :
-            output_f1 = os.path.splitext(output_f1)
-            output_f2 = os.path.splitext(output_f2)
+            output_f1 = os.path.splitext(output_f1)[0]
+            output_f2 = os.path.splitext(output_f2)[0]
         output_f1 = output_f1 + ".converted.fastq.gz"
-        output_f1 = output_f2 + ".converted.fastq.gz"
+        output_f2 = output_f2 + ".converted.fastq.gz"
     else :
         output_f1 = op + "_R1.fastq.gz"
         output_f2 = op + "_R2.fastq.gz"
 
-    return gz, fastq1, fastq2, output_f1, output_f2, instID, run, i1_len, i2_len
+    global instrument_ID
+    global run_number
+    global index1_length
+    global index2_length
+    instrument_ID = instID
+    run_number = run
+    index1_length = i1_len
+    index2_length = i2_len
+
+#    global f1_out
+#    global f2_out
+
+    return gz, fastq1, fastq2, output_f1, output_f2, ncpus
 
 def usage():
     print "\n------------------------------------------------------------------------"
@@ -91,7 +115,13 @@ def usage():
     print "       -y :        size of the second barcode (default 0 i.e. single-end)"
     print "       -r :        run number"
     print "       -s :        instrument/sequencer ID"
+    print "       -t :        number of threads/cpus for parallelized processing (default 4)"
     print "       -h :        this help \n"
+
+# https://stackoverflow.com/a/43922107/6198494
+def chunker_list(seq, size):
+    print "Start chunking the input fastq files..."
+    return (seq[i::size] for i in range(size))
 
 def parseMGI(
     header_string,
@@ -136,69 +166,85 @@ def convertIllumina(
     )
     return formatted_string
 
+def processMGIfastq(
+    data,
+    ):
+    mgi_head1, seq1, qual1 = data[0]
+    mgi_head2, seq2, qual2 = data[1]
+
+    if index2_length == 0:
+        # Single index
+        sample_barcode = str(seq2)[-index1_length:]
+    else:
+        # Dual Index
+        sample_barcode = str(seq2)[-(index2_length+index1_length):-index1_length]+"+"+str(seq2)[-index1_length:]
+#    print sample_barcode
+    illumina_head1 = convertIllumina(
+        parseMGI(
+            mgi_head1,
+            instrument_ID,
+            run_number,
+            sample_barcode
+        )
+    )
+
+    illumina_head2 = convertIllumina(
+        parseMGI(
+            mgi_head2,
+            instrument_ID,
+            run_number,
+            sample_barcode
+        )
+    )
+
+    # Parallelization attempt
+#    f1_out.write(illumina_records[0])
+#    f2_out.write(illumina_records[1])
+#    return sample_barcode
+    return ["@%s\n%s\n+\n%s\n" % (illumina_head1, seq1, qual1), "@%s\n%s\n+\n%s\n" % (illumina_head2, seq2, qual2)]
+
+
 def main():
-    gz, fastq1, fastq2, output_fastq1, output_fastq2, instrument_ID, run_number, barcode1_length, barcode2_length = getarg(sys.argv)
+    gz, fastq1, fastq2, output_fastq1, output_fastq2, ncpus = getarg(sys.argv)
+
+    # Parallelization attempt
+#    # create a pool of processing nodes
+#    p = Pool(ncpus)
+#
+#    # use partial to create a function needing only one argument
+#    fastqfunc = partial(
+#        processMGIfastq
+#    )
 
     if gz == 0 :
-        f1 = gzip.open(fastq1, 'rb')
-        f2 = gzip.open(fastq2, 'rb')
+        open_input = compile("gzip.open", "<string>", "eval")
     else :
-        f1=fastq1
-        f2=fastq2
-    print "fastqs opened for reading :\n" + "\n".join([fastq1, fastq2])
+        open_input = compile("open", "<string>", "eval")
 
-    handle_out_R1 = gzip.open(output_fastq1, "wt")
-    handle_out_R2 = gzip.open(output_fastq2, "wt")
-    print "fastqs opened for writing :\n" + "\n".join([output_fastq1, output_fastq2])
+    with eval(open_input)(fastq1, 'rb') as f1_in, eval(open_input)(fastq2, 'rb') as f2_in:
+        print "fastqs opened for reading :\n" + "\n".join([fastq1, fastq2])
 
-    # Loop over both R1 and R2 fastq in parallel
-    # R2 is needed to fech the barcode sequcence(s)
-    # One coupled-record at a time, both R1 and R2 headers have to be converted before passing to the next record
-    for mgi_record1, mgi_record2 in itertools.izip(SeqIO.parse(f1, "fastq"), SeqIO.parse(f2, "fastq")):
-        # Retrieve the barcode sequence(s) from the R2 fastq
-        if barcode2_length == 0:
-            # Single index
-            sample_barcode = str(mgi_record2.seq)[-barcode1_length:]
-        else:
-            # Dual Index
-            sample_barcode = str(mgi_record2.seq)[-(barcode2_length+barcode1_length):-barcode1_length]+"+"+str(mgi_record2.seq)[-barcode1_length:]
+        with gzip.open(output_fastq1, "wt") as f1_out, gzip.open(output_fastq2, "wt") as f2_out:
+            print "fastqs opened for writing :\n" + "\n".join([output_fastq1, output_fastq2])
 
-        # Parse the MGI header of R1 e.g. V300057102L1C001R00400000262/1
-        header_dict_R1 = parseMGI(
-            mgi_record1.id,
-            instrument_ID,
-            run_number,
-            sample_barcode
-        )
-        # Parse the MGI header of R2 e.g. V300057102L1C001R00400000262/2
-        header_dict_R2 = parseMGI(
-            mgi_record2.id,
-            instrument_ID,
-            run_number,
-            sample_barcode
-        )
+            # Serial mode
+            for mgi_r1_record, mgi_r2_record in itertools.izip(FastqGeneralIterator(f1_in), FastqGeneralIterator(f2_in)):
+                illumina_records = processMGIfastq([mgi_r1_record, mgi_r2_record])
+                f1_out.write(illumina_records[0])
+                f2_out.write(illumina_records[1])
 
-        # Create Illumina header for R1
-        illumina_header_R1 = convertIllumina(header_dict_R1)
-        # Create Illumina header for R2
-        illumina_header_R2 = convertIllumina(header_dict_R2)
+            # Parallelization attempt
+#            chunk_count = 0
+#            for i in range(10000):
+#            for chunked_fastqs in chunker_list(list(itertools.izip(FastqGeneralIterator(f1_in), FastqGeneralIterator(f2_in))), ncpus):
+#                chunk_count += 1
+#                print "Processing chunk #" + str(chunk_count) + " out of " + str(10000)
+#                illumina_fastqs = p.imap(fastqfunc, list(itertools.izip(FastqGeneralIterator(f1_in), FastqGeneralIterator(f2_in)))[i::10000])
 
-        # Create the Illumina output record for R1
-        illumina_record1 = mgi_record1
-        illumina_record1.description = illumina_header_R1
-        illumina_record1.id = illumina_header_R1.split(' ')[0]
-        illumina_record1.name = illumina_header_R1.split(' ')[0]
-        # Create the Illumina output record for R2
-        illumina_record2 = mgi_record2
-        illumina_record2.description = illumina_header_R2
-        illumina_record2.id = illumina_header_R2.split(' ')[0]
-        illumina_record2.name = illumina_header_R2.split(' ')[0]
+#                for illumina_fastq in illumina_fastqs:
+#                    f1_out.write(illumina_fastq[0])
+#                    f2_out.write(illumina_fastq[1])
 
-        # write R1 record into output
-        handle_out_R1.write(illumina_record1.format('fastq'))
-        # write R2 record into output
-        handle_out_R2.write(illumina_record2.format('fastq'))
-        
     print "Fastq headers converted successfully !"
 
 main()
