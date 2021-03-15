@@ -1,6 +1,33 @@
-44 tags, 534 commits
+45 tags, 547 commits
 
-HEAD        Fri Apr 17 13:21:20 2020 -0400        0 commits
+HEAD        Mon Mar 15 19:17:36 2021 +0000        0 commits
+
+2.4.0        Mon Mar 15 15:27:18 2021 -0400        13 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      8 commits
+
+       6a10cc4 MUGQIC_TOOLS - python tools : updated convertFastqHeaders to convert already demultiplexed fastq files only
+       7fa2afd MUGQIC-TOOLS - Python Tools : update convertFastqHeader with use of Bio.SeqIO.QualityIO.FastqGeneralIterator instead of Bio.SeqIO.parse to try speeding things...
+       647c5e7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       7614df1 pytohn tools - convertFastqHeader - corrected output record handling
+       2cc1b36 adding tools for run processing pipeline + fastq header conversion tool
+       f6bdd97 adding tools for run processing pipeline + fastq header conversion tool
+       304278f Version bump to 2.3.3-beta
+       5a3e071 Version bump to 2.3.2
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       cc43663 Python tools - convertFastqHeaders : corrected typo
+       bf2c709 convertFastqHeaders.py edited online with Bitbucket
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       e7f4fdc add fastqIcounter.py from my perso repo
+
+  Robert Syme <rob.syme@gmail.com>      2 commits
+
+       1a983d8 Merged in Robert-Syme/ensure-that-mgi-library-name-parsing-cap-1615835329509 (pull request #16)
+       7be259e Ensure that MGI library name parsing captures letter prefix.
 
 2.3.2        Fri Apr 17 13:26:36 2020 -0400        8 commits
 
