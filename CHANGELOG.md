@@ -1,6 +1,172 @@
-45 tags, 547 commits
+45 tags, 701 commits
 
-HEAD        Mon Mar 15 19:17:36 2021 +0000        0 commits
+HEAD        Tue Mar 30 16:14:20 2021 -0400        154 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       e30895d Version bump to 2.4.0
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      2 commits
+
+       171104d Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       424214c Version bump to 2.5.0
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      148 commits
+
+       8550435 Fixing typo
+       db28643 Fixing typo
+       f9edca2 Fixing typo
+       d7c0d1c Cleaning and fixing tss script
+       3450864 Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       d27f908 Fixing IHEC chipseq metrics
+       affddba Fixing IHEC chipseq metrics
+       92054ae Fixing IHEC chipseq metrics
+       68ebf59 Fixing IHEC chipseq metrics
+       8984a6a Fixing IHEC chipseq metrics
+       bc7b86f Fixing IHEC chipseq metrics
+       1c08b4e Fixing IHEC chipseq metrics
+       43fdaf5 Fixing IHEC chipseq metrics
+       5ef2251 Switching from design to readset
+       f7bf2a9 Switching from design to readset
+       d3f5cf8 Switching from design to readset
+       75e42c2 Fixing IHEC chipseq metrics
+       accd9d5 Fixing IHEC chipseq metrics
+       931ee37 Fixing IHEC chipseq metrics
+       b37f0a7 Fixing IHEC chipseq metrics
+       db2335c Fixing IHEC chipseq metrics
+       9d5dcc7 Fixing IHEC chipseq metrics
+       7486d44 Fixing IHEC chipseq metrics
+       13b932a Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       27126a0 Fixing IHEC chipseq metrics
+       71e62a2 Fixing IHEC chipseq metrics
+       72d7c2d Fixing IHEC chipseq metrics
+       e4b1e4f Fixing IHEC chipseq metrics
+       22ce29f Fixing IHEC chipseq metrics
+       1c536e4 Fixing IHEC chipseq metrics
+       5b1df8d Fixing IHEC chipseq metrics
+       effffc2 Fixing IHEC chipseq metrics
+       10772dd Fixing IHEC chipseq metrics
+       35287e3 Fixing IHEC chipseq metrics
+       8b9788c Fixing IHEC chipseq metrics
+       a84d4b9 Fixing IHEC chipseq metrics
+       bb103de Fixing IHEC chipseq metrics
+       231e2cc Fixing IHEC chipseq metrics
+       193906a Fixing IHEC chipseq metrics
+       2cd3a95 Fixing IHEC chipseq metrics
+       7830440 Fixing IHEC chipseq metrics
+       3c40592 Fixing IHEC chipseq metrics
+       5fa6b2f Fixing IHEC chipseq metrics
+       4ed3980 Fixing IHEC chipseq metrics
+       223592e Debug
+       702a5f9 Switching from design to readset
+       62a4bba Switching from design to readset
+       da852e1 Switching from design to readset
+       be76982 Fixing IHEC chipseq metrics
+       8908e84 Switching from design to readser
+       e6678d2 Switching from design to readser
+       1afb177 Switching from design to readser
+       c4aa908 Switching from design to readser
+       231ba82 Switching from design to readser
+       475eeb1 Switching from design to readser
+       693109d Switching from design to readser
+       69abdcd Switching from design to readser
+       287ed42 Switching from design to readser
+       7faa335 Switching from design to readser
+       fee2ab9 Switching from design to readser
+       adbdd4b Switching from design to readser
+       8f0648e Switching from design to readser
+       db525ec Switching from design to readser
+       7f445c5 Switching from design to readser
+       581f387 Switching from design to readser
+       c6199ea Switching from design to readser
+       dfffe1d Switching from design to readser
+       311c4ff Switching from design to readser
+       ff14a6c Switching from design to readser
+       9b97e77 Switching from design to readser
+       a5d777e Switching from design to readser
+       d9fb8a7 Switching from design to readser
+       b5d2f9d Debug design file change chipseq pipeline
+       e0cbfda Fixing IHEC chipseq metrics
+       c9c6ec9 Fixing IHEC chipseq metrics
+       e69f170 Fixing IHEC chipseq metrics
+       f9ca01c Fixing IHEC chipseq metrics
+       64235fe Fixing IHEC chipseq metrics
+       606d466 Fixing IHEC chipseq metrics
+       410c501 Fixing IHEC chipseq metrics
+       8afc660 Fixing IHEC chipseq metrics
+       249a6b5 Fixing IHEC chipseq metrics
+       5ac8c8d Fixing IHEC chipseq metrics
+       4127e4e Fixing IHEC chipseq metrics
+       bc6879e Debug
+       2bd980e Fixing IHEC chipseq metrics
+       fd9fbb4 Fixing IHEC chipseq metrics
+       36ce67a Fixing IHEC chipseq metrics
+       7bc76b0 Fixing IHEC chipseq metrics
+       082131c Fixing IHEC chipseq metrics
+       053bc5d Fixing IHEC chipseq metrics
+       251bd82 Fixing IHEC chipseq metrics
+       a71fb4b Fixing IHEC chipseq metrics
+       29780fa Fixing IHEC chipseq metrics
+       50cd9aa Fixing IHEC chipseq metrics
+       42477c9 Fixing IHEC chipseq metrics
+       c0e7159 Fixing IHEC chipseq metrics
+       e23e896 Fixing IHEC chipseq metrics
+       f35b761 Fixing IHEC chipseq metrics
+       5929748 Fixing IHEC chipseq metrics
+       78da539 Fixing IHEC chipseq metrics
+       260750b Fixing IHEC chipseq metrics
+       b98693c Fixing IHEC chipseq metrics
+       a3087d2 Fixing IHEC chipseq metrics
+       086de46 Fixing IHEC chipseq metrics
+       affff8a Fixing IHEC chipseq metrics
+       b72e3ae Debug
+       ac1c9fd Switching from design to readset
+       802242c Switching from design to readset
+       b5f22a8 Switching from design to readset
+       2847309 Fixing IHEC chipseq metrics
+       13aacad Switching from design to readser
+       15c8ff9 Switching from design to readser
+       6617b09 Switching from design to readser
+       e22d822 Switching from design to readser
+       9d3cd7c Switching from design to readser
+       cda9fff Switching from design to readser
+       a738c8e Switching from design to readser
+       041abc3 Switching from design to readser
+       bbd6a4d Switching from design to readser
+       e0e96d4 Switching from design to readser
+       696a402 Switching from design to readser
+       19a380f Switching from design to readser
+       6226787 Switching from design to readser
+       efdf606 Switching from design to readser
+       aa35b4c Switching from design to readser
+       712e471 Switching from design to readser
+       17bdc05 Switching from design to readser
+       29f6f3c Switching from design to readser
+       03fcd21 Switching from design to readser
+       9206d7a Switching from design to readser
+       581600a Switching from design to readser
+       02a308b Switching from design to readser
+       ab9b34e Switching from design to readser
+       bf7a6e5 Debug design file change chipseq pipeline
+       e060522 Fixing IHEC chipseq metrics
+       ccbb492 Fixing IHEC chipseq metrics
+       e1bfb99 Fixing IHEC chipseq metrics
+       c6be1a6 Fixing IHEC chipseq metrics
+       5442b15 Fixing IHEC chipseq metrics
+       9f40a06 Fixing IHEC chipseq metrics
+       cd5912f Fixing IHEC chipseq metrics
+       b6abcf1 Fixing IHEC chipseq metrics
+       644d458 Fixing IHEC chipseq metrics
+       e13f7c0 Fixing IHEC chipseq metrics
+       66217c5 Fixing IHEC chipseq metrics
+       d98d7e0 Debug
+       96dd552 Fixing IHEC chipseq metrics
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      3 commits
+
+       22ea87d Merged in IHEC_chipseq_metrics_fix (pull request #15)
+       c99130a Merged master into IHEC_chipseq_metrics_fix
+       6aaaaa1 Merged master into IHEC_chipseq_metrics_fix
 
 2.4.0        Mon Mar 15 15:27:18 2021 -0400        13 commits
 
