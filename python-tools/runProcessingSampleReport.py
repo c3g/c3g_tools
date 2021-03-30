@@ -139,7 +139,7 @@ def getIndexHash_from_DemuxFastqs(
     barcode_keys = []
     barcode_name = ""
     for name in raw_barcode_keys:
-        m = re.search(sample+"_"+library+"_\w?_?(?P<barcode_name>.+)", name)
+        m = re.search(sample+"_"+library+"_(\w_)?(?P<barcode_name>.+)", name)
         if m:
             if barcode_name and barcode_name != m.group('barcode_name'):
                 print "Error !! At least more than one barcode (" + barcode_name + ", " + m.group('barcode_name') + ") was found to be associated to library(" + sample + "_" + library + ")"
