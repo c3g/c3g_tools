@@ -7,5 +7,5 @@ TMP="_temp"
 BKP=$(echo $OTU | sed -e 's/\.txt$/_BACKUP.txt/')
 
 grep -v "^[a-zA-Z]..*$" $OTU > $TMP && \\
-cp $OTU $BKP && \\
+cp $OTU $BKP && ls $TMP && \\
 mv $TMP $OTU
