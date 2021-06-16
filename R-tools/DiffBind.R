@@ -15,17 +15,24 @@
 #'  
 #' ---
 
+
+##above set of codes define YAML parameters. It captures the paramters recived from the outside
+#turn off echo. Otherwise HTML page has all the codes. If you want to see the code, set these two to true
 knitr::opts_chunk$set(echo=FALSE)
 knitr::opts_chunk$set(message=FALSE)
+#set current working directory to user folder. Otherwise, R script executes where it is stored.
 knitr::opts_knit$set(root.dir = params$cur_wd)
 
 #' # DiffBind Analysis
+#' 
+#loading libraries 
 library(DiffBind)
 library(gdata)
 library(DESeq2)
 library(data.table)
 library(dplyr)
 
+#default help when run using Rscript paramters ...
 usage = function(errM) {
   cat("\nUsage : Rscript diffbind.R [option] <Value>\n")
   cat("       -d      : design file\n")
@@ -43,6 +50,7 @@ usage = function(errM) {
 
 set.seed(123456789)
 
+#only run when rendering using knit
 if(isTRUE(getOption('knitr.in.progress'))){
   design_file = params$d
   readset_file = params$r
@@ -57,7 +65,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   
   
 } else{
-
+#only run when execut using traditional method
 ##################################
 
 ARG = commandArgs(trailingOnly = T)
@@ -125,9 +133,6 @@ if (tmpOP[[1]][length(tmpOP[[1]])] == "/") {
 
 
 #Rscript /home/pubudu/projects/rrg-bourqueg-ad/pubudu/chipseq_diff/diff_bind.R -d designfile_chipseq.chr22.txt -r readsets.chipseqTest.kidney.tsv -c H3K4me1_N_T -o differential_binding/diffbind_H3K4me1_N_T_dba.txt
-#load design file
-#design = fread(design_file)
-#readset = fread(readset_file)
 
 #load design file
 design <- fread(design_file)
@@ -151,7 +156,6 @@ samplesheet$Peaks <- paste(peak_dir, samplesheet$Sample, samplesheet$Factor,  pa
 samplesheet$PeakFormat <- "macs"
 
 
-#design.cols <- colnames(design)
 Condition.col <- comparison
 #subset by column name passed from a variable
 design <- subset(design, design[[Condition.col]]==1 | design[[Condition.col]]==2)
@@ -230,8 +234,6 @@ plot(dba.ob.cont,contrast=1)
 
 dba.ob.diff <- dba.report(dba.ob.cont)
 
-
-
 #' Correlation heatmap, using only significantly differentially bound sites
 #' Fig 4
 dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE)
@@ -249,4 +251,5 @@ dba.plotMA(dba.ob.cont)
 
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
+print("complted differential binding analysis")
 
