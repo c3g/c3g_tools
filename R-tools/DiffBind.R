@@ -16,15 +16,18 @@
 #' ---
 
 
-##above set of codes define YAML parameters. It captures the paramters recived from the outside
-#turn off echo. Otherwise HTML page has all the codes. If you want to see the code, set these two to true
+
 knitr::opts_chunk$set(echo=FALSE)
 knitr::opts_chunk$set(message=FALSE)
-#set current working directory to user folder. Otherwise, R script executes where it is stored.
 knitr::opts_knit$set(root.dir = params$cur_wd)
 
+
 #' # DiffBind Analysis
-#' 
+
+#first set of codes define YAML parameters. It captures the paramters recived from the outside
+# then turn offed echo. Otherwise HTML page has all the codes. If you want to see the code, set these two to true
+# then set current working directory to user folder. Otherwise, R script executes where it is stored.
+
 #loading libraries 
 library(DiffBind)
 library(gdata)
@@ -164,7 +167,7 @@ names(design)[names(design) == Condition.col] <- "Condition"
 
 
 samplesheet <- merge(samplesheet, design, by.x=c("Sample", "Factor"), by.y=c("Sample", "MarkName"))
-#' ### Sample sheet used for the analysis
+#' #### Sample sheet used for the analysis
 print(samplesheet)
 
 #check whether all the files are available
@@ -198,9 +201,8 @@ dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 #' Below table shows information related to samples and macs2 peak files. Such as how many peaks are in each peakset, the total number of unique peaks after merging overlapping ones (in the first line), and the dimensions of the default binding matrix.
 dba.ob
 
-#' Using the data from the peak calls, a correlation heatmap can be generated which gives an initial clustering of the samples using the cross-correlations of each row of the binding matrix
-#' Fig1
-#' Correlation heatmap, using occupancy (peak caller score) data
+#' Using the data from the peak calls, a correlation heatmap can be generated which gives an initial clustering of the samples using the cross-correlations of each row of the binding matrix.
+#+ Fig1, fig.cap = "Fig 1: Correlation heatmap, using occupancy (peak caller score) data" , fig.align = "center"
 plot(dba.ob)
 
 dba.ob.count <- dba.count(dba.ob, bParallel=F)
@@ -214,8 +216,8 @@ libsizes <- cbind(LibReads=info$Reads, FRiP=info$FRiP, PeakReads=round(info$Read
 libsizes
 
 #' New correlation heatmap based on the count scores
-#' Fig 2
-#' Correlation heatmap, using affinity (read count) data
+
+#+ Fig2, fig.cap = "Fig 2: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
 plot(dba.ob.count)
 
 dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_ALL_METHODS)
@@ -228,28 +230,24 @@ dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembe
 
 dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 
-#' Ven diagram of Gain vs Loss differentially bound sites
-#' Fig 3
+#+ Fig3, fig.cap = "Fig 3: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
 plot(dba.ob.cont,contrast=1)
 
 dba.ob.diff <- dba.report(dba.ob.cont)
 
-#' Correlation heatmap, using only significantly differentially bound sites
-#' Fig 4
+
+#+ Fig4, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
 dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE)
 
-#' MA plot of Resistant-Responsive contrast
-#' Sites identified as significantly differentially bound shown in red
-#' Fig 7
+#+ Fig5, fig.cap = "Fig 5: MA plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
 dba.plotMA(dba.ob.cont)
 
-
-#' Volcano plot of Resistant-Responsive contrast
-#' Sites identified as significantly differentially bound shown in red.
-#' Fig 8
-#dba.plotVolcano(dba.ob.cont)
+#+ Fig6, fig.cap = "Fig 6: Volcano plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
+dba.plotVolcano(dba.ob.cont)
 
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
+#' Below table displays first 6 rows of the differential analysis results
+head(dba.ob.diff)
 print("complted differential binding analysis")
 
