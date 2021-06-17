@@ -12,6 +12,7 @@
 #'  dir: "differential_binding"
 #'  cur_wd: ""
 #'  minMembers: 2
+#'  method: "DBA_DESEQ2"
 #'  
 #' ---
 
@@ -64,6 +65,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   minoverlap = params$minOverlap
   minmembers = params$minMembers
   out_dir = params$dir
+  diff_method = params$method
   
   
   
@@ -74,15 +76,16 @@ if(isTRUE(getOption('knitr.in.progress'))){
 ARG = commandArgs(trailingOnly = T)
 
 ## default arg values
-count_limit = 9
+
 design_file = ""
 readset_file = ""
 out_path = ""
 comparison= ""
 bam_dir=""
 peak_dir=""
-minoverlap=NA
-minmembers=NA
+minoverlap=2
+minmembers=2
+diff_method="DBA_DESEQ2"
 
 ## get arg variables
 for (i in 1:length(ARG)) {
@@ -106,6 +109,8 @@ for (i in 1:length(ARG)) {
     minmembers = ARG[i+1]
   } else if (ARG[i] == "-dir") {
     out_dir = ARG[i+1]
+  } else if (ARG[i] == "-method") {
+    diff_method = ARG[i+1]
   }
 }
 }
@@ -167,6 +172,7 @@ names(design)[names(design) == Condition.col] <- "Condition"
 
 
 samplesheet <- merge(samplesheet, design, by.x=c("Sample", "Factor"), by.y=c("Sample", "MarkName"))
+#' #### Using `r diff_method` as the differential analysis method 
 #' #### Sample sheet used for the analysis
 print(samplesheet)
 
@@ -193,9 +199,7 @@ for (i in samplesheet$Peaks) {
 samplesheet$SampleID <- paste(samplesheet$Sample, samplesheet$Factor, sep="_")
 samplesheet$ControlID <- paste(samplesheet$Sample, "input", sep="_")
 
-if(is.na(minoverlap)){
-  minoverlap=2
-}
+
 
 dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 #' Below table shows information related to samples and macs2 peak files. Such as how many peaks are in each peakset, the total number of unique peaks after merging overlapping ones (in the first line), and the dimensions of the default binding matrix.
@@ -220,15 +224,27 @@ libsizes
 #+ Fig2, fig.cap = "Fig 2: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
 plot(dba.ob.count)
 
-dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_ALL_METHODS)
-
-if(is.na(minmembers)){
-  minmembers=2
+#dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
+#print(noquote(diff_method))
+if(diff_method=="DBA_DESEQ2"){
+dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
+} else if (diff_method=="DBA_EDGER") {
+  dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_EDGER)
+} else if(diff_method=="DBA_ALL_METHODS"){
+  dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_ALL_METHODS)
 }
+
 
 dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembers=minmembers)
 
-dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
+if(diff_method=="DBA_DESEQ2"){
+dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_DESEQ2)
+#dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_DESEQ2)
+} else if(diff_method=="DBA_EDGER") {
+  dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_EDGER)
+} else if(diff_method=="DBA_ALL_METHODS"){
+  dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
+}
 
 #+ Fig3, fig.cap = "Fig 3: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
 plot(dba.ob.cont,contrast=1)
@@ -247,7 +263,7 @@ dba.plotVolcano(dba.ob.cont)
 
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
-#' Below table displays first 6 rows of the differential analysis results
+#' Below table displays first 6 rows of the differential analysis results using `r diff_method`
 head(dba.ob.diff)
 print("complted differential binding analysis")
 
