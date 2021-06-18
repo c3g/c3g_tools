@@ -1,13 +1,29 @@
-45 tags, 701 commits
+46 tags, 709 commits
 
-HEAD        Tue Mar 30 16:14:20 2021 -0400        154 commits
+HEAD        Fri Jun 18 11:09:52 2021 -0400        7 commits
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       5ea76f9 MUGQIC_TOOLS -  bash tools : fixes Issue #1
+       dd2eee5 MUGQIC_TOOLS - bash tool : added 'ls' command in cleanOTUtable.sh to ensure 'copy' is over prior 'moving'
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      5 commits
+
+       b5580ca Removed the second if ladder
+       92da41b added paramter to change the comparison method. e.g deseq2 or edger
+       cc5a254 Decorated html output, center aligned plots, added figure captions and named chunks
+       dba8c2b Added some comments explaining the code
+       b407204 Added DiffBind.R file used in chipseq differential binding
+
+2.5.0        Tue Mar 30 16:24:40 2021 -0400        155 commits
 
   Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
 
        e30895d Version bump to 2.4.0
 
-  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      2 commits
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      3 commits
 
+       a613bdd Version bump to 2.5.0
        171104d Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        424214c Version bump to 2.5.0
 
