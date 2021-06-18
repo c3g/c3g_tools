@@ -227,22 +227,16 @@ plot(dba.ob.count)
 #dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
 #print(noquote(diff_method))
 if(diff_method=="DBA_DESEQ2"){
-dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
+  dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
+  dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembers=minmembers)
+  dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_DESEQ2)
 } else if (diff_method=="DBA_EDGER") {
   dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_EDGER)
-} else if(diff_method=="DBA_ALL_METHODS"){
-  dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_ALL_METHODS)
-}
-
-
-dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembers=minmembers)
-
-if(diff_method=="DBA_DESEQ2"){
-dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_DESEQ2)
-#dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_DESEQ2)
-} else if(diff_method=="DBA_EDGER") {
+  dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembers=minmembers)
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_EDGER)
 } else if(diff_method=="DBA_ALL_METHODS"){
+  dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_ALL_METHODS)
+  dba.ob.cont <- dba.contrast(dba.ob.norm, reorderMeta=list(Condition=1), minMembers=minmembers)
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
