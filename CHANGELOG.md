@@ -1,6 +1,283 @@
-41 tags, 505 commits
+46 tags, 709 commits
 
-HEAD        Wed May 15 16:50:23 2019 -0400        0 commits
+HEAD        Fri Jun 18 11:09:52 2021 -0400        7 commits
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       5ea76f9 MUGQIC_TOOLS -  bash tools : fixes Issue #1
+       dd2eee5 MUGQIC_TOOLS - bash tool : added 'ls' command in cleanOTUtable.sh to ensure 'copy' is over prior 'moving'
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      5 commits
+
+       b5580ca Removed the second if ladder
+       92da41b added paramter to change the comparison method. e.g deseq2 or edger
+       cc5a254 Decorated html output, center aligned plots, added figure captions and named chunks
+       dba8c2b Added some comments explaining the code
+       b407204 Added DiffBind.R file used in chipseq differential binding
+
+2.5.0        Tue Mar 30 16:24:40 2021 -0400        155 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       e30895d Version bump to 2.4.0
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      3 commits
+
+       a613bdd Version bump to 2.5.0
+       171104d Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       424214c Version bump to 2.5.0
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      148 commits
+
+       8550435 Fixing typo
+       db28643 Fixing typo
+       f9edca2 Fixing typo
+       d7c0d1c Cleaning and fixing tss script
+       3450864 Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       d27f908 Fixing IHEC chipseq metrics
+       affddba Fixing IHEC chipseq metrics
+       92054ae Fixing IHEC chipseq metrics
+       68ebf59 Fixing IHEC chipseq metrics
+       8984a6a Fixing IHEC chipseq metrics
+       bc7b86f Fixing IHEC chipseq metrics
+       1c08b4e Fixing IHEC chipseq metrics
+       43fdaf5 Fixing IHEC chipseq metrics
+       5ef2251 Switching from design to readset
+       f7bf2a9 Switching from design to readset
+       d3f5cf8 Switching from design to readset
+       75e42c2 Fixing IHEC chipseq metrics
+       accd9d5 Fixing IHEC chipseq metrics
+       931ee37 Fixing IHEC chipseq metrics
+       b37f0a7 Fixing IHEC chipseq metrics
+       db2335c Fixing IHEC chipseq metrics
+       9d5dcc7 Fixing IHEC chipseq metrics
+       7486d44 Fixing IHEC chipseq metrics
+       13b932a Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       27126a0 Fixing IHEC chipseq metrics
+       71e62a2 Fixing IHEC chipseq metrics
+       72d7c2d Fixing IHEC chipseq metrics
+       e4b1e4f Fixing IHEC chipseq metrics
+       22ce29f Fixing IHEC chipseq metrics
+       1c536e4 Fixing IHEC chipseq metrics
+       5b1df8d Fixing IHEC chipseq metrics
+       effffc2 Fixing IHEC chipseq metrics
+       10772dd Fixing IHEC chipseq metrics
+       35287e3 Fixing IHEC chipseq metrics
+       8b9788c Fixing IHEC chipseq metrics
+       a84d4b9 Fixing IHEC chipseq metrics
+       bb103de Fixing IHEC chipseq metrics
+       231e2cc Fixing IHEC chipseq metrics
+       193906a Fixing IHEC chipseq metrics
+       2cd3a95 Fixing IHEC chipseq metrics
+       7830440 Fixing IHEC chipseq metrics
+       3c40592 Fixing IHEC chipseq metrics
+       5fa6b2f Fixing IHEC chipseq metrics
+       4ed3980 Fixing IHEC chipseq metrics
+       223592e Debug
+       702a5f9 Switching from design to readset
+       62a4bba Switching from design to readset
+       da852e1 Switching from design to readset
+       be76982 Fixing IHEC chipseq metrics
+       8908e84 Switching from design to readser
+       e6678d2 Switching from design to readser
+       1afb177 Switching from design to readser
+       c4aa908 Switching from design to readser
+       231ba82 Switching from design to readser
+       475eeb1 Switching from design to readser
+       693109d Switching from design to readser
+       69abdcd Switching from design to readser
+       287ed42 Switching from design to readser
+       7faa335 Switching from design to readser
+       fee2ab9 Switching from design to readser
+       adbdd4b Switching from design to readser
+       8f0648e Switching from design to readser
+       db525ec Switching from design to readser
+       7f445c5 Switching from design to readser
+       581f387 Switching from design to readser
+       c6199ea Switching from design to readser
+       dfffe1d Switching from design to readser
+       311c4ff Switching from design to readser
+       ff14a6c Switching from design to readser
+       9b97e77 Switching from design to readser
+       a5d777e Switching from design to readser
+       d9fb8a7 Switching from design to readser
+       b5d2f9d Debug design file change chipseq pipeline
+       e0cbfda Fixing IHEC chipseq metrics
+       c9c6ec9 Fixing IHEC chipseq metrics
+       e69f170 Fixing IHEC chipseq metrics
+       f9ca01c Fixing IHEC chipseq metrics
+       64235fe Fixing IHEC chipseq metrics
+       606d466 Fixing IHEC chipseq metrics
+       410c501 Fixing IHEC chipseq metrics
+       8afc660 Fixing IHEC chipseq metrics
+       249a6b5 Fixing IHEC chipseq metrics
+       5ac8c8d Fixing IHEC chipseq metrics
+       4127e4e Fixing IHEC chipseq metrics
+       bc6879e Debug
+       2bd980e Fixing IHEC chipseq metrics
+       fd9fbb4 Fixing IHEC chipseq metrics
+       36ce67a Fixing IHEC chipseq metrics
+       7bc76b0 Fixing IHEC chipseq metrics
+       082131c Fixing IHEC chipseq metrics
+       053bc5d Fixing IHEC chipseq metrics
+       251bd82 Fixing IHEC chipseq metrics
+       a71fb4b Fixing IHEC chipseq metrics
+       29780fa Fixing IHEC chipseq metrics
+       50cd9aa Fixing IHEC chipseq metrics
+       42477c9 Fixing IHEC chipseq metrics
+       c0e7159 Fixing IHEC chipseq metrics
+       e23e896 Fixing IHEC chipseq metrics
+       f35b761 Fixing IHEC chipseq metrics
+       5929748 Fixing IHEC chipseq metrics
+       78da539 Fixing IHEC chipseq metrics
+       260750b Fixing IHEC chipseq metrics
+       b98693c Fixing IHEC chipseq metrics
+       a3087d2 Fixing IHEC chipseq metrics
+       086de46 Fixing IHEC chipseq metrics
+       affff8a Fixing IHEC chipseq metrics
+       b72e3ae Debug
+       ac1c9fd Switching from design to readset
+       802242c Switching from design to readset
+       b5f22a8 Switching from design to readset
+       2847309 Fixing IHEC chipseq metrics
+       13aacad Switching from design to readser
+       15c8ff9 Switching from design to readser
+       6617b09 Switching from design to readser
+       e22d822 Switching from design to readser
+       9d3cd7c Switching from design to readser
+       cda9fff Switching from design to readser
+       a738c8e Switching from design to readser
+       041abc3 Switching from design to readser
+       bbd6a4d Switching from design to readser
+       e0e96d4 Switching from design to readser
+       696a402 Switching from design to readser
+       19a380f Switching from design to readser
+       6226787 Switching from design to readser
+       efdf606 Switching from design to readser
+       aa35b4c Switching from design to readser
+       712e471 Switching from design to readser
+       17bdc05 Switching from design to readser
+       29f6f3c Switching from design to readser
+       03fcd21 Switching from design to readser
+       9206d7a Switching from design to readser
+       581600a Switching from design to readser
+       02a308b Switching from design to readser
+       ab9b34e Switching from design to readser
+       bf7a6e5 Debug design file change chipseq pipeline
+       e060522 Fixing IHEC chipseq metrics
+       ccbb492 Fixing IHEC chipseq metrics
+       e1bfb99 Fixing IHEC chipseq metrics
+       c6be1a6 Fixing IHEC chipseq metrics
+       5442b15 Fixing IHEC chipseq metrics
+       9f40a06 Fixing IHEC chipseq metrics
+       cd5912f Fixing IHEC chipseq metrics
+       b6abcf1 Fixing IHEC chipseq metrics
+       644d458 Fixing IHEC chipseq metrics
+       e13f7c0 Fixing IHEC chipseq metrics
+       66217c5 Fixing IHEC chipseq metrics
+       d98d7e0 Debug
+       96dd552 Fixing IHEC chipseq metrics
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      3 commits
+
+       22ea87d Merged in IHEC_chipseq_metrics_fix (pull request #15)
+       c99130a Merged master into IHEC_chipseq_metrics_fix
+       6aaaaa1 Merged master into IHEC_chipseq_metrics_fix
+
+2.4.0        Mon Mar 15 15:27:18 2021 -0400        13 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      8 commits
+
+       6a10cc4 MUGQIC_TOOLS - python tools : updated convertFastqHeaders to convert already demultiplexed fastq files only
+       7fa2afd MUGQIC-TOOLS - Python Tools : update convertFastqHeader with use of Bio.SeqIO.QualityIO.FastqGeneralIterator instead of Bio.SeqIO.parse to try speeding things...
+       647c5e7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       7614df1 pytohn tools - convertFastqHeader - corrected output record handling
+       2cc1b36 adding tools for run processing pipeline + fastq header conversion tool
+       f6bdd97 adding tools for run processing pipeline + fastq header conversion tool
+       304278f Version bump to 2.3.3-beta
+       5a3e071 Version bump to 2.3.2
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       cc43663 Python tools - convertFastqHeaders : corrected typo
+       bf2c709 convertFastqHeaders.py edited online with Bitbucket
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       e7f4fdc add fastqIcounter.py from my perso repo
+
+  Robert Syme <rob.syme@gmail.com>      2 commits
+
+       1a983d8 Merged in Robert-Syme/ensure-that-mgi-library-name-parsing-cap-1615835329509 (pull request #16)
+       7be259e Ensure that MGI library name parsing captures letter prefix.
+
+2.3.2        Fri Apr 17 13:26:36 2020 -0400        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       a6f9432 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       869d24a Version bump to 2.3.1
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      4 commits
+
+       40f63d8 Added a script to run BLAST for Nanopore QC
+       6f4c3fb Merge branch 'nanopore_jhg' of bitbucket.org:mugqic/mugqic_tools into nanopore_jhg
+       e977d55 Added a tool to trim nanopore reads to a set length of 1000bp
+       3ca36d4 Added a tool to trim nanopore reads to a set length of 1000bp
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       7c066b9 Merged in nanopore_jhg (pull request #14)
+       368915d Merged master into nanopore_jhg
+
+2.3.1        Mon Mar 30 09:34:18 2020 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       d355b75 Version bump to 2.3.1-beta
+       b4e91eb Version bump to 2.3.0
+
+  pubudumanoj <pnawarat@abacus3.ferrier.genome.mcgill.ca>      2 commits
+
+       945d76e corrected typo in printing new restructured matrix size
+       31bdf7a Modified script to take rawRN interaction matrices. Added additional codes to re-structure the code
+
+2.3.0        Fri Feb 21 15:19:26 2020 -0500        17 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       aab730b correcting file permissions to some python tools
+       d9ba47c Version bump to 2.2.5-beta
+       5cba859 Version bump to 2.2.4
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      1 commits
+
+       4a2b153 Added a new python script to extract a certain number of bases from long nanopore reads, for use with BLAST QC.
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       8b61def Merged in nanopore_jhg (pull request #12)
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      10 commits
+
+       4febc34 Merged in IHEC_chipseq_metrics_fix (pull request #11)
+       2b4d612 IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fix typo
+       208edcd IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Ed comment
+       b57833b IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fixing sambamba issue
+       e3ad940 Using sambamba to speed up
+       6108b26 Using sambamba to speed up
+       cfd4925 Fixing metrics
+       89d50d5 Fixing typo
+       11e5f3d Merged in Paul-Stretenowich/getfastabinedgcpy-edited-online-with-bit-1558131034321 (pull request #10)
+       af4f10f Correcting minor bug issue
+
+  pubudumanoj <pnawarat@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       b85eb34 Added hicrep.R to R-tools which does the hicrep analysis
+
+  rami.coles@mail.mcgill.ca <rcoles@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       a83ea10 Added tool to compute signal to noise on ChIP-Seq signal tracks and EpiQC report tool
 
 2.2.4        Thu May 16 11:01:29 2019 -0400        13 commits
 
