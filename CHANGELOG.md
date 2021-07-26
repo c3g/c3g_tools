@@ -1,6 +1,22 @@
-46 tags, 709 commits
+48 tags, 712 commits
 
-HEAD        Fri Jun 18 11:09:52 2021 -0400        7 commits
+HEAD        Mon Jul 26 19:20:43 2021 +0000        0 commits
+
+2.6.1        Mon Jul 26 19:22:14 2021 +0000        2 commits
+
+  Robert Eveleigh <eveleigh@beluga1.int.ets1.calculquebec.ca>      1 commits
+
+       63e3b93 sequenza fixes
+
+  Robert Eveleigh <robert.eveleigh@mcgill.ca>      1 commits
+
+       6c74997 Merged in tumor_pair (pull request #17)
+
+2.6.0        Fri Jun 18 17:44:38 2021 +0000        8 commits
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       0a770fa Version bump to 2.6.0
 
   ehenrion <edouard.henrion@mcgill.ca>      2 commits
 
