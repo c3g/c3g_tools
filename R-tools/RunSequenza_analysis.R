@@ -15,7 +15,8 @@ sample_name=args[3]
 library("sequenza")
 
 ##Extract the information from the seqz file
-test <- sequenza.extract(data.file, parallel=3)
+#test <- sequenza.extract(data.file, parallel=3)
+test <- sequenza.extract(data.file)
 
 ##Inference of cellularity and ploidy
 CP.example <- sequenza.fit(test)
