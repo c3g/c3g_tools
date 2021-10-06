@@ -70,7 +70,7 @@ for (i in 1:length(ARG)) {
 }
 ## check arg consitency
 if (!(file.exists(file))) {
-    stop("Input file not found") 
+    stop("Input file not found")
 }
 if (out_path == "") {
     stop("Output directory not found")
@@ -100,7 +100,7 @@ d2<-d2[order(d2[,2]),]
 
 head(d2)
 is.significant<-function(x,pv=pvalThr) ifelse(x <= pv,1,0)
-if(sum(is.significant(d2[,2])==1) == 0) {
+if(sum(is.significant(d2[,2])==1, na.rm=TRUE) == 0) {
     print("No significant adjusted p-values found")
     write.table(paste("Enriched category",paste("FDR <",as.character(fdrThr),"filtered p-value"),"GOID","Term","Ontology","Definition","Synonym", sep="\t"), out_path, append=F, row.names=F, col.names=F, quote=F)
     q("no",0)
