@@ -43,7 +43,7 @@ library(dplyr)
 # get differential expression analysis results
 
 pathway_analysis <- function(degs, userpathways, fdr=0.05 , output_file_prefix , kegg_rds, output_dir,  all_kegg_pathways){
-#degs <- fread("/lustre03/project/6007512/pubudu/seq2fun/testing_august_2021/differential_expression/seq2fun/H1ESC_GM12787/edger_results.csv")
+
 #log2fc = 1
   degs <- fread(degs)
 degs$log2FC <- abs(degs$log_FC)
