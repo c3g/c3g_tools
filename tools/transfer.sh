@@ -19,7 +19,7 @@ then
     export DEST_DIR=${DEST_DIR:: -1}
 fi
 
-mkdir -p  $DEST_DIR 2>/dev/null
+# mkdir -p  $DEST_DIR 2>/dev/null
 # sync folder structure first
 rsync -a -f'+ */' -f'- *' $SOURCE_DIR $DEST_DIR
 
