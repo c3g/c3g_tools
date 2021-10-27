@@ -1,6 +1,23 @@
-50 tags, 732 commits
+51 tags, 738 commits
 
-HEAD        Wed Oct 13 17:08:28 2021 +0000        0 commits
+HEAD        Wed Oct 27 20:10:36 2021 +0000        0 commits
+
+2.8.1        Wed Oct 27 16:17:08 2021 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       e61de6e Version bump to 2.8.1-beta
+       5e1c9d6 Version bump to 2.8.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7f606de MGUQIC_TOOLS - ampliconSeq Tools : updated use of tmp in cleanOTUtable.sh
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      3 commits
+
+       39f2955 modified chipseq DiffBind report Fixed text decorations
+       eb08eaf minor fix to the path name
+       cba6fda Added KOPathawayAnalysis.R in the seq2fun protocol of the de-novo RNA-seq pipeline
 
 2.8.0        Wed Oct 13 13:17:49 2021 -0400        11 commits
 
