@@ -286,20 +286,28 @@ def getAlignmentHash(
     if os.path.isfile(target_coverage_file):
         sex_match_reader = csv.DictReader(open(target_coverage_file, 'rb'), delimiter='\t')
 
+        chrX_cov, chrX_covered_bases = 0, 0
+        chrY_cov, chrY_covered_bases = 0, 0
+        total_cov = 0
         for row in sex_match_reader:
             #print row
             if row['IntervalName'] == "chrX":
-                chrX_cov = row['MeanCoverage']
+                chrX_cov += int(row['TotalCoverage'])
+                chrX_covered_bases += int(row['TotalNbCoveredBases'])
             if row['IntervalName'] == "chrY":
-                chrY_cov = row['MeanCoverage']
+                chrY_cov += int(row['TotalCoverage'])
+                chrY_covered_bases += int(row['TotalNbCoveredBases'])
             if row['IntervalName'] == "Total":
                 total_cov = row['MeanCoverage']
 
+        chrX_cov = chrX_cov / float(chrX_covered_bases)
+        chrY_cov = chrY_cov / float(chrY_covered_bases)
+
         #print chrX_cov
         #print chrY_cov
-        if float(chrX_cov) > 0.8:
+        if chrX_cov > 0.8:
             sex_det = "F"
-        elif float(chrY_cov) > 0.25:
+        elif chrY_cov > 0.25:
             sex_det = "M"
         else:
             sex_det = "?"
@@ -397,7 +405,7 @@ def main():
         project, sample, sample_number, lane, library, index_stats_file, main_info_json, qc_graph_xml, blast_output, kapa_tag_output, alignment_directory, gender, output_file = getarg(sys.argv)
         print main_info_json
         print "Building the run processing report for sample " + sample + " (library " + library + ") from project " + project
-
+        print output_file
         report(project, sample, sample_number, lane, library, index_stats_file, main_info_json, qc_graph_xml, blast_output, kapa_tag_output, alignment_directory, gender, output_file)
 
 main()
