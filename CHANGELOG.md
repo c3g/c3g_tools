@@ -1,6 +1,20 @@
-51 tags, 738 commits
+52 tags, 744 commits
 
-HEAD        Wed Oct 27 20:10:36 2021 +0000        0 commits
+HEAD        Tue Nov 30 11:21:59 2021 -0500        0 commits
+
+2.8.2        Tue Nov 30 11:22:49 2021 -0500        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      5 commits
+
+       6b7b175 Updated VERSION prior new release
+       1f88a55 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       a8ce1bd PYTHON TOOLS - Run Processing : improved metrics in runProcessingSampleReport.py
+       43b17d9 Version bump to 2.8.2-beta
+       e01530f Version bump to 2.8.1
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b5cb280 adding signal_to_noise in epiQC pipeline
 
 2.8.1        Wed Oct 27 16:17:08 2021 -0400        6 commits
 
