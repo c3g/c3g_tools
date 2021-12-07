@@ -1,6 +1,13 @@
-52 tags, 744 commits
+53 tags, 746 commits
 
-HEAD        Tue Nov 30 11:21:59 2021 -0500        0 commits
+HEAD        Mon Dec 6 09:20:12 2021 -0500        0 commits
+
+2.9.0        Tue Dec 7 11:06:54 2021 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       b4d1fa5 MUGQIC_TOOLS - adding script to combine metrics from fgbio DemuxFastqs
+       605ae14 Version bump to 2.8.2
 
 2.8.2        Tue Nov 30 11:22:49 2021 -0500        6 commits
 
