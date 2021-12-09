@@ -49,6 +49,7 @@ def main():
             except:
                 pass
 
+    yaml.indent(sequence=4, offset=2)
     if args.output:
         with open(args.output, 'w') as output_file:
             yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper)
