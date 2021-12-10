@@ -49,10 +49,10 @@ def main():
             except:
                 pass
 
-    yaml.YAML().indent(sequence=4, offset=2)
+    # dumping = yaml.YAML().indent(sequence=4, offset=2)
     if args.output:
         with open(args.output, 'w') as output_file:
-            yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper)
+            yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper).indent(sequence=4, offset=2)
     else:
         yaml.dump(template, sys.stdout)
 
