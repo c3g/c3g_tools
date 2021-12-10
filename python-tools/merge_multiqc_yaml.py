@@ -49,12 +49,13 @@ def main():
             except:
                 pass
 
-    # dumping = yaml.YAML().indent(sequence=4, offset=2)
+    dumping = yaml.YAML()
+    dumping.indent(mapping=4, sequence=4, offset=2)
     if args.output:
         with open(args.output, 'w') as output_file:
-            yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=2)
+            dumping.dump(template, output_file)
     else:
-        yaml.dump(template, sys.stdout)
+        dumping.dump(template, sys.stdout)
 
 if __name__ == "__main__":
     main()
