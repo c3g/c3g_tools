@@ -7,7 +7,7 @@ Merges sub-yaml files within template yaml provided.
 # General import
 import argparse
 import sys
-import ruamel.yaml
+from ruamel import yaml
 
 def parseoptions():
     """Command line options"""
@@ -35,7 +35,6 @@ def main():
 
     # ARGS
     args = parseoptions()
-    yaml = ruamel.yaml.YAML()
 
     with open(args.template, "r", encoding="utf8") as template_file:
         template = yaml.load(template_file, Loader=yaml.RoundTripLoader)
@@ -50,7 +49,7 @@ def main():
             except:
                 pass
 
-    yaml.indent(sequence=4, offset=2)
+    yaml.YAML().indent(sequence=4, offset=2)
     if args.output:
         with open(args.output, 'w') as output_file:
             yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper)
