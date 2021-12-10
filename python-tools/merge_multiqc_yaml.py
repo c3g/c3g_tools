@@ -51,7 +51,7 @@ def main():
                 pass
 
     # dumping = yaml.YAML()
-    yaml.indent(mapping=4, sequence=4, offset=2)
+    yaml.indent(mapping=4, sequence=4, offset=4)
     if args.output:
         with open(args.output, 'w') as output_file:
             yaml.dump(template, output_file)
