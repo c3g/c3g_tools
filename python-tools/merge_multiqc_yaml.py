@@ -52,7 +52,7 @@ def main():
     # dumping = yaml.YAML().indent(sequence=4, offset=2)
     if args.output:
         with open(args.output, 'w') as output_file:
-            yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper, indent=2, block_seq_indent=4)
+            yaml.dump(template, output_file, Dumper=yaml.RoundTripDumper, indent=4, block_seq_indent=2)
     else:
         yaml.dump(template, sys.stdout)
 
