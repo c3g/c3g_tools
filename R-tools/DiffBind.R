@@ -259,10 +259,10 @@ if(diff_method=="DBA_DESEQ2"){
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
-#+ Fig3, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
+#+ Fig3.1, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
 plot(dba.ob.cont,contrast=1)
 
-#+ Fig3, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
+#+ Fig3.2, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
 dba.plotPCA(dba.ob.cont, contrast=1, label=DBA_ID)
 
 dba.ob.diff <- dba.report(dba.ob.cont)
