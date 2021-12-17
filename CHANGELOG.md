@@ -1,6 +1,17 @@
-53 tags, 746 commits
+54 tags, 749 commits
 
-HEAD        Mon Dec 6 09:20:12 2021 -0500        0 commits
+HEAD        Wed Dec 15 15:44:19 2021 -0500        0 commits
+
+2.9.1        Fri Dec 17 10:47:28 2021 -0500        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       bf75bd7 Version bump to 2.9.0
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      2 commits
+
+       8687a39 fixed a typo
+       08641a3 added pca plots to the report improved to analyse ATAC-seq peaks
 
 2.9.0        Tue Dec 7 11:06:54 2021 -0500        2 commits
 
