@@ -1,6 +1,24 @@
-54 tags, 749 commits
+55 tags, 756 commits
 
-HEAD        Wed Dec 15 15:44:19 2021 -0500        0 commits
+HEAD        Thu Mar 3 15:12:52 2022 -0500        0 commits
+
+2.10.0        Thu Mar 3 15:15:38 2022 -0500        7 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       d8fff50 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       6af9e78 PYTHON TOOLS - Run Procssing : updates and fixes in runProcessingMetricsToJson.py + removing useless run processing tools
+       540404c Python tools - Run Processing : adding tool to push metrics of run processing into a standardized report in SON format
+       d9145c7 Version bump to 2.9.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      1 commits
+
+       c731ca7 transfer.sh - Testing removing the mkdir before rsync
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       9beef29 Merged in data_transfer_script (pull request #21)
+       3ca743d Updating transfer tool for syncing symlinks
 
 2.9.1        Fri Dec 17 10:47:28 2021 -0500        3 commits
 
