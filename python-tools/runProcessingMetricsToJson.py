@@ -122,11 +122,11 @@ def getIndexHash_from_splitBarcode(
     pf_perfect_matches = sum([int(row['Count']) for row in sequence_stat_tsv if barcode_name in row['Barcode'] and row['#Sequence'] in barcode_sequences])
     pf_one_mismatch_matches = sum([int(row['Count']) for row in sequence_stat_tsv if barcode_name in row['Barcode'] and not row['#Sequence'] in barcode_sequences])
 
-    dict_to_update['PF Clusters'] = pf_clusters
-    dict_to_update['% of the lane'] = 100*pf_clusters/float(total_pf)
-    dict_to_update['% on index in lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
-    dict_to_update['% Perfect barcode'] = 100*pf_perfect_matches/float(pf_clusters)
-    dict_to_update['% One mismatch barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
+    dict_to_update['pf_clusters'] = pf_clusters
+    dict_to_update['pct_of_the_lane'] = 100*pf_clusters/float(total_pf)
+    dict_to_update['pct_on_index_in_lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
+    dict_to_update['pct_perfect_barcode'] = 100*pf_perfect_matches/float(pf_clusters)
+    dict_to_update['pct_one_mismatch_barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
 
     return dict_to_update
 
@@ -151,14 +151,14 @@ def getIndexHash_from_BCL2fastq(
 
     for i, sample in enumerate(stats_json['ConversionResults'][0]['DemuxResults']):
         if sample['SampleName'] == readset:
-            dict_to_update['PF Clusters'] = sample['NumberReads'],
-            dict_to_update['% of the lane'] = 100*sample['NumberReads']/float(total_pf),
-            dict_to_update['% on index in lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
-            dict_to_update['% Perfect barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
-            dict_to_update['% One mismatch barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
-            dict_to_update['Yield (bases)'] = sample['Yield'],
-            dict_to_update['% >= Q30 bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
-            dict_to_update['Mean Quality Score'] = sum([readMetrics['QualityScoreSum'] for readsMetrics in sample['ReadMetrics']])/float(sample['Yield'])
+            dict_to_update['pf_clusters'] = sample['NumberReads'],
+            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf),
+            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
+            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
+            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
+            dict_to_update['yield'] = sample['Yield'],
+            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
+            dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readsMetrics in sample['ReadMetrics']])/float(sample['Yield'])
 
     return dict_to_update
 
@@ -203,11 +203,11 @@ def getIndexHash_from_DemuxFastqs(
     pf_perfect_matches = sum([int(row['pf_perfect_matches']) for row in demux_metrics_tsv if row['library_name'] == library and row['barcode_name'] in barcode_keys])
     pf_one_mismatch_matches = sum([int(row['pf_one_mismatch_matches']) for row in demux_metrics_tsv if row['library_name'] == library and row['barcode_name'] in barcode_keys])
 
-    dict_to_update['PF Clusters'] = pf_clusters
-    dict_to_update['% of the lane'] = 100*pf_clusters/float(total_pf)
-    dict_to_update['% on index in lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
-    dict_to_update['% Perfect barcode'] = 100*pf_perfect_matches/float(pf_clusters)
-    dict_to_update['% One mismatch barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
+    dict_to_update['pf_clusters'] = pf_clusters
+    dict_to_update['pct_of_the_lane'] = 100*pf_clusters/float(total_pf)
+    dict_to_update['pct_on_index_in_lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
+    dict_to_update['pct_perfect_barcode'] = 100*pf_perfect_matches/float(pf_clusters)
+    dict_to_update['pct_one_mismatch_barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
 
     return dict_to_update
 
@@ -230,15 +230,15 @@ def getIndexHash_from_FastQC(
     mean_quality_score = float(subprocess.check_output("sed -n '/#Base\tMean/,/END_MODULE/p' %s | awk '{if($1!=\">>END_MODULE\" && $1!=\"#Mean\"){records+=1;sum+=$2}} END {print sum/records}'" % fastqc_file, shell=True).strip())
 
     # At this point, 'PF Clusters' should be available in the JSON
-    if dict_to_update['PF Clusters']:
-        pf_clusters = dict_to_update['PF Clusters']
+    if dict_to_update['pf_clusters']:
+        pf_clusters = dict_to_update['pf_clusters']
     # If not...
     else:
         pf_clusters = total_readset_seq
 
-    dict_to_update['Yield (bases)'] = seq_length*float(pf_clusters)
-    dict_to_update['% >= Q30 bases'] = pct_q30_bases
-    dict_to_update['Mean Quality Score'] = mean_quality_score
+    dict_to_update['yield'] = seq_length*float(pf_clusters)
+    dict_to_update['pct_q30_bases'] = pct_q30_bases
+    dict_to_update['mean_quality_score'] = mean_quality_score
 
     return dict_to_update
 
@@ -256,10 +256,10 @@ def getQcHash(
 
     root = ET.parse(qc_graph_xml).getroot()
 
-    dict_to_update['avgQual'] = root.attrib['avgQual']
-    dict_to_update['duplicateRate'] = root.attrib['duplicateRate']
-    dict_to_update['nbReads'] = root.attrib['nbReads']
-    dict_to_update['nbBases'] = root.attrib['nbBases']
+    dict_to_update['avg_qual'] = root.attrib['avgQual']
+    dict_to_update['duplicate_rate'] = root.attrib['duplicateRate']
+    dict_to_update['nb_reads'] = root.attrib['nbReads']
+    dict_to_update['nb_bases'] = root.attrib['nbBases']
 
     return dict_to_update
 
@@ -412,7 +412,7 @@ def getAlignmentHash(
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS']
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER']
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE']
-    dict_to_update['Freemix'] = verifyBamID_tsv[0]['FREEMIX']
+    dict_to_update['freemix'] = verifyBamID_tsv[0]['FREEMIX']
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
 
