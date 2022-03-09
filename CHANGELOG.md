@@ -1,6 +1,13 @@
-55 tags, 756 commits
+56 tags, 758 commits
 
-HEAD        Thu Mar 3 15:12:52 2022 -0500        0 commits
+HEAD        Wed Mar 9 15:45:09 2022 -0500        0 commits
+
+2.10.1        Wed Mar 9 15:49:27 2022 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2f2b163 Python Tools - Run Processing : updating runProcessingMetrics2Json.py with same format as pipeline
+       8b349f5 Version bump to 2.10.0
 
 2.10.0        Thu Mar 3 15:15:38 2022 -0500        7 commits
 
