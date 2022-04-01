@@ -64,9 +64,9 @@ def id_to_name(gf, t, n):
 def main():
     print("\n------------------------------------------------------------")
     print("rrnaBAMCounter.py will estimate rRNA abundancy after ")
-    print("mapping reads on fasta containing rRNA sequeunces")
+    print("mapping reads on fasta containing rRNA sequences")
     print("This program was written by Mathieu BOURGEY")
-    print("For more information, contact: mbourgey@mail.mcgill.ca")
+    print("For more information, contact: mbourgey@mcgill.ca")
     print("------------------------------------------------------------\n")
     inF, gtf, outF, typ = getarg(sys.argv)
 
