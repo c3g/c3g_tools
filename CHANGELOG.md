@@ -1,6 +1,32 @@
-56 tags, 758 commits
+57 tags, 764 commits
 
-HEAD        Wed Mar 9 15:45:09 2022 -0500        0 commits
+HEAD        Mon Apr 4 16:51:45 2022 -0400        0 commits
+
+2.10.2        Tue Apr 5 12:37:33 2022 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       9a13ef3 Version bump to 2.10.1
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      1 commits
+
+       23be1ae PYTHON TOOLS - Updating fixVS2VCF.py to run with Python3
+
+  Édouard Henrion <henrione@narval3.narval.calcul.quebec>      1 commits
+
+       169f9d4 PYTHON TOOLS : updating dict2BEDs.py so it's compatible to both Python2 and Python3
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       02f9aec rrnaBAMcounter.py edited online with Bitbucket
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       ffc257e Merged in rrnaBAMCounter_pythonupdate (pull request #22)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       6569fa5 Remove unused imports and convert print to python3
 
 2.10.1        Wed Mar 9 15:49:27 2022 -0500        2 commits
 
