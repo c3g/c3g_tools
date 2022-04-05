@@ -227,9 +227,6 @@ for (i in samplesheet$Peaks) {
 samplesheet$SampleID <- paste(samplesheet$Sample, samplesheet$Factor, sep="_")
 samplesheet$ControlID <- paste(samplesheet$Sample, "input", sep="_")
 
-print("puka")
-print(th)
-
 dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 #' Below table shows information related to samples and macs2 peak files. Such as how many peaks are in each peakset, the total number of unique peaks after merging overlapping ones (in the first line), and the dimensions of the default binding matrix.
 dba.ob
