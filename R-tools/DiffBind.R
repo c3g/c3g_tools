@@ -13,6 +13,8 @@
 #'  cur_wd: ""
 #'  minMembers: 2
 #'  method: "DBA_DESEQ2"
+#'  th: 0.05
+#'  bUsePval: FALSE
 #' output:
 #'  html_document:
 #'   df_print: paged
@@ -50,6 +52,8 @@ usage = function(errM) {
   cat("       -p      : peak file directory\n")
   cat("       -minMembers      : MinMembers in a group\n")
   cat("       -minOverlap      : minOverlap in a group\n")
+  cat("       -th      : FDR threshold\n")
+  cat("       -bUsePval      : Use P-value instead FDR\n")
   cat("       -h      : this help\n\n")
   
   stop(errM)
@@ -69,6 +73,8 @@ if(isTRUE(getOption('knitr.in.progress'))){
   minmembers = params$minMembers
   out_dir = params$dir
   diff_method = params$method
+  th = params$th
+  bUsePval = params$bUsePval
   
   
   
@@ -89,6 +95,8 @@ peak_dir=""
 minoverlap=2
 minmembers=2
 diff_method="DBA_DESEQ2"
+th = 0.05
+bUsePval = FALSE
 
 ## get arg variables
 for (i in 1:length(ARG)) {
@@ -112,6 +120,10 @@ for (i in 1:length(ARG)) {
     minmembers = ARG[i+1]
   } else if (ARG[i] == "-dir") {
     out_dir = ARG[i+1]
+  } else if (ARG[i] == "-th") {
+    th = ARG[i+1]
+  } else if (ARG[i] == "-bUsePval") {
+    bUsePval = ARG[i+1]
   } else if (ARG[i] == "-method") {
     diff_method = ARG[i+1]
   }
@@ -215,7 +227,8 @@ for (i in samplesheet$Peaks) {
 samplesheet$SampleID <- paste(samplesheet$Sample, samplesheet$Factor, sep="_")
 samplesheet$ControlID <- paste(samplesheet$Sample, "input", sep="_")
 
-
+print("puka")
+print(th)
 
 dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 #' Below table shows information related to samples and macs2 peak files. Such as how many peaks are in each peakset, the total number of unique peaks after merging overlapping ones (in the first line), and the dimensions of the default binding matrix.
@@ -241,7 +254,7 @@ as.data.frame(libsizes)
 plot(dba.ob.count)
 
 #+ Fig2.2, fig.cap = "Fig 2.2: PCA plot using affinity (read count) data for all sites" , fig.align = "center"
-dba.plotPCA(dba.ob.count,DBA_ID,label=DBA_CONDITION)
+dba.plotPCA(dba.ob.count,DBA_ID,label=DBA_CONDITION, th=th, bUsePval=bUsePval)
 
 #dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
 #print(noquote(diff_method))
@@ -265,17 +278,17 @@ plot(dba.ob.cont,contrast=1)
 #+ Fig3.2, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
 dba.plotPCA(dba.ob.cont, contrast=1, label=DBA_ID)
 
-dba.ob.diff <- dba.report(dba.ob.cont)
+dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
 
 
 #+ Fig4, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
-dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE)
+dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE, th=th, bUsePval=bUsePval)
 
 #+ Fig5, fig.cap = "Fig 5: MA plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
-dba.plotMA(dba.ob.cont)
+dba.plotMA(dba.ob.cont, th=th, bUsePval=bUsePval)
 
 #+ Fig6, fig.cap = "Fig 6: Volcano plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
-dba.plotVolcano(dba.ob.cont)
+dba.plotVolcano(dba.ob.cont, th=th, bUsePval=bUsePval)
 
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
