@@ -1,6 +1,24 @@
-57 tags, 764 commits
+58 tags, 768 commits
 
-HEAD        Mon Apr 4 16:51:45 2022 -0400        0 commits
+HEAD        Mon Apr 11 18:42:33 2022 +0000        0 commits
+
+2.10.3        Mon Apr 11 14:48:08 2022 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       6387aa9 Version bump to 2.10.2
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      1 commits
+
+       eae38f3 Merged in DiffBInd_hotfix (pull request #23)
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       cdfd52a Added FDR and P-value cutoff to all the functions
+
+  Pubudu Nawarathna Mudiyanselage <pubudu@narval1.narval.calcul.quebec>      1 commits
+
+       99dfd96 Removed comments
 
 2.10.2        Tue Apr 5 12:37:33 2022 -0400        6 commits
 

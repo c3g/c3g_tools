@@ -475,7 +475,11 @@ def report(
                     section = 'alignment'
                     new_dict = getAlignmentHash(inputs, readset, record[section])
 
-                record[section] = new_dict
+                else:
+                    new_dict = None
+
+                if new_dict:
+                    record[section] = new_dict
                 break
         else:
             sys.exit("Error - no such sample " + readset + " in the provided JSON (" + json_file + ")")
