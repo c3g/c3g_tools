@@ -75,7 +75,8 @@ def fixVarscanVcfFile(iterable):
     >>> from seqtools.varscan import fixVarscanVcfFile
     >>> varscan = fixVarscanVcfFile(open('filename.vcf','r'))
     >>> for line in varscan:
-        print line
+        print(line)
+        
     """
 
     for line in iterable:

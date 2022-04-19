@@ -1,6 +1,75 @@
-54 tags, 749 commits
+58 tags, 768 commits
 
-HEAD        Wed Dec 15 15:44:19 2021 -0500        0 commits
+HEAD        Mon Apr 11 18:42:33 2022 +0000        0 commits
+
+2.10.3        Mon Apr 11 14:48:08 2022 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       6387aa9 Version bump to 2.10.2
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      1 commits
+
+       eae38f3 Merged in DiffBInd_hotfix (pull request #23)
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       cdfd52a Added FDR and P-value cutoff to all the functions
+
+  Pubudu Nawarathna Mudiyanselage <pubudu@narval1.narval.calcul.quebec>      1 commits
+
+       99dfd96 Removed comments
+
+2.10.2        Tue Apr 5 12:37:33 2022 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       9a13ef3 Version bump to 2.10.1
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      1 commits
+
+       23be1ae PYTHON TOOLS - Updating fixVS2VCF.py to run with Python3
+
+  Édouard Henrion <henrione@narval3.narval.calcul.quebec>      1 commits
+
+       169f9d4 PYTHON TOOLS : updating dict2BEDs.py so it's compatible to both Python2 and Python3
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       02f9aec rrnaBAMcounter.py edited online with Bitbucket
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       ffc257e Merged in rrnaBAMCounter_pythonupdate (pull request #22)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       6569fa5 Remove unused imports and convert print to python3
+
+2.10.1        Wed Mar 9 15:49:27 2022 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2f2b163 Python Tools - Run Processing : updating runProcessingMetrics2Json.py with same format as pipeline
+       8b349f5 Version bump to 2.10.0
+
+2.10.0        Thu Mar 3 15:15:38 2022 -0500        7 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       d8fff50 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       6af9e78 PYTHON TOOLS - Run Procssing : updates and fixes in runProcessingMetricsToJson.py + removing useless run processing tools
+       540404c Python tools - Run Processing : adding tool to push metrics of run processing into a standardized report in SON format
+       d9145c7 Version bump to 2.9.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      1 commits
+
+       c731ca7 transfer.sh - Testing removing the mkdir before rsync
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       9beef29 Merged in data_transfer_script (pull request #21)
+       3ca743d Updating transfer tool for syncing symlinks
 
 2.9.1        Fri Dec 17 10:47:28 2021 -0500        3 commits
 

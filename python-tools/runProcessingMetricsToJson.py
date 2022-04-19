@@ -92,22 +92,24 @@ def parseMetricsFile(
     metrics_tsv = []
     header = []
     for row in reader:
-        if row!="\n" and not str(row[0]).startswith('##') and not str(row[0]).startswith('# '):
+        if row!="\n" and not str(row).startswith('##') and not str(row).startswith('# '):
             if not header:
                 header = row.strip().split("\t")
+                header = [head.strip() for head in header]
             else:
                 metrics_tsv.append(dict(zip(header, row.strip().split("\t"))))
     return metrics_tsv
 
 def getIndexHash_from_splitBarcode(
     input_file,
+    barcode_name,
     barcode_sequences,
     dict_to_update
     ):
 
     sequence_stat_file = ""
     if "SequenceStat.txt" in input_file:
-        stats_json_file = input_file
+        sequence_stat_file = input_file
     else:
         sys.exit("Error - Unexpected input file found for splitBarcode index metrics : " + input_file)
 
@@ -120,11 +122,11 @@ def getIndexHash_from_splitBarcode(
     pf_perfect_matches = sum([int(row['Count']) for row in sequence_stat_tsv if barcode_name in row['Barcode'] and row['#Sequence'] in barcode_sequences])
     pf_one_mismatch_matches = sum([int(row['Count']) for row in sequence_stat_tsv if barcode_name in row['Barcode'] and not row['#Sequence'] in barcode_sequences])
 
-    dict_to_update['PF Clusters'] = pf_clusters
-    dict_to_update['% of the lane'] = 100*pf_clusters/float(total_pf)
-    dict_to_update['% on index in lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
-    dict_to_update['% Perfect barcode'] = 100*pf_perfect_matches/float(pf_clusters)
-    dict_to_update['% One mismatch barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
+    dict_to_update['pf_clusters'] = pf_clusters
+    dict_to_update['pct_of_the_lane'] = 100*pf_clusters/float(total_pf)
+    dict_to_update['pct_on_index_in_lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
+    dict_to_update['pct_perfect_barcode'] = 100*pf_perfect_matches/float(pf_clusters)
+    dict_to_update['pct_one_mismatch_barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
 
     return dict_to_update
 
@@ -149,14 +151,14 @@ def getIndexHash_from_BCL2fastq(
 
     for i, sample in enumerate(stats_json['ConversionResults'][0]['DemuxResults']):
         if sample['SampleName'] == readset:
-            dict_to_update['PF Clusters'] = sample['NumberReads'],
-            dict_to_update['% of the lane'] = 100*sample['NumberReads']/float(total_pf),
-            dict_to_update['% on index in lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
-            dict_to_update['% Perfect barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
-            dict_to_update['% One mismatch barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
-            dict_to_update['Yield (bases)'] = sample['Yield'],
-            dict_to_update['% >= Q30 bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
-            dict_to_update['Mean Quality Score'] = sum([readMetrics['QualityScoreSum'] for readsMetrics in sample['ReadMetrics']])/float(sample['Yield'])
+            dict_to_update['pf_clusters'] = sample['NumberReads'],
+            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf),
+            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
+            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
+            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
+            dict_to_update['yield'] = sample['Yield'],
+            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
+            dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readsMetrics in sample['ReadMetrics']])/float(sample['Yield'])
 
     return dict_to_update
 
@@ -201,11 +203,11 @@ def getIndexHash_from_DemuxFastqs(
     pf_perfect_matches = sum([int(row['pf_perfect_matches']) for row in demux_metrics_tsv if row['library_name'] == library and row['barcode_name'] in barcode_keys])
     pf_one_mismatch_matches = sum([int(row['pf_one_mismatch_matches']) for row in demux_metrics_tsv if row['library_name'] == library and row['barcode_name'] in barcode_keys])
 
-    dict_to_update['PF Clusters'] = pf_clusters
-    dict_to_update['% of the lane'] = 100*pf_clusters/float(total_pf)
-    dict_to_update['% on index in lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
-    dict_to_update['% Perfect barcode'] = 100*pf_perfect_matches/float(pf_clusters)
-    dict_to_update['% One mismatch barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
+    dict_to_update['pf_clusters'] = pf_clusters
+    dict_to_update['pct_of_the_lane'] = 100*pf_clusters/float(total_pf)
+    dict_to_update['pct_on_index_in_lane'] = 100*pf_clusters/float(total_pf_onindex_inlane)
+    dict_to_update['pct_perfect_barcode'] = 100*pf_perfect_matches/float(pf_clusters)
+    dict_to_update['pct_one_mismatch_barcode'] = 100*pf_one_mismatch_matches/float(pf_clusters)
 
     return dict_to_update
 
@@ -227,11 +229,16 @@ def getIndexHash_from_FastQC(
     pct_q30_bases = 100 * q30_bases / float(readset_yield)
     mean_quality_score = float(subprocess.check_output("sed -n '/#Base\tMean/,/END_MODULE/p' %s | awk '{if($1!=\">>END_MODULE\" && $1!=\"#Mean\"){records+=1;sum+=$2}} END {print sum/records}'" % fastqc_file, shell=True).strip())
 
-    pf_clusters = dict_to_update['PF Clusters'] # At this point, 'PF Clusters' should be available in the JSON
+    # At this point, 'PF Clusters' should be available in the JSON
+    if dict_to_update['pf_clusters']:
+        pf_clusters = dict_to_update['pf_clusters']
+    # If not...
+    else:
+        pf_clusters = total_readset_seq
 
-    dict_to_update['Yield (bases)'] = seq_length*float(pf_clusters)
-    dict_to_update['% >= Q30 bases'] = pct_q30_bases
-    dict_to_update['Mean Quality Score'] = mean_quality_score
+    dict_to_update['yield'] = seq_length*float(pf_clusters)
+    dict_to_update['pct_q30_bases'] = pct_q30_bases
+    dict_to_update['mean_quality_score'] = mean_quality_score
 
     return dict_to_update
 
@@ -241,7 +248,7 @@ def getQcHash(
     dict_to_update
     ):
 
-    pattern = re.compile("mpsQC_" + readset + "_[0-9]_L00[0-9]_stats.xml$")
+    pattern = re.compile("mpsQC_" + readset + "_[0-9]+_L00[0-9]_stats.xml$")
     if pattern.search(input_file):
         qc_graph_xml = input_file
     else:
@@ -249,10 +256,10 @@ def getQcHash(
 
     root = ET.parse(qc_graph_xml).getroot()
 
-    dict_to_update['avgQual'] = root.attrib['avgQual']
-    dict_to_update['duplicateRate'] = root.attrib['duplicateRate']
-    dict_to_update['nbReads'] = root.attrib['nbReads']
-    dict_to_update['nbBases'] = root.attrib['nbBases']
+    dict_to_update['avg_qual'] = root.attrib['avgQual']
+    dict_to_update['duplicate_rate'] = root.attrib['duplicateRate']
+    dict_to_update['nb_reads'] = root.attrib['nbReads']
+    dict_to_update['nb_bases'] = root.attrib['nbBases']
 
     return dict_to_update
 
@@ -262,7 +269,7 @@ def getBlastHash(
     dict_to_update
     ):
 
-    pattern = re.compile(readset + "_[0-9]_L00[0-9].R1.RDP.blastHit_20MF_species.txt$")
+    pattern = re.compile(readset + "_[0-9]+_L00[0-9].R1.RDP.blastHit_20MF_species.txt$")
     if pattern.search(input_file):
         blast_output = input_file
     else:
@@ -405,7 +412,7 @@ def getAlignmentHash(
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS']
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER']
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE']
-    dict_to_update['Freemix'] = verifyBamID_tsv[0]['FREEMIX']
+    dict_to_update['freemix'] = verifyBamID_tsv[0]['FREEMIX']
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
 
@@ -422,6 +429,7 @@ def report(
     with open(json_file, 'r') as json_fh:
         run_report_json = json.load(json_fh)
 
+    report_version = run_report_json['version']
     readsets = [readset] if readset else [record['sample'] for record in run_report_json['run_validation']]
     for readset in readsets:
         for record in run_report_json['run_validation']:
@@ -431,22 +439,25 @@ def report(
                         section = 'index'
                         if platform == 'mgit7':
                             # retrieve barcode name for the readset
-                            readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['barcodes'][readset]]))
+                            if report_version == "2.0":
+                                readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['readsets'][readset]['barcodes']]))
+                                barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['readsets'][readset]['barcodes']]
+                            else:
+                                readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['barcodes'][readset]]))
+                                barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['barcodes'][readset]]
                             if not len(readset_barcodes) == 1:
                                 sys.exit("Error - More than one barcode identified for readset" + readset + " in json file " + json_file + " :\n  " + "\n  ".join(readset_barcodes))
                             else:
                                 barcode_name = readset_barcodes[0]
-                            barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['barcodes'][readset]]
-                            new_dict = getIndexHash_from_splitBarcode(inputs[0], barcode_sequences, record[section])
+                            new_dict = getIndexHash_from_splitBarcode(inputs[0], barcode_name, barcode_sequences, record[section])
                         if platform == 'illumina':
                             new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
-                        if platorm == 'mgig400':
+                        if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
                 elif step == 'fastqc':
                     section = 'index'
-                    if platform == 'mgig400':
-                        new_dict = getIndexHash_from_FastQC(inputs[0], record[section])
+                    new_dict = getIndexHash_from_FastQC(inputs[0], record[section])
 
                 elif step == 'qc_graphs':
                     section = 'qc'
@@ -464,7 +475,11 @@ def report(
                     section = 'alignment'
                     new_dict = getAlignmentHash(inputs, readset, record[section])
 
-                record[section] = new_dict
+                else:
+                    new_dict = None
+
+                if new_dict:
+                    record[section] = new_dict
                 break
         else:
             sys.exit("Error - no such sample " + readset + " in the provided JSON (" + json_file + ")")
