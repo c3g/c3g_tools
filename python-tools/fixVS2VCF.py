@@ -13,13 +13,13 @@ def fixLine(line):
     """
     line = line.strip()
 
-    tofix = ("##INFO=<ID=SSC", "##FORMAT=<ID=FREQ")    
+    tofix = ("##INFO=<ID=SSC", "##FORMAT=<ID=FREQ")
     if(line.startswith("##")):
         if line.startswith(tofix):
             line=line.replace('FREQ,Number=1,Type=String',
                               'FREQ,Number=1,Type=Float')
         return line
-    
+
     if(line.startswith("#CHROM")):
         return line
 
@@ -36,8 +36,7 @@ def fixLine(line):
     tdat[Ifreq] = str(float(tdat[Ifreq].rstrip("%"))/100)
     line[9]=":".join(ndat)
     line[10]=":".join(tdat)
-    
-    
+
     if "+" in ALT or "-" in ALT:
         if "/" not in ALT:
             if ALT[0] == "+":
@@ -67,7 +66,7 @@ def fixLine(line):
 
 def fixVarscanVcfFile(iterable):
     """Takes an interator over a varscan VCF file and returns an iterator over fixed VCF lines, including header.
-    
+
     :param iterable: any iterable of the VCF lines
     :returns: An iterator over fixed VCF lines
 
@@ -77,8 +76,8 @@ def fixVarscanVcfFile(iterable):
     >>> varscan = fixVarscanVcfFile(open('filename.vcf','r'))
     >>> for line in varscan:
         print line
-        
     """
+
     for line in iterable:
         yield fixLine(line)
 
@@ -95,7 +94,7 @@ def main():
     else:
         varscan = fixVarscanVcfFile(open(opts.varscan))
     for line in varscan:
-        print line
+        print(line)
 
 if __name__ == '__main__':
     main()
