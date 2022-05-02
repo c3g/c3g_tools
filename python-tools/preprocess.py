@@ -13,8 +13,8 @@ import gzip
 import re
 
 def xopen(f):
-    if f.endswith(".gz"): return gzip.open(f)
-    else: return open(f)
+    if f.endswith(".gz"): return gzip.open(f, 'rt')
+    else: return open(f, 'rt')
 
 def dp4(sample, dp4_i):
 
@@ -77,13 +77,13 @@ def preprocess(vcf, ref_depth, alt_depth, depth="DP"):
             if line.startswith("##FORMAT"):
                 if "ID=%s," % ref_depth in line or ref_depth is None \
                         and "ID=%s," % alt_depth in line:
-                    print "##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allele depths\">"
+                    print("##FORMAT=<ID=AD,Number=R,Type=Integer,Description=\"Allele depths\">")
                 
                 if depth != "DP" and "ID=%s" % depth in line:
-                    print "##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"read depths\">"
+                    print("##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"read depths\">")
             if line.startswith("##FORMAT=<ID=AD,"):
                 line = line.replace("##FORMAT=<ID=AD,", "##FORMAT=<ID=AD_O,")
-            print line,
+            print(line),
 
             if line.startswith("#CHROM"):
                 n_samples = len(line.split("\t")) - 9
@@ -107,13 +107,13 @@ def preprocess(vcf, ref_depth, alt_depth, depth="DP"):
 
             if depth != "DP": fmt.append("DP")
     
-            #print samples[0]
-            #print len(samples[0])
-            #print len(fmt)
-            #print samples[0][0]
+            #print(samples[0])
+            #print(len(samples[0]))
+            #print(len(fmt))
+            #print(samples[0][0])
             #assert len(samples[0]) == len(fmt) or samples[0][0] == "."
 
-            print "\t".join([toks, ":".join(fmt), "\t".join(":".join(s) for s in samples)])
+            print("\t".join([toks, ":".join(fmt), "\t".join(":".join(s) for s in samples)]))
 
 def main(args):
 
