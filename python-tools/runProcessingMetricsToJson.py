@@ -345,6 +345,8 @@ def getAlignmentHash(
             insert_size_metrics_file = in_file
         elif ".sorted.metrics.verifyBamId.tsv" in in_file:
             verify_bam_id_file = in_file
+        elif ".sorted.metrics.verifyBamId.selfSM" in in_file:
+            verify_bam_id_file = in_file
         elif ".sorted.metrics.targetCoverage.txt" in in_file:
             target_coverage_file = in_file
         elif ".metrics.rRNA.tsv" in in_file:
