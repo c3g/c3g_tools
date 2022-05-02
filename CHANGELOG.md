@@ -1,6 +1,25 @@
-58 tags, 771 commits
+60 tags, 777 commits
 
-HEAD        Tue Apr 19 12:56:53 2022 -0400        3 commits
+HEAD        Mon May 2 12:20:27 2022 -0400        0 commits
+
+2.10.5        Mon May 2 12:24:05 2022 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       90cc30e Python Tools - updated preprocess.py to avoid empty lines insertion in the header
+       716a3a1 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       f63a433 Python Tools - updated preprocess.py for Python3 compatibility
+       81b8095 Version bump to 2.10.4
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       a11f9cf Merged in verifybamidfix (pull request #24)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       91089e2 Accept both tsv and selfSM extension for VerifyBamID
+
+2.10.4        Mon May 2 16:22:17 2022 +0000        3 commits
 
   Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
 
