@@ -83,7 +83,7 @@ def preprocess(vcf, ref_depth, alt_depth, depth="DP"):
                     print("##FORMAT=<ID=DP,Number=1,Type=Integer,Description=\"read depths\">")
             if line.startswith("##FORMAT=<ID=AD,"):
                 line = line.replace("##FORMAT=<ID=AD,", "##FORMAT=<ID=AD_O,")
-            print(line),
+            print(line.rstrip())
 
             if line.startswith("#CHROM"):
                 n_samples = len(line.split("\t")) - 9
