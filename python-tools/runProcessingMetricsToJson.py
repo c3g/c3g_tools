@@ -158,7 +158,7 @@ def getIndexHash_from_BCL2fastq(
             dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
             dict_to_update['yield'] = sample['Yield'],
             dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
-            dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readsMetrics in sample['ReadMetrics']])/float(sample['Yield'])
+            dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield'])
 
     return dict_to_update
 
@@ -409,12 +409,14 @@ def getAlignmentHash(
         sex_det = "N/A"
         sex_match = "N/A"
 
+    freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else 'N/A'
+
     dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED']
     dict_to_update['mean_coverage'] = total_cov
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS']
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER']
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE']
-    dict_to_update['freemix'] = verifyBamID_tsv[0]['FREEMIX']
+    dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
 
