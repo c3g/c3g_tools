@@ -1,11 +1,13 @@
-60 tags, 777 commits
+60 tags, 779 commits
 
-HEAD        Mon May 2 12:20:27 2022 -0400        0 commits
+HEAD        Thu May 5 10:34:33 2022 -0400        0 commits
 
-2.10.5        Mon May 2 12:24:05 2022 -0400        6 commits
+2.10.5        Fri May 6 12:21:07 2022 -0400        8 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
 
+       8b44038 Python Tools - RunRprocessingMetrics2json : allowing absence of verifyBamID metrics
+       29a69bf Version bump to 2.10.5
        90cc30e Python Tools - updated preprocess.py to avoid empty lines insertion in the header
        716a3a1 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        f63a433 Python Tools - updated preprocess.py for Python3 compatibility
