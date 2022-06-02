@@ -1,4 +1,4 @@
-## lading package
+## loading package
 library(parallel)
 
 ##get file names from args
@@ -31,7 +31,7 @@ if (sum(co[,1] %in% gtf[,1]) == dim(coA)[1]) {
 	rownames(leT)=gtf[,2]
 	rownames(coA)=co[,2]
 } else {
-	stop("ERROR: discrepency match between gene length file and and rawcoutn file\n") 
+	stop("ERROR: discrepency match between gene length file and rawcount file\n") 
 }
 leO=match(rownames(coA),rownames(leT))
 letO=cbind(leT[leO,]/1000)
