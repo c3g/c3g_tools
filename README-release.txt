@@ -14,9 +14,10 @@ git push -u origin --tags
 # Recreate the CHANGELOG.md
 bash ~/repo/dump_ChangeLog.sh > CHANGELOG.md
 git commit -a -m "Version bump to 2.7.0"
+git push
 
 # Create a release tarball archive
-git archive --format=tar --prefix=mugqic_tools-2.7.0/ 2.7.0 | gzip > ~/mugqic_tools-2.7.0.tar.gz
+git archive --format=tar --prefix=mugqic_tools-2.7.0/ <latest_commmit> | gzip > ~/mugqic_tools-2.7.0.tar.gz
 
 # Upload this archive in
 https://bitbucket.org/mugqic/mugqic_tools/downloads
@@ -28,7 +29,3 @@ git push
 
 # Deploy mugqic_tools-<VERSION> as a module on all clusters
 
-# Send a message to the mailing list:
-mugqic_pipelines@googlegroups.com
-
-# In JIRA, add a release date to the 'Version' category of the administer project
