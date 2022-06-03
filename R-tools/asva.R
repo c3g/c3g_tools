@@ -189,7 +189,7 @@ if(!file.exists(checkfile)){
 
 checkfile=sprintf("%s/QCStats.ok",job_checks)
 if(!file.exists(checkfile)){
-
+  start_time <- Sys.time()
   cat("\nExamine quality statistics of forward and reverse reads at different quantiles")
   srqa=qa(rawReadsFolder,"fastq")
   df <- srqa[["perCycle"]]$quality
@@ -795,12 +795,15 @@ MA_tax$NS <- NULL
 names(MA_tax)[names(MA_tax)=="OTU"] <- "#TAXONOMY"
 #output this table as Taxonomy table
 write.table(MA_tax ,file =sprintf("%s/Taxonomy_table .txt",MA_path), sep = "\t", quote = FALSE, row.names = FALSE)
+end_time <- Sys.time()
+cat("\nLast process time:",end_time - start_time,"secs")
 cat("\ndone!")
 
 
 
 
 cat("\n##################################### Excel-ready #################################\n")
+start_time <- Sys.time()
 excel_path <- file.path(output_directory, "ExcelReadyOutput")
 if(!file_test("-d", excel_path)) dir.create(excel_path)
 #create the otu table
@@ -819,7 +822,8 @@ excelTable$NS <- NULL
 #move ASV_name column to first column
 excelTable = excelTable[,c(which(colnames(excelTable)=="ASV_name"),which(colnames(excelTable)!="ASV_name"))]
 write.table(excelTable ,file =sprintf("%s/ASV_table.txt",excel_path), sep = "\t", quote = FALSE, row.names = FALSE)
-
+end_time <- Sys.time()
+cat("\nLast process time:",end_time - start_time,"secs")
 cat("\ndone!")
 
 
@@ -889,6 +893,7 @@ cat("\n---\ndone!\n")
 
 
 cat("\nOrdination plots")
+start_time <- Sys.time()
 destfile=sprintf("%s/ordination.pdf",graphs_path)
 pdf(file=destfile, width=10, height=7)
 print("PCoA")
@@ -908,7 +913,8 @@ ggplot(df, aes(df[,1], df[,2], color = df[,sprintf("%s",mycond)])) +
   geom_text(aes(label=row.names(df)),hjust=0, vjust=0, size = 3, color = 'grey') +
   theme_classic(base_size = 16)
 dev.off()
-
+end_time <- Sys.time()
+cat("\nLast process time:",end_time - start_time,"secs")
 cat("\ndone!\n")
 
 
