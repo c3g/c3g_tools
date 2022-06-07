@@ -362,8 +362,8 @@ def getAlignmentHash(
         not_found.append(readset + ".sorted.metrics.alignment_summary_metrics")
     if not insert_size_metrics_file:
          not_found.append(readset + ".sorted.metrics.insert_size_metrics")
-    if not verify_bam_id_file:
-        not_found.append(readset + ".sorted.metrics.verifyBamId.tsv")
+    # if not verify_bam_id_file:
+    #     not_found.append(readset + ".sorted.metrics.verifyBamId.tsv")
 #    if not target_coverage_file:
         # don't do anythign as it could just be an RNA case...
         #not_found.append(readset + ".sorted.metrics.targetCoverage.txt")
@@ -372,7 +372,10 @@ def getAlignmentHash(
 
     align_tsv = parseMetricsFile(alignment_summary_metrics_file)
     insert_tsv = parseMetricsFile(insert_size_metrics_file)
-    verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
+    if os.path.isfile(verify_bam_id_file):
+        verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
+    else:
+        verifyBamID_tsv = None
 
     if os.path.isfile(target_coverage_file):
         sex_match_reader = csv.DictReader(open(target_coverage_file, 'r'), delimiter='\t')
