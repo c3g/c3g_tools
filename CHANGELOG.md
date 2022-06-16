@@ -1,6 +1,13 @@
-62 tags, 784 commits
+63 tags, 786 commits
 
-HEAD        Tue Jun 7 17:17:50 2022 -0400        0 commits
+HEAD        Thu Jun 16 12:54:30 2022 -0400        0 commits
+
+2.10.8        Thu Jun 16 12:56:48 2022 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       c3b5959 Python Tools : run processing metrics improved
+       c969134 Version bump to 2.10.7
 
 2.10.7        Tue Jun 7 17:26:05 2022 -0400        2 commits
 
