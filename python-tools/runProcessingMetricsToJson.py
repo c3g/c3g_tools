@@ -446,12 +446,12 @@ def report(
                         section = 'index'
                         if platform == 'mgit7':
                             # retrieve barcode name for the readset
-                            if report_version == "2.0":
-                                readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['readsets'][readset]['barcodes']]))
-                                barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['readsets'][readset]['barcodes']]
-                            else:
+                            if report_version == "1.0":
                                 readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['barcodes'][readset]]))
                                 barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['barcodes'][readset]]
+                            else:
+                                readset_barcodes = list(set([record['INDEX_NAME'] for record in run_report_json['readsets'][readset]['barcodes']]))
+                                barcode_sequences = [record['BARCODE_SEQUENCE'] for record in run_report_json['readsets'][readset]['barcodes']]
                             if not len(readset_barcodes) == 1:
                                 sys.exit("Error - More than one barcode identified for readset" + readset + " in json file " + json_file + " :\n  " + "\n  ".join(readset_barcodes))
                             else:
