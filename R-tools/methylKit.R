@@ -109,8 +109,10 @@ for (i in 2:ncol(design)) {
     dir <- paste("mkdir -p ", output_folder, "/Rdata_files/", designName, sep="")
     system(dir)
 
-    condition1SampleNames <- design[design[,i] == 1,1] #unlist(strsplit(design[i,2],","))
-    condition2SampleNames <- design[design[,i] == 2,1] #unlist(strsplit(design[i,3],","))
+    condition1SampleNames <- design[design[,i] == 1,][1] #unlist(strsplit(design[i,2],","))
+    condition1SampleNames <- condition1SampleNames[,1]
+    condition2SampleNames <- design[design[,i] == 2,][1] #unlist(strsplit(design[i,3],","))
+    condition2SampleNames <- condition2SampleNames[,1]
     condition1Samples <- paste("methylkit/inputs/", condition1SampleNames, inputFileSuffix, sep="")
     condition2Samples <- paste("methylkit/inputs/", condition2SampleNames, inputFileSuffix, sep="")
     nmbSamples <- length(condition1Samples) + length(condition2Samples)
@@ -119,8 +121,8 @@ for (i in 2:ncol(design)) {
     conditions <- c(rep(0, length(condition1Samples)), rep(1, length(condition2Samples)))
     print(paste(sampleNames, collapse=" "))
     print(paste(conditions, collapse=" "))
-
-    myobj <- methRead(file.list, sample.id = as.list(sampleNames), assembly = genomeVersion, treatment = conditions, context = "CpG")
+    #need to add mincov here otherwise cannot filter by readcounts less than 10. Because, defualt value of mincov is 10
+    myobj <- methRead(file.list, sample.id = as.list(sampleNames), assembly = genomeVersion, treatment = conditions, context = "CpG", mincov=minReads)
     print("Finishing reading sample methylation profile files!");
     filtered.myobj <- filterByCoverage(myobj, lo.count = minReads, lo.perc = NULL, hi.count = NULL, hi.perc = 99.9)
     filtered.myobj <- normalizeCoverage(filtered.myobj, "median")
