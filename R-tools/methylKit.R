@@ -121,7 +121,7 @@ for (i in 2:ncol(design)) {
     conditions <- c(rep(0, length(condition1Samples)), rep(1, length(condition2Samples)))
     print(paste(sampleNames, collapse=" "))
     print(paste(conditions, collapse=" "))
-    #need to add mincov here otherwise cannot filter by readcounts less than 10. Because, defualt value of mincov is 10
+    #need to add mincov here otherwise cannot filter by readcounts less than 10. Because, default value of mincov is 10
     myobj <- methRead(file.list, sample.id = as.list(sampleNames), assembly = genomeVersion, treatment = conditions, context = "CpG", mincov=minReads)
     print("Finishing reading sample methylation profile files!");
     filtered.myobj <- filterByCoverage(myobj, lo.count = minReads, lo.perc = NULL, hi.count = NULL, hi.perc = 99.9)
