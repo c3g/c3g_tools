@@ -1,11 +1,30 @@
-63 tags, 786 commits
+64 tags, 791 commits
 
-HEAD        Thu Jun 16 12:54:30 2022 -0400        0 commits
+HEAD        Fri Jun 24 18:15:21 2022 +0000        0 commits
 
-2.10.8        Thu Jun 16 12:56:48 2022 -0400        2 commits
+2.10.9        Fri Jun 24 14:18:08 2022 -0400        4 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
 
+       8a82bca Python tools - Run Processing metrics : improved alignment metrics function
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7685c96 methylKit.R edited online with Bitbucket
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       81ba9ec added a cutoff to remove based on readcounts
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       aa450a1 Merged in methylkit_diff_methy (pull request #26)
+
+2.10.8        Thu Jun 16 17:00:15 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       7e2580b Version bump to 2.10.8
        c3b5959 Python Tools : run processing metrics improved
        c969134 Version bump to 2.10.7
 
