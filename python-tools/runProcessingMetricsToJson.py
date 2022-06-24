@@ -331,6 +331,7 @@ def getAlignmentHash_from_picardMarkDup(
 def getAlignmentHash(
     inputs,
     readset,
+    gender,
     dict_to_update
     ):
 
@@ -402,7 +403,7 @@ def getAlignmentHash(
             sex_det = "M"
         else:
             sex_det = "?"
-        gender = dict_to_update['reported_sex'] # At this point, 'reported_sex' should be available in the JSON
+
         if sex_det == gender:
             sex_match = True
         else:
@@ -480,7 +481,8 @@ def report(
 
                 elif step == 'metrics':
                     section = 'alignment'
-                    new_dict = getAlignmentHash(inputs, readset, record[section])
+                    gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
+                    new_dict = getAlignmentHash(inputs, readset, gender, record[section])
 
                 else:
                     new_dict = None
