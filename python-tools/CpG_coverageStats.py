@@ -5,7 +5,6 @@
 
 import os
 import sys
-import string
 import getopt
 import numpy
 import csv
@@ -26,20 +25,20 @@ def getarg(argument):
     return profile, out
 
 def usage():
-    print "USAGE : CpG_coverageStats.py [option] "
-    print "       -i :        CpG combined profile input file"
-    print "       -o :        output text file"
-    print "       -h :        this help \n"
+    print("USAGE : CpG_coverageStats.py [option] ")
+    print("       -i :        CpG combined profile input file")
+    print("       -o :        output text file")
+    print("       -h :        this help \n")
 
 def main():
-    print "\n---------------------------------------------------------------------------------"
-    print "CpG_coverageStats.py will generate the mean & median CpG coverage from a given"
-    print "combined CpG profile i.e. a bismark CpG report for which the strand information"
-    print "would have been combined using the perl script 'methylProfile.bismark.pl' which can"
-    print "be found within the mugqic_tools, as part of the perl tools."
-    print "This program was written by Edouard HENRION"
-    print "For more information, contact: edouard.henrion@computationalgenomics.ca"
-    print "----------------------------------------------------------------------------------\n"
+    print("\n---------------------------------------------------------------------------------")
+    print("CpG_coverageStats.py will generate the mean & median CpG coverage from a given")
+    print("combined CpG profile i.e. a bismark CpG report for which the strand information")
+    print("would have been combined using the perl script 'methylProfile.bismark.pl' which can")
+    print("be found within the mugqic_tools, as part of the perl tools.")
+    print("This program was written by Edouard HENRION")
+    print("For more information, contact: edouard.henrion@computationalgenomics.ca")
+    print("----------------------------------------------------------------------------------\n")
 
     profile, outfile = getarg(sys.argv)
 
