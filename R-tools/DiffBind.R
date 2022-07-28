@@ -15,6 +15,7 @@
 #'  method: "DBA_DESEQ2"
 #'  th: 0.05
 #'  bUsePval: FALSE
+#'  contrastnb: 1
 #' output:
 #'  html_document:
 #'   df_print: paged
