@@ -44,17 +44,18 @@ library(dplyr)
 #default help when run using Rscript paramters ...
 usage = function(errM) {
   cat("\nUsage : Rscript diffbind.R [option] <Value>\n")
-  cat("       -d      : design file\n")
-  cat("       -r      : readset file \n")
-  cat("       -c      : comparison column name \n")
-  cat("       -o      : output file path\n")
-  cat("       -b      : bam directory\n")
-  cat("       -p      : peak file directory\n")
-  cat("       -minMembers      : MinMembers in a group\n")
-  cat("       -minOverlap      : minOverlap in a group\n")
-  cat("       -th      : FDR threshold\n")
-  cat("       -bUsePval      : Use P-value instead FDR\n")
-  cat("       -h      : this help\n\n")
+  cat("       -d              : design file\n")
+  cat("       -r              : readset file \n")
+  cat("       -c              : comparison column name \n")
+  cat("       -o              : output file path\n")
+  cat("       -b              : bam directory\n")
+  cat("       -p              : peak file directory\n")
+  cat("       -minMembers     : MinMembers in a group\n")
+  cat("       -minOverlap     : minOverlap in a group\n")
+  cat("       -th             : FDR threshold\n")
+  cat("       -bUsePval       : Use P-value instead FDR\n")
+  cat("       -contrastnb     : Number of contrast to use (if \"cit\" set, contrast is skipped)\n")
+  cat("       -h              : this help\n\n")
   
   stop(errM)
 }
@@ -75,6 +76,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   diff_method = params$method
   th = params$th
   bUsePval = params$bUsePval
+  contrastnb = params$contrastnb
   
   
   
@@ -97,6 +99,7 @@ minmembers=2
 diff_method="DBA_DESEQ2"
 th = 0.05
 bUsePval = FALSE
+contrastnb = 1
 
 ## get arg variables
 for (i in 1:length(ARG)) {
@@ -124,6 +127,8 @@ for (i in 1:length(ARG)) {
     th = ARG[i+1]
   } else if (ARG[i] == "-bUsePval") {
     bUsePval = ARG[i+1]
+  } else if (ARG[i] == "contrastnb") {
+    contrastnb = ARG[i+1]
   } else if (ARG[i] == "-method") {
     diff_method = ARG[i+1]
   }
@@ -199,7 +204,7 @@ samplesheet <- merge(samplesheet, design, by.x=c("Sample", "Factor"), by.y=c("Sa
 #'  
 
 
-samplesheet
+print(samplesheet)
 
 
 #check whether all the files are available
@@ -229,7 +234,7 @@ samplesheet$ControlID <- paste(samplesheet$Sample, "input", sep="_")
 
 dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 #' Below table shows information related to samples and macs2 peak files. Such as how many peaks are in each peakset, the total number of unique peaks after merging overlapping ones (in the first line), and the dimensions of the default binding matrix.
-dba.ob
+print(dba.ob)
 
 #' Using the data from the peak calls, a correlation heatmap can be generated which gives an initial clustering of the samples using the cross-correlations of each row of the binding matrix.
 #+ Fig1, fig.cap = "Fig 1: Correlation heatmap, using occupancy (peak caller score) data" , fig.align = "center"
@@ -238,7 +243,7 @@ plot(dba.ob)
 dba.ob.count <- dba.count(dba.ob, bParallel=F)
 
 #' Next step is to Calculate a binding matrix with scores based on read counts for every sample (affinity scores), rather than confidence scores for only those peaks called in a specific sample (occupancy scores. Two additional columns were added to above table in this step. The first shows the total number of aligned reads for each sample (the "Full" library sizes). The second is labeled FRiP, which stands for Fraction of Reads in Peaks. This is the proportion of reads for that sample that overlap a peak in the consensus peak set, and can be used to indicate which samples show more enrichment overall.
-dba.ob.count
+print(dba.ob.count)
 info <- dba.show(dba.ob.count)
 libsizes <- cbind(LibReads=info$Reads, FRiP=info$FRiP, PeakReads=round(info$Reads*info$FRiP))
 
@@ -270,10 +275,18 @@ if(diff_method=="DBA_DESEQ2"){
 }
 
 #+ Fig3.1, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
-plot(dba.ob.cont,contrast=1)
+if(contrastnb=="cit"){
+  plot(dba.ob.cont)
+} else {
+  plot(dba.ob.cont,contrast=contrastnb)
+}
 
 #+ Fig3.2, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
-dba.plotPCA(dba.ob.cont, contrast=1, label=DBA_ID)
+if(contrastnb=="cit"){
+  dba.plotPCA(dba.ob.cont, label=DBA_ID)
+} else {
+  dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID)
+}
 
 dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
 
