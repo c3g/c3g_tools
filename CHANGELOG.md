@@ -1,11 +1,35 @@
-64 tags, 791 commits
+65 tags, 801 commits
 
-HEAD        Fri Jun 24 18:15:21 2022 +0000        0 commits
+HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
 
-2.10.9        Fri Jun 24 14:18:08 2022 -0400        4 commits
+2.10.10        Wed Sep 28 12:51:35 2022 -0400        9 commits
 
-  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
 
+       c316557 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       fd73915 Python tools : CpG_coveragStats now compatible with Python3
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      5 commits
+
+       9204711 Merged in DiffBInd_hotfix (pull request #28)
+       7701f42 Debug latest commit
+       5595842 Adding contrastnb param for cit test for chipseq - atacseq pipeline
+       2303dc7 Reading chrList from input as a string being like "chr1,chr2" (ini file for GenPipes)
+       1a84904 Changing awk for allowing genomes to have "-" within its name
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       200a87b added anno_fuse for rnaseq pipeline
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b49abc9 Merged in rna_seq_update (pull request #27)
+
+2.10.9        Fri Jun 24 18:40:14 2022 +0000        5 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       66770a5 Version bump to 2.10.9
        8a82bca Python tools - Run Processing metrics : improved alignment metrics function
 
   ehenrion <edouard.henrion@mcgill.ca>      1 commits
