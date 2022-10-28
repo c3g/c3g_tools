@@ -5,7 +5,6 @@ import sys
 import getopt
 import pysam
 
-
 def getarg(argument):
     typ = "transcript"
     optli, arg = getopt.getopt(argument[1:], "i:g:o:t:h", [
@@ -32,7 +31,6 @@ def getarg(argument):
 
     return inF, gtF, outF, typ
 
-
 def usage():
     print("USAGE : rrnaBAMCounter.py [option] ")
     print("       -i :        input file")
@@ -40,7 +38,6 @@ def usage():
     print("       -g :        gtf file")
     print("       -t :        type of the instance rRNA: transcript / gene (default: transcript)")
     print("       -h :        this help \n")
-
 
 # generate a mapping table detween rRNA instance id and rRNA name
 def id_to_name(gf, t, n):
@@ -59,7 +56,6 @@ def id_to_name(gf, t, n):
         l = g.readline()
     g.close()
     return map_dict
-
 
 def main():
     print("\n------------------------------------------------------------")
@@ -110,6 +106,5 @@ def main():
     o.close()
     o2.close()
     samfile.close()
-
 
 main()
