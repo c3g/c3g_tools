@@ -137,7 +137,7 @@ def getIndexHash_from_BCL2fastq(
     ):
 
     stats_json_file = ""
-    if ".index_stats.json" in input_file:
+    if "Stats.json" in input_file:
         stats_json_file = input_file
     else:
         sys.exit("Error - Unexpected input file found for bcl2fasfq index metrics : " + input_file)
@@ -395,7 +395,7 @@ def getAlignmentHash(
                 total_cov = row['MeanCoverage']
 
         chrX_cov = chrX_cov / float(chrX_covered_bases)
-        chrY_cov = chrY_cov / float(chrY_covered_bases)
+        chrY_cov = chrY_cov / float(chrY_covered_bases) if chrY_covered_bases else float(0)
 
         if chrX_cov > 0.8:
             sex_det = "F"
@@ -529,9 +529,9 @@ def main():
         lock(json_file)
 
         if readset:
-            print("Updating " + platform + "run processing report (" + json_file + ") for readset " + readset + " on step " + step)
+            print("Updating " + platform + " run processing report (" + json_file + ") for readset " + readset + " on step " + step)
         else:
-            print("Updating " + platform + "run processing report (" + json_file + ") for step " + step)
+            print("Updating " + platform + " run processing report (" + json_file + ") for step " + step)
 
         report(
             json_file,
