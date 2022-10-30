@@ -51,7 +51,7 @@ def id_to_name(gf, t, n):
             c = l.replace(' "', '\t').replace('"; ', '\t').split("\t")
             if idTag in c and nameTag in c:
                 if c[c.index(idTag)+1] in n:
-                    if not map_dict.has_key(c[c.index(idTag)+1]):
+                    if not c[c.index(idTag)+1] in map_dict:
                         map_dict[c[c.index(idTag)+1]] = c[c.index(nameTag)+1]
         l = g.readline()
     g.close()
