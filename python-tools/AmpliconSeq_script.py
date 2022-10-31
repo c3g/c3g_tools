@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 ################################################################################
 ### Several scripts for the Amplicon-Seq pipeline including outputs creation.
 ################################################################################
@@ -12,7 +11,6 @@ import os, re
 from Bio import SeqIO
 
 def map_build(samples):
-
     """
     Make a general map file if not available.
     """
@@ -26,7 +24,6 @@ def map_build(samples):
     out_map.close()
 
 def map_per_sample(sample, output):
-
     """
     Make a basic map file for each sample.
     """
@@ -37,9 +34,7 @@ def map_per_sample(sample, output):
 
     out_map.close()
 
-
 def krona(table_tax, rep_out_f):
-
     """
     Create file for Krona chart.
     """
@@ -53,12 +48,10 @@ def krona(table_tax, rep_out_f):
     sample_number = 0
 
     while sample_number < len(sample_name):
-
         out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt","w")
 
         i=2
         while i < len(lines):
-
             word = lines[i].split()
             out_krona.write(word[sample_number+1]+'\t'+'\t'.join(word[len(sample_name)+1:])+"\n")
             i+=1
@@ -69,7 +62,6 @@ def krona(table_tax, rep_out_f):
     table.close()
 
 def catenate_stat(cat_file, uchime_log):
-
     """
     Catenate statistics for report.
     """
@@ -78,7 +70,6 @@ def catenate_stat(cat_file, uchime_log):
     stat_uchime = open(uchime_log,'w')
 
     dic_sample = {}
-
     for record in SeqIO.parse(log_cat, "fasta") :
 
         if record.id.split('_')[0] in dic_sample:
@@ -94,7 +85,6 @@ def catenate_stat(cat_file, uchime_log):
 
 
 def uchime(uchime_log, flash_log, sample):
-
     """
     Uchime statistics for report.
     """
@@ -112,11 +102,10 @@ def uchime(uchime_log, flash_log, sample):
     log_merged.close()
     log_chimer.close()
 
-    #print filter_stat
-    print "\t".join(str(x) for x in filter_stat)
+    # Print filter_stat
+    print("\t".join(str(x) for x in filter_stat))
 
 def sample_name(otu_sum, output_dir):
-
     """
     Create an empty file for reamining samples after OTU table creation.
     """
@@ -140,7 +129,6 @@ def sample_name(otu_sum, output_dir):
     readset.close()
 
 def sample_rarefaction(alpha_stat_f, alpha_out_f, sample_name):
-
     """
     Create rarefaction files for differents metrics
     (observed species, chao1 and shannon) for each sample.
@@ -164,7 +152,6 @@ def sample_rarefaction(alpha_stat_f, alpha_out_f, sample_name):
     alpha_out.close()
 
 def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
-
     """
     Rarefying all samples at the same level.
     """
@@ -176,7 +163,6 @@ def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
     rarefaction_done = False
 
     i=0
-
     while i<len(lines):
         word = re.split("[\r\t\n]",lines[i])
 
@@ -194,7 +180,6 @@ def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
     alpha_out.close()
 
 def plot_heatmap(table_f, rep_out_f, taxon_lvl):
-
     """
     Create R script for heatmap plot.
     """
@@ -247,7 +232,6 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
     while i < len(lines):
 
         parse = lines[i].split()
-
         for taxon in parse[0].split(';'):
             if taxon == 'Other' and OTU_tax_final[len(OTU_tax_final)-1]!='k__Bacteria':
                 OTU_tax_final.append(str(OTU_tax_final[len(OTU_tax_final)-1])+'_'+taxon)
@@ -337,20 +321,15 @@ def main(argv):
     mod.append('%(prog)s -m single_rarefaction -i <stat_metrics> -j <output_file> -s <rarefaction_threshold>')
     mod.append('%(prog)s -m plot_heatmap -i <table.txt> -j <output_directory> -s <taxon_lvl>')
 
-    parser = argparse.ArgumentParser(prog = 'AmpliconSeq_script.py',
-                                 usage = "\n".join(mod))
+    parser = argparse.ArgumentParser(prog = 'AmpliconSeq_script.py', usage = "\n".join(mod))
 
-    parser.add_argument('-m', action='store', dest='fct_value',
-                        help='Fonction')
+    parser.add_argument('-m', action='store', dest='fct_value', help='Fonction')
 
-    parser.add_argument('-i', action='store', dest='input_value',
-                        help='Input 1')
+    parser.add_argument('-i', action='store', dest='input_value', help='Input 1')
 
-    parser.add_argument('-j', action='store', dest='input2_value',
-                        help='Input 2')
+    parser.add_argument('-j', action='store', dest='input2_value', help='Input 2')
 
-    parser.add_argument('-s', action='store', dest='sample_value',
-                        help='Sample')
+    parser.add_argument('-s', action='store', dest='sample_value', help='Sample')
 
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
 
