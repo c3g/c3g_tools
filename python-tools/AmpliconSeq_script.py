@@ -15,7 +15,7 @@ def map_build(samples):
     Make a general map file if not available.
     """
 
-    out_map = open('map.txt','w')
+    out_map = open('map.txt', 'w')
     out_map.write("#SampleID\tInputFileName\tDescription\n")
 
     for sample in samples.split(','):
@@ -28,7 +28,7 @@ def map_per_sample(sample, output):
     Make a basic map file for each sample.
     """
 
-    out_map = open(output,'w')
+    out_map = open(output, 'w')
     out_map.write("#SampleID\t"+sample+"\n")
     out_map.write(sample+"\t"+sample+"\n")
 
@@ -39,7 +39,7 @@ def krona(table_tax, rep_out_f):
     Create file for Krona chart.
     """
 
-    table = open(table_tax,"r")
+    table = open(table_tax, "r")
     lines = table.readlines()
 
     word = lines[1].split()
@@ -48,7 +48,7 @@ def krona(table_tax, rep_out_f):
     sample_number = 0
 
     while sample_number < len(sample_name):
-        out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt","w")
+        out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt", "w")
 
         i=2
         while i < len(lines):
@@ -66,8 +66,8 @@ def catenate_stat(cat_file, uchime_log):
     Catenate statistics for report.
     """
 
-    log_cat = open(cat_file,"rU")
-    stat_uchime = open(uchime_log,'w')
+    log_cat = open(cat_file, "r")
+    stat_uchime = open(uchime_log, 'w')
 
     dic_sample = {}
     for record in SeqIO.parse(log_cat, "fasta") :
@@ -77,20 +77,19 @@ def catenate_stat(cat_file, uchime_log):
         else:
             dic_sample[record.id.split('_')[0]]=1
 
-    for key, values in dic_sample.iteritems():
+    for key, values in dic_sample.items():
         stat_uchime.write(key+'\t'+str(values)+'\n')
 
     log_cat.close()
     stat_uchime.close()
-
 
 def uchime(uchime_log, flash_log, sample):
     """
     Uchime statistics for report.
     """
 
-    log_merged = open(flash_log,"r")
-    log_chimer = open(uchime_log,"r")
+    log_merged = open(flash_log, "r")
+    log_chimer = open(uchime_log, "r")
 
     filter_stat=[]
     filter_stat.append([int(i.split()[3]) for i in log_merged if re.search("Combined pairs",i)][0])
@@ -110,7 +109,7 @@ def sample_name(otu_sum, output_dir):
     Create an empty file for reamining samples after OTU table creation.
     """
 
-    readset = open(otu_sum,'r')
+    readset = open(otu_sum, 'r')
     lines = readset.readlines()
     i=0
     while i<len(lines):
@@ -134,8 +133,8 @@ def sample_rarefaction(alpha_stat_f, alpha_out_f, sample_name):
     (observed species, chao1 and shannon) for each sample.
     """
 
-    alpha_stat = open(alpha_stat_f,'r')
-    alpha_out = open(alpha_out_f,'w')
+    alpha_stat = open(alpha_stat_f, 'r')
+    alpha_out = open(alpha_out_f, 'w')
 
     lines = alpha_stat.readlines()
 
@@ -156,8 +155,8 @@ def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
     Rarefying all samples at the same level.
     """
 
-    alpha_stat = open(alpha_stat_f,'r')
-    alpha_out = open(alpha_out_f,'w')
+    alpha_stat = open(alpha_stat_f, 'r')
+    alpha_out = open(alpha_out_f, 'w')
 
     lines = alpha_stat.readlines()
     rarefaction_done = False
@@ -214,7 +213,7 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     #1st step: Create the OTU matrix
 
-    table = open(table_f,"r")
+    table = open(table_f, "r")
 
     lines = table.readlines()
 
@@ -249,33 +248,29 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     table.close()
 
-    out_subprocess = open(os.path.join(rep_out_f,"OTU_data.txt"),"w")
+    out_subprocess = open(os.path.join(rep_out_f, "OTU_data.txt"),"w")
     for OTU_data in data:
         out_subprocess.write(OTU_data+"\n")
     out_subprocess.close()
 
-    out_subprocess = open(os.path.join(rep_out_f,"OTU_name.txt"),"w")
+    out_subprocess = open(os.path.join(rep_out_f, "OTU_name.txt"),"w")
     for OTU_name in row_names:
         out_subprocess.write(OTU_name+"\n")
     out_subprocess.close()
 
-
     #2nd step: Create the taxonomy matrix
-
 
     out_subprocess = open(os.path.join(rep_out_f,"OTU_tax_final.txt"),"w")
     for taxon in OTU_tax_final:
         out_subprocess.write(taxon+"\n")
     out_subprocess.close()
 
-
     #######################################################
-
 
     cmd_matrix = "otumat = matrix(vec_otu_data, nrow={}, ncol={}, byrow=TRUE)".format(len(row_names), len(col_names))
     cmd_names = "dimnames(otumat) = list(vec_otu_name, c({}))".format(str(col_names)[1:len(str(col_names))-1])
 
-    out_to_R = open(os.path.join(rep_out_f,"OTU_%s_to_R.R" % (name_tax)),"w")
+    out_to_R = open(os.path.join(rep_out_f,"OTU_%s_to_R.R" % (name_tax)), "w")
 
     out_to_R.write('#!/usr/bin/env Rscript\n')
     out_to_R.write('library("pheatmap")\n')
