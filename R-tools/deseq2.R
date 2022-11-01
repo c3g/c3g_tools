@@ -111,7 +111,7 @@ if (batch_file != "") {
     # make sure design and batch are following the same sample order
     merge_sorted <- merge(design, batches, sort=F, all.x=T, by.x=1)
     batches <- merge_sorted[, 1:ncol(merge_sorted)]
-
+}
 # Iterate over each design
 for (i in 2:ncol(design)) {
 
