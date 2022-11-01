@@ -27,7 +27,11 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
 
     # Normalize and do test
     coldata = data.frame(row.names=colnames(counts), condition=groups)
-    ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition+batch)
+    if (length(batch)) {
+        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
+    } else {
+        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch + condition)
+    }
 
     dds <- DESeq2::DESeq(ddsFullCountTable)
     res <- DESeq2::results(dds)
@@ -36,13 +40,15 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
     res[, 6] = as.numeric(format(res[, 6], digits=2))
     colnames(res)[c(1, 5, 6)] = c("id", "deseq2.p-value", "deseq2.adj.pvalue")
     write.table(res[order(res[, 6]), c(1, 5, 6)], paste(path, "deseq2_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
-    fileOpen = paste(path, "edger_results.csv", sep="/")
-    d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
-    res <- as.data.frame(res)
-    d2 <- merge(d1, res[, c(1, 5, 6)], by.x=1, by.y=1, sep="\t")
-    d2 <- d2[order(d2[, (ncol(d2)-1)]), ]
-    vecWrite <- c(1:4, (ncol(d2)-1), ncol(d2), 5:6, 7:(ncol(d2)-2))
-    write.table(d2[, vecWrite], paste(path, "dge_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+    if (!(length(batch))) {
+        fileOpen = paste(path, "edger_results.csv", sep="/")
+        d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
+        res <- as.data.frame(res)
+        d2 <- merge(d1, res[, c(1, 5, 6)], by.x=1, by.y=1, sep="\t")
+        d2 <- d2[order(d2[, (ncol(d2)-1)]), ]
+        vecWrite <- c(1:4, (ncol(d2)-1), ncol(d2), 5:6, 7:(ncol(d2)-2))
+        write.table(d2[, vecWrite], paste(path, "dge_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+    }
 }
 
 ##################################
@@ -107,11 +113,12 @@ countMatrix = round(rawcount[, 3:ncol(rawcount)])
 # Check if a batch file has to be used
 batches = ""
 if (batch_file != "") {
-    batches = read.csv2(batch_file, header=T, sep="\t", na.strings="0", check.names=F, colCalsses=c('character', 'character'))
+    batches = read.csv2(batch_file, header=T, sep="\t", na.strings="0", check.names=F)
     # make sure design and batch are following the same sample order
     merge_sorted <- merge(design, batches, sort=F, all.x=T, by.x=1)
-    batches <- merge_sorted[, 1:ncol(merge_sorted)]
+    batches <- merge_sorted[, 1-ncol(merge_sorted)]
 }
+
 # Iterate over each design
 for (i in 2:ncol(design)) {
 
@@ -133,7 +140,7 @@ for (i in 2:ncol(design)) {
     rownames(current_countMatrix) = rawcount[, 1]
 
     batch = ""
-    if (!(batches == "")) {
+    if (length(batches)) {
         batch = as.character(batches)[!(is.na(current_design))]
     }
 
