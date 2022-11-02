@@ -27,9 +27,13 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
 
     # Normalize and do test
     coldata = data.frame(row.names=colnames(counts), condition=groups)
-    if (length(batch)) {
+    if ((length(batch)==1) && (batch=="")) {
+        print(batch)
+        print(length(batch))
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
     } else {
+        print("ya")
+        print(length(batch))
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch + condition)
     }
 
@@ -40,7 +44,8 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
     res[, 6] = as.numeric(format(res[, 6], digits=2))
     colnames(res)[c(1, 5, 6)] = c("id", "deseq2.p-value", "deseq2.adj.pvalue")
     write.table(res[order(res[, 6]), c(1, 5, 6)], paste(path, "deseq2_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
-    if (!(length(batch))) {
+    if ((length(batch)==1) && (batch=="")) {
+        print("uch")
         fileOpen = paste(path, "edger_results.csv", sep="/")
         d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
         res <- as.data.frame(res)
@@ -117,6 +122,7 @@ if (batch_file != "") {
     # make sure design and batch are following the same sample order
     merge_sorted <- merge(design, batches, sort=F, all.x=T, by.x=1)
     batches <- merge_sorted[, 1-ncol(merge_sorted)]
+    print(batches)
 }
 
 # Iterate over each design
@@ -140,7 +146,9 @@ for (i in 2:ncol(design)) {
     rownames(current_countMatrix) = rawcount[, 1]
 
     batch = ""
-    if (length(batches)) {
+    if (!((length(batches)==1) && (batches==""))) {
+        print(batches)
+        print(length(batches))
         batch = as.character(batches)[!(is.na(current_design))]
     }
 
