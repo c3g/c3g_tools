@@ -28,12 +28,8 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
     # Normalize and do test
     coldata = data.frame(row.names=colnames(counts), condition=groups)
     if ((length(batch)==1) && (batch=="")) {
-        print(batch)
-        print(length(batch))
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
     } else {
-        print("ya")
-        print(length(batch))
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch + condition)
     }
 
@@ -45,7 +41,6 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
     colnames(res)[c(1, 5, 6)] = c("id", "deseq2.p-value", "deseq2.adj.pvalue")
     write.table(res[order(res[, 6]), c(1, 5, 6)], paste(path, "deseq2_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
     if ((length(batch)==1) && (batch=="")) {
-        print("uch")
         fileOpen = paste(path, "edger_results.csv", sep="/")
         d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
         res <- as.data.frame(res)
@@ -147,8 +142,6 @@ for (i in 2:ncol(design)) {
 
     batch = ""
     if (!((length(batches)==1) && (batches==""))) {
-        print(batches)
-        print(length(batches))
         batch = as.character(batches)[!(is.na(current_design))]
     }
 
