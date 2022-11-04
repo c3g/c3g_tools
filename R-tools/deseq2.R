@@ -25,12 +25,13 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
     # Retain row which have > count_limit
     counts <- round(counts[rowSums(counts) > count_limit, ])
 
-    # Normalize and do test
-    coldata = data.frame(row.names=colnames(counts), condition=groups)
+    # Normalize and do test    
     if ((length(batch)==1) && (batch=="")) {
+        coldata = data.frame(row.names=colnames(counts), condition=groups)
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
     } else {
-        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch + condition)
+        coldata = data.frame(row.names=colnames(counts), condition=groups, Batch=batch)
+        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~Batch+condition)
     }
 
     dds <- DESeq2::DESeq(ddsFullCountTable)
@@ -111,13 +112,13 @@ name_sample = as.character(as.vector(design[, 1]))
 countMatrix = round(rawcount[, 3:ncol(rawcount)])
 
 # Check if a batch file has to be used
-batches = ""
+batch = ""
 if (batch_file != "") {
-    batches = read.csv2(batch_file, header=T, sep="\t", na.strings="0", check.names=F)
+    batches = read.csv2(batch_file, header=T, sep="\t", na.strings="0", check.names=F, colClasses=c('character', 'character'))
     # make sure design and batch are following the same sample order
-    merge_sorted <- merge(design, batches, sort=F, all.x=T, by.x=1)
-    batches <- merge_sorted[, 1-ncol(merge_sorted)]
-    print(batches)
+    merge_sorted = merge(design, batches, sort=F, all.x=T, by.x=1)
+    batch = merge_sorted[ncol(merge_sorted)]
+    print(batch)
 }
 
 # Iterate over each design
@@ -139,11 +140,6 @@ for (i in 2:ncol(design)) {
     }
     colnames(current_countMatrix) = subsampleN
     rownames(current_countMatrix) = rawcount[, 1]
-
-    batch = ""
-    if (!((length(batches)==1) && (batches==""))) {
-        batch = as.character(batches)[!(is.na(current_design))]
-    }
 
     cat("Processing for the design\n")
     cat(paste("Name folder: ", name_folder, "\n", sep=""))
