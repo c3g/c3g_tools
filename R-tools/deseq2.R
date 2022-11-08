@@ -30,8 +30,8 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
         coldata = data.frame(row.names=colnames(counts), condition=groups)
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
     } else {
-        coldata = data.frame(row.names=colnames(counts), condition=groups, Batch=batch)
-        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~Batch+condition)
+        coldata = data.frame(row.names=colnames(counts), condition=groups, batch=batch)
+        ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch+condition)
     }
 
     dds <- DESeq2::DESeq(ddsFullCountTable)
