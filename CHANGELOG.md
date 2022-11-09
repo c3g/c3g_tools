@@ -1,6 +1,33 @@
-65 tags, 801 commits
+66 tags, 820 commits
 
-HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
+HEAD        Wed Nov 9 15:05:20 2022 +0000        0 commits
+
+2.11.0        Wed Nov 9 15:16:49 2022 +0000        19 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+
+       8278f1c undo nundesired changes in ihec_metrics
+       ef03f1e minor format change
+       fefa6a0 Python Scripts - updating run Processing metrics
+       5d3ec55 Python Scripts - added working_dir as 2nd argument in ihec_metrics
+       69da92f R-Scripts - Added batch efet corection to deseq2
+       3f10c69 Version bump to 2.10.10
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      13 commits
+
+       57b523a Version bump to 2.11.0
+       920057b R-tools - correct typo in deseq2.R
+       8913947 R-tools - corretions in deseq2.R
+       be3b365 R-TOOLS - cleaning deseq2.R from debug prints
+       da205b8 R-tools - some adjustments to the batch effect correction in deseq2.R
+       0c180c5 minor
+       fb9edf6 R-tools - Fixed deseq2.R for batch effect correction
+       02599f9 Python-tools - updates in AmpliconSeq_script.py
+       e4b4b52 R-tools - correcting deseq2.R with missing curly bracket
+       3ed5904 R-tools : updated help of deseq2.R
+       0209640 Python tools - minor formating in AmpliconSeq_script.py
+       08591da Python tools - updated parseTrinotateOutput to Python3 syntax
+       53e4353 Python tools - correct rrnaBAMconter python3 syntax
 
 2.10.10        Wed Sep 28 12:51:35 2022 -0400        9 commits
 
@@ -847,6 +874,14 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
 
        9de32e1 Merged in RNAseq_light_dev (pull request #1)
 
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
+
+       b84d9e8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       b8acd7b IHEC_chips metrics tool - correct typo
+       8591e6f tool -  ihec metrics debug -  BFXDEV-675
+       a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
+
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      14 commits
 
        d76a8f8 tools - cpgStats add more info to stdout and correct for the exit code 1 when grep do not find a match
@@ -863,14 +898,6 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
        3a8ab8d update axiom dev suite
        a1ea573 correct plateQC graphs resolution
        787a517 correct plateQC graphs
-
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      5 commits
-
-       b84d9e8 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
-       b8acd7b IHEC_chips metrics tool - correct typo
-       8591e6f tool -  ihec metrics debug -  BFXDEV-675
-       a25d589 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
-       2a359af  ChIPseq-   debug  IHEC metrics tools - BFXDEV-675
 
   Mathieu Bourgey <mbourgey@cedar5.cedar.computecanada.ca>      1 commits
 
@@ -907,16 +934,6 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
 
        edfb29a commiting the CHANGELOG before release
 
-  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      7 commits
-
-       70af3b5 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
-       69cce81 update gene titan
-       068bd1b Imporve Genetitan processing script
-       4c049c5 Imporve Genetitan processing script
-       446f05d resolve conflict merging
-       94240fc Updat Axiom tools for more QC
-       3f461c4 add somatic signature R tools
-
   Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      10 commits
 
        9ec9b5f correct ggplot
@@ -929,6 +946,16 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
        170f2b4 correct typo
        5e77a35 correct typo
        9ccb828 correct module incompatibility
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      7 commits
+
+       70af3b5 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       69cce81 update gene titan
+       068bd1b Imporve Genetitan processing script
+       4c049c5 Imporve Genetitan processing script
+       446f05d resolve conflict merging
+       94240fc Updat Axiom tools for more QC
+       3f461c4 add somatic signature R tools
 
 2.1.7        Fri Jan 20 16:31:19 2017 -0500        19 commits
 
@@ -1064,14 +1091,14 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
        b8cd478 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        556d49d BFXDEV-59 DNAsampleMetrics.R fix
 
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       1fe0c67 python - update rrnaBAMcounter.py to include all unmapped reads in the total count
+
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
 
        95a1618 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        721a2b3 python - add rrnaBAMcounter.py a small tools to report rrna counts
-
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
-
-       1fe0c67 python - update rrnaBAMcounter.py to include all unmapped reads in the total count
 
 2.0.3        Fri Jan 30 10:55:17 2015 -0500        9 commits
 
@@ -1086,15 +1113,15 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
        5266243 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        70fd054 File needs to exist in paired file to add columns
 
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       b38b144 TOOLS - update tools/gtf2tmpMatrix.awk to support commetn lines in the gtf
+
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
 
        b11c11c Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        6d02639 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        b115892 Tools -add runLumpy.sh using v0.2.9 of Lumpy and the python script for the mean and stdev
-
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
-
-       b38b144 TOOLS - update tools/gtf2tmpMatrix.awk to support commetn lines in the gtf
 
 2.0.2        Tue Dec 16 16:43:51 2014 -0500        7 commits
 
@@ -1258,16 +1285,16 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
 
        7c2b7cc BlastCov.tsv is now sorted. BFXDEV-30
 
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
+
+       bb3351c Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       5855f97 Add tools/WG2ChromosomeFasta.awk to split wholeGenome fatsa into chromosme fasta
+
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
 
        f583128 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        66cf8b6 DNAsampleMetrics.R will add NA filed if missing file of CCDS metrics - BFXDEV-214
        7fc08bd R-tools/deseq.R and  R-tools/edger.R now support numeric sample name starting with 0 in the design file - BFXDEV-213
-
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      2 commits
-
-       bb3351c Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
-       5855f97 Add tools/WG2ChromosomeFasta.awk to split wholeGenome fatsa into chromosme fasta
 
   pascale.marquis@mail.mcgill.ca <pmarquis@abacus2.(none)>      1 commits
 
@@ -1359,18 +1386,18 @@ HEAD        Wed Sep 21 16:55:02 2022 +0000        0 commits
        f6f56c0 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        1938c7b tool to plot coverage bed files. BFXDEV-30
 
+  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
+
+       64d2d44 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       4edc18e R-tools/DNAsamplemetrics.R: change the alignment and duplicates metrics which where not good when mem is used correct BFXDEV-130
+       8f31f92 remove unneccessary file integrity in vcfstats.py
+
   mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      4 commits
 
        fe831ce Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        90c9d92 chipSeqgenerateAnnotationGraphs.R : add additional control for empty file with size > 0
        3c5d163 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
        6f4cab2 add null buffer in vcfstat.py; correct BFXDEV-120
-
-  Mathieu Bourgey <mathieu.bourgey@mail.mcgill.ca>      3 commits
-
-       64d2d44 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
-       4edc18e R-tools/DNAsamplemetrics.R: change the alignment and duplicates metrics which where not good when mem is used correct BFXDEV-130
-       8f31f92 remove unneccessary file integrity in vcfstats.py
 
 1.7        Thu Feb 27 14:21:48 2014 -0500        22 commits
 
