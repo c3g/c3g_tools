@@ -10,6 +10,7 @@ library(methods)
 library(pheatmap)
 library(tibble)
 library(RColorBrewer)
+library(ggplot2)
 
 # Usage 
 
