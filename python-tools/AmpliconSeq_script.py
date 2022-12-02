@@ -106,7 +106,7 @@ def uchime(uchime_log, flash_log, sample):
 
 def sample_name(otu_sum, output_dir):
     """
-    Create an empty file for reamining samples after OTU table creation.
+    Create an empty file for remaining samples after OTU table creation.
     """
 
     readset = open(otu_sum, 'r')
