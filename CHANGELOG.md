@@ -1,6 +1,13 @@
-67 tags, 824 commits
+68 tags, 826 commits
 
-HEAD        Fri Dec 2 10:46:03 2022 -0500        0 commits
+HEAD        Tue Apr 4 12:48:01 2023 -0400        0 commits
+
+2.11.2        Tue Apr 4 12:53:12 2023 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       d0392e8 Improvements in runprocssing tools
+       374d0a3 Version bump to 2.11.1
 
 2.11.1        Fri Dec 2 10:47:35 2022 -0500        4 commits
 
