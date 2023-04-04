@@ -131,16 +131,17 @@ def getIndexHash_from_splitBarcode(
     return dict_to_update
 
 def getIndexHash_from_BCL2fastq(
-    input_file,
+    inputs,
     readset,
     dict_to_update
     ):
 
     stats_json_file = ""
-    if "Stats.json" in input_file:
-        stats_json_file = input_file
-    else:
-        sys.exit("Error - Unexpected input file found for bcl2fasfq index metrics : " + input_file)
+    for in_file in inputs:
+        if "Stats.json" in in_file:
+            stats_json_file = in_file
+    if not stats_json_file:
+        sys.exit("Error - bcl2fasfq index metrics JSON file not found in  : " + "\n".join(inputs))
 
     with open(stats_json_file, 'r') as json_file:
         stats_json = json.load(json_file)
@@ -443,7 +444,7 @@ def report(
         for record in run_report_json['run_validation']:
             if record['sample'] == readset:
 
-                if step in ['basecall', 'index', 'fastq']:
+                if step in ['basecall', 'fastq']:
                         section = 'index'
                         if platform == 'mgit7':
                             # retrieve barcode name for the readset
@@ -472,8 +473,8 @@ def report(
                     new_dict = getQcHash(inputs[0], readset, record[section])
 
                 elif step == 'blast':
-                    section = step
-                    new_dict = getBlastHash(inputs[0], readset, record[section])
+                    section = 'blast'
+                    new_dict = getBlastHash(inputs[0], readset, record[step])
 
                 elif step == 'picard_mark_duplicates':
                     section = 'alignment'
