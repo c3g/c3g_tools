@@ -7,6 +7,7 @@
 #'  o: ""
 #'  c: ""
 #'  b: "alignment"
+#'  ext: ""
 #'  p: "peak_call"
 #'  minOverlap: 2
 #'  dir: "differential_binding"
@@ -50,6 +51,7 @@ usage = function(errM) {
   cat("       -c              : comparison column name \n")
   cat("       -o              : output file path\n")
   cat("       -b              : bam directory\n")
+  cat("       -ext            : bam file name extension\n")
   cat("       -p              : peak file directory\n")
   cat("       -minMembers     : MinMembers in a group\n")
   cat("       -minOverlap     : minOverlap in a group\n")
@@ -70,6 +72,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   out_path = params$o
   comparison = params$c
   bam_dir = params$b
+  bam_ext = params$ext
   peak_dir = params$p
   minoverlap = params$minOverlap
   minmembers = params$minMembers
@@ -94,6 +97,7 @@ readset_file = ""
 out_path = ""
 comparison= ""
 bam_dir=""
+bam_ext="sorted.dup.filtered.bam"
 peak_dir=""
 minoverlap=2
 minmembers=2
@@ -114,6 +118,8 @@ for (i in 1:length(ARG)) {
     comparison = ARG[i+1]
   } else if (ARG[i] == "-b") {
     bam_dir = ARG[i+1]
+  } else if (ARG[i] == "-ext") {
+    bam_ext = ARG[i+1]
   } else if (ARG[i] == "-p") {
     peak_dir = ARG[i+1]
   } else if (ARG[i] == "-h") {
@@ -171,11 +177,11 @@ readset <- fread(readset_file)
 #merge readset and design file
 samplesheet <- readset
 samplesheet$bamReads <- paste(bam_dir, samplesheet$Sample, samplesheet$MarkName,  paste(samplesheet$Sample, 
-                                                                                        samplesheet$MarkName, "sorted.dup.filtered.bam", sep="."), sep="/")
+                                                                                        samplesheet$MarkName, bam_ext, sep="."), sep="/")
 
 if(! tolower(design$MarkName[1]) %like% "atac") {
 samplesheet$bamControl <- paste(bam_dir, samplesheet$Sample, 'input',  paste(samplesheet$Sample, 
-                                                                             "input", "sorted.dup.filtered.bam", sep="."), sep="/")
+                                                                             "input", bam_ext, sep="."), sep="/")
 samplesheet <- select(samplesheet, c("Sample", "MarkName", "bamReads", "bamControl"))
 colnames(samplesheet) <- c("Sample", "Factor", "bamReads", "bamControl")
 } else{
@@ -305,6 +311,6 @@ write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quot
 
 #' Below table displays first 6 rows of the differential analysis results using `r diff_method`
 head(as.data.frame(dba.ob.diff))
-print("complted differential binding analysis")
+print("completed differential binding analysis")
 
 
