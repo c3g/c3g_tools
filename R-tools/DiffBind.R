@@ -72,7 +72,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   out_path = params$o
   comparison = params$c
   bam_dir = params$b
-  bam_ext = param$ext
+  bam_ext = params$ext
   peak_dir = params$p
   minoverlap = params$minOverlap
   minmembers = params$minMembers
