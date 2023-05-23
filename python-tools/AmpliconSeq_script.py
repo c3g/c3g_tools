@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 ################################################################################
 ### Several scripts for the Amplicon-Seq pipeline including outputs creation.
 ################################################################################
@@ -12,12 +11,11 @@ import os, re
 from Bio import SeqIO
 
 def map_build(samples):
-
     """
     Make a general map file if not available.
     """
 
-    out_map = open('map.txt','w')
+    out_map = open('map.txt', 'w')
     out_map.write("#SampleID\tInputFileName\tDescription\n")
 
     for sample in samples.split(','):
@@ -26,25 +24,22 @@ def map_build(samples):
     out_map.close()
 
 def map_per_sample(sample, output):
-
     """
     Make a basic map file for each sample.
     """
 
-    out_map = open(output,'w')
+    out_map = open(output, 'w')
     out_map.write("#SampleID\t"+sample+"\n")
     out_map.write(sample+"\t"+sample+"\n")
 
     out_map.close()
 
-
 def krona(table_tax, rep_out_f):
-
     """
     Create file for Krona chart.
     """
 
-    table = open(table_tax,"r")
+    table = open(table_tax, "r")
     lines = table.readlines()
 
     word = lines[1].split()
@@ -53,12 +48,10 @@ def krona(table_tax, rep_out_f):
     sample_number = 0
 
     while sample_number < len(sample_name):
-
-        out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt","w")
+        out_krona = open(rep_out_f+"/"+sample_name[sample_number]+".txt", "w")
 
         i=2
         while i < len(lines):
-
             word = lines[i].split()
             out_krona.write(word[sample_number+1]+'\t'+'\t'.join(word[len(sample_name)+1:])+"\n")
             i+=1
@@ -69,16 +62,14 @@ def krona(table_tax, rep_out_f):
     table.close()
 
 def catenate_stat(cat_file, uchime_log):
-
     """
     Catenate statistics for report.
     """
 
-    log_cat = open(cat_file,"rU")
-    stat_uchime = open(uchime_log,'w')
+    log_cat = open(cat_file, "r")
+    stat_uchime = open(uchime_log, 'w')
 
     dic_sample = {}
-
     for record in SeqIO.parse(log_cat, "fasta") :
 
         if record.id.split('_')[0] in dic_sample:
@@ -86,21 +77,19 @@ def catenate_stat(cat_file, uchime_log):
         else:
             dic_sample[record.id.split('_')[0]]=1
 
-    for key, values in dic_sample.iteritems():
+    for key, values in dic_sample.items():
         stat_uchime.write(key+'\t'+str(values)+'\n')
 
     log_cat.close()
     stat_uchime.close()
 
-
 def uchime(uchime_log, flash_log, sample):
-
     """
     Uchime statistics for report.
     """
 
-    log_merged = open(flash_log,"r")
-    log_chimer = open(uchime_log,"r")
+    log_merged = open(flash_log, "r")
+    log_chimer = open(uchime_log, "r")
 
     filter_stat=[]
     filter_stat.append([int(i.split()[3]) for i in log_merged if re.search("Combined pairs",i)][0])
@@ -112,16 +101,15 @@ def uchime(uchime_log, flash_log, sample):
     log_merged.close()
     log_chimer.close()
 
-    #print filter_stat
-    print "\t".join(str(x) for x in filter_stat)
+    # Print filter_stat
+    print("\t".join(str(x) for x in filter_stat))
 
 def sample_name(otu_sum, output_dir):
-
     """
-    Create an empty file for reamining samples after OTU table creation.
+    Create an empty file for remaining samples after OTU table creation.
     """
 
-    readset = open(otu_sum,'r')
+    readset = open(otu_sum, 'r')
     lines = readset.readlines()
     i=0
     while i<len(lines):
@@ -140,14 +128,13 @@ def sample_name(otu_sum, output_dir):
     readset.close()
 
 def sample_rarefaction(alpha_stat_f, alpha_out_f, sample_name):
-
     """
     Create rarefaction files for differents metrics
     (observed species, chao1 and shannon) for each sample.
     """
 
-    alpha_stat = open(alpha_stat_f,'r')
-    alpha_out = open(alpha_out_f,'w')
+    alpha_stat = open(alpha_stat_f, 'r')
+    alpha_out = open(alpha_out_f, 'w')
 
     lines = alpha_stat.readlines()
 
@@ -164,19 +151,17 @@ def sample_rarefaction(alpha_stat_f, alpha_out_f, sample_name):
     alpha_out.close()
 
 def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
-
     """
     Rarefying all samples at the same level.
     """
 
-    alpha_stat = open(alpha_stat_f,'r')
-    alpha_out = open(alpha_out_f,'w')
+    alpha_stat = open(alpha_stat_f, 'r')
+    alpha_out = open(alpha_out_f, 'w')
 
     lines = alpha_stat.readlines()
     rarefaction_done = False
 
     i=0
-
     while i<len(lines):
         word = re.split("[\r\t\n]",lines[i])
 
@@ -194,7 +179,6 @@ def single_rarefaction(alpha_stat_f, alpha_out_f, rarefaction_threshold):
     alpha_out.close()
 
 def plot_heatmap(table_f, rep_out_f, taxon_lvl):
-
     """
     Create R script for heatmap plot.
     """
@@ -229,7 +213,7 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     #1st step: Create the OTU matrix
 
-    table = open(table_f,"r")
+    table = open(table_f, "r")
 
     lines = table.readlines()
 
@@ -247,7 +231,6 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
     while i < len(lines):
 
         parse = lines[i].split()
-
         for taxon in parse[0].split(';'):
             if taxon == 'Other' and OTU_tax_final[len(OTU_tax_final)-1]!='k__Bacteria':
                 OTU_tax_final.append(str(OTU_tax_final[len(OTU_tax_final)-1])+'_'+taxon)
@@ -265,33 +248,29 @@ def plot_heatmap(table_f, rep_out_f, taxon_lvl):
 
     table.close()
 
-    out_subprocess = open(os.path.join(rep_out_f,"OTU_data.txt"),"w")
+    out_subprocess = open(os.path.join(rep_out_f, "OTU_data.txt"),"w")
     for OTU_data in data:
         out_subprocess.write(OTU_data+"\n")
     out_subprocess.close()
 
-    out_subprocess = open(os.path.join(rep_out_f,"OTU_name.txt"),"w")
+    out_subprocess = open(os.path.join(rep_out_f, "OTU_name.txt"),"w")
     for OTU_name in row_names:
         out_subprocess.write(OTU_name+"\n")
     out_subprocess.close()
 
-
     #2nd step: Create the taxonomy matrix
-
 
     out_subprocess = open(os.path.join(rep_out_f,"OTU_tax_final.txt"),"w")
     for taxon in OTU_tax_final:
         out_subprocess.write(taxon+"\n")
     out_subprocess.close()
 
-
     #######################################################
-
 
     cmd_matrix = "otumat = matrix(vec_otu_data, nrow={}, ncol={}, byrow=TRUE)".format(len(row_names), len(col_names))
     cmd_names = "dimnames(otumat) = list(vec_otu_name, c({}))".format(str(col_names)[1:len(str(col_names))-1])
 
-    out_to_R = open(os.path.join(rep_out_f,"OTU_%s_to_R.R" % (name_tax)),"w")
+    out_to_R = open(os.path.join(rep_out_f,"OTU_%s_to_R.R" % (name_tax)), "w")
 
     out_to_R.write('#!/usr/bin/env Rscript\n')
     out_to_R.write('library("pheatmap")\n')
@@ -337,20 +316,15 @@ def main(argv):
     mod.append('%(prog)s -m single_rarefaction -i <stat_metrics> -j <output_file> -s <rarefaction_threshold>')
     mod.append('%(prog)s -m plot_heatmap -i <table.txt> -j <output_directory> -s <taxon_lvl>')
 
-    parser = argparse.ArgumentParser(prog = 'AmpliconSeq_script.py',
-                                 usage = "\n".join(mod))
+    parser = argparse.ArgumentParser(prog = 'AmpliconSeq_script.py', usage = "\n".join(mod))
 
-    parser.add_argument('-m', action='store', dest='fct_value',
-                        help='Fonction')
+    parser.add_argument('-m', action='store', dest='fct_value', help='Fonction')
 
-    parser.add_argument('-i', action='store', dest='input_value',
-                        help='Input 1')
+    parser.add_argument('-i', action='store', dest='input_value', help='Input 1')
 
-    parser.add_argument('-j', action='store', dest='input2_value',
-                        help='Input 2')
+    parser.add_argument('-j', action='store', dest='input2_value', help='Input 2')
 
-    parser.add_argument('-s', action='store', dest='sample_value',
-                        help='Sample')
+    parser.add_argument('-s', action='store', dest='sample_value', help='Sample')
 
     parser.add_argument('--version', action='version', version='%(prog)s 1.0')
 

@@ -1,6 +1,6 @@
 
 ################################################################################
-# Copyright (C) 2014, 2015 GenAP, McGill University and Genome Quebec Innovation Centre
+# Copyright (C) 2014, 2022 GenAP, McGill University and Genome Quebec Innovation Centre
 #
 # This file is part of MUGQIC Pipelines.
 #
@@ -46,9 +46,10 @@
 args<-commandArgs(TRUE)
 sampleName <- args[1]
 workingDir <- args[2]
+chrList <- args[3]
 
-if(!is.na(args[3])){
-  outputDir <- args[3]
+if(!is.na(args[4])){
+  outputDir <- args[4]
 } else {
   outputDir <- "HomerQcPlots"
 }
@@ -160,7 +161,8 @@ if (length(file) != 0 ){
 
   data <- read.table(file, header=T, sep="\t", skip = 11)
   colnames(data) <- c("chr", "UniquePositions", "TotalTags")
-  chrList <- paste("chr" , c( seq(1:22), "X", "Y"),sep="" )
+  # chrList <- paste("chr" , c( seq(1:22), "X", "Y"),sep="" )
+  chrList <- sapply(strsplit(chrList, ","), paste)
   data <- data[data$chr %in% chrList,]
   data = melt(data, id="chr")
   

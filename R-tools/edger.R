@@ -165,18 +165,18 @@ for (i in 2:ncol(design)) {
     # Both groups have no replicates
 
     else if((table(group)[1] == 1) & (table(group)[2] == 1)) {
-        perform_dge(dge.list, count_limit=length(subsampleN),name_folder, 2, geneSymbol)
+        perform_dge(dge.list, count_limit=length(subsampleN), name_folder, 2, geneSymbol)
     }
 
     # Group 1 has replicates but not group 2
 
     else if((table(group)[1] > 1) & (table(group)[2] == 1)) {
-        perform_dge(dge.list, count_limit=length(subsampleN),name_folder, 1, geneSymbol)
+        perform_dge(dge.list, count_limit=length(subsampleN), name_folder, 1, geneSymbol)
     }
 
     # Group 2 has replicates but not group 1
 
     else if((table(group)[1] == 1) & (table(group)[2] > 1)) {
-        perform_dge(dge.list, count_limit=length(subsampleN),name_folder, 1, geneSymbol)
+        perform_dge(dge.list, count_limit=length(subsampleN), name_folder, 1, geneSymbol)
     }
 }

@@ -1,6 +1,674 @@
-40 tags, 492 commits
+69 tags, 832 commits
 
-HEAD        Wed May 1 15:44:51 2019 -0400        0 commits
+HEAD        Fri Apr 28 16:15:18 2023 +0000        0 commits
+
+2.11.3        Fri May 5 17:52:27 2023 +0000        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2df3ffd Python Tools - Updated getFastaBinedGC for Python3 compatibility
+       cc9910b Version bump to 2.11.2
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      4 commits
+
+       840ad06 Merged in diffBind_bam (pull request #29)
+       d626d7c R-tools DiffBind : changed default bam file name
+       29b6267 R-tools DiffBind : fixed typo
+       e6afe40 R-tools DiffBind : added input option to specify extension of bam files
+
+2.11.2        Tue Apr 4 12:53:12 2023 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       d0392e8 Improvements in runprocssing tools
+       374d0a3 Version bump to 2.11.1
+
+2.11.1        Fri Dec 2 10:47:35 2022 -0500        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       47765a1 Python tools - python-tools/AmpliconSeq_script.py : minor typo fix
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       4c7e2d7 CHANGELOG for 2.11.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       568c9cd FastqReadNameEdit updated
+       ee3dc4a Some minor changes to R-tools
+
+2.11.0        Wed Nov 9 15:16:49 2022 +0000        19 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+
+       8278f1c undo nundesired changes in ihec_metrics
+       ef03f1e minor format change
+       fefa6a0 Python Scripts - updating run Processing metrics
+       5d3ec55 Python Scripts - added working_dir as 2nd argument in ihec_metrics
+       69da92f R-Scripts - Added batch efet corection to deseq2
+       3f10c69 Version bump to 2.10.10
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      13 commits
+
+       57b523a Version bump to 2.11.0
+       920057b R-tools - correct typo in deseq2.R
+       8913947 R-tools - corretions in deseq2.R
+       be3b365 R-TOOLS - cleaning deseq2.R from debug prints
+       da205b8 R-tools - some adjustments to the batch effect correction in deseq2.R
+       0c180c5 minor
+       fb9edf6 R-tools - Fixed deseq2.R for batch effect correction
+       02599f9 Python-tools - updates in AmpliconSeq_script.py
+       e4b4b52 R-tools - correcting deseq2.R with missing curly bracket
+       3ed5904 R-tools : updated help of deseq2.R
+       0209640 Python tools - minor formating in AmpliconSeq_script.py
+       08591da Python tools - updated parseTrinotateOutput to Python3 syntax
+       53e4353 Python tools - correct rrnaBAMconter python3 syntax
+
+2.10.10        Wed Sep 28 12:51:35 2022 -0400        9 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       c316557 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       fd73915 Python tools : CpG_coveragStats now compatible with Python3
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      5 commits
+
+       9204711 Merged in DiffBInd_hotfix (pull request #28)
+       7701f42 Debug latest commit
+       5595842 Adding contrastnb param for cit test for chipseq - atacseq pipeline
+       2303dc7 Reading chrList from input as a string being like "chr1,chr2" (ini file for GenPipes)
+       1a84904 Changing awk for allowing genomes to have "-" within its name
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       200a87b added anno_fuse for rnaseq pipeline
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b49abc9 Merged in rna_seq_update (pull request #27)
+
+2.10.9        Fri Jun 24 18:40:14 2022 +0000        5 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       66770a5 Version bump to 2.10.9
+       8a82bca Python tools - Run Processing metrics : improved alignment metrics function
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7685c96 methylKit.R edited online with Bitbucket
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       81ba9ec added a cutoff to remove based on readcounts
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       aa450a1 Merged in methylkit_diff_methy (pull request #26)
+
+2.10.8        Thu Jun 16 17:00:15 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       7e2580b Version bump to 2.10.8
+       c3b5959 Python Tools : run processing metrics improved
+       c969134 Version bump to 2.10.7
+
+2.10.7        Tue Jun 7 17:26:05 2022 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7cc985c Run Procesisng : setting verifyBamID output as non-mandatory
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       af6e5b1 Version bump to 2.10.6
+
+2.10.6        Fri Jun 3 19:17:57 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7dff0c5 Version bump to 2.10.5
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       ff40611 Merged in DiffBInd_hotfix (pull request #25)
+       8705a96 Debugging asva.R
+
+2.10.5        Fri May 6 12:21:07 2022 -0400        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+
+       8b44038 Python Tools - RunRprocessingMetrics2json : allowing absence of verifyBamID metrics
+       29a69bf Version bump to 2.10.5
+       90cc30e Python Tools - updated preprocess.py to avoid empty lines insertion in the header
+       716a3a1 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       f63a433 Python Tools - updated preprocess.py for Python3 compatibility
+       81b8095 Version bump to 2.10.4
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       a11f9cf Merged in verifybamidfix (pull request #24)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       91089e2 Accept both tsv and selfSM extension for VerifyBamID
+
+2.10.4        Mon May 2 16:22:17 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       13eb97d Version bump to 2.10.3
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      2 commits
+
+       9a0c243 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       890ef0b Python tools - updated fixVS2VCF.py and format2pcgr.py to be python3 compatible
+
+2.10.3        Mon Apr 11 14:48:08 2022 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       6387aa9 Version bump to 2.10.2
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      1 commits
+
+       eae38f3 Merged in DiffBInd_hotfix (pull request #23)
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       cdfd52a Added FDR and P-value cutoff to all the functions
+
+  Pubudu Nawarathna Mudiyanselage <pubudu@narval1.narval.calcul.quebec>      1 commits
+
+       99dfd96 Removed comments
+
+2.10.2        Tue Apr 5 12:37:33 2022 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       9a13ef3 Version bump to 2.10.1
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      1 commits
+
+       23be1ae PYTHON TOOLS - Updating fixVS2VCF.py to run with Python3
+
+  Édouard Henrion <henrione@narval3.narval.calcul.quebec>      1 commits
+
+       169f9d4 PYTHON TOOLS : updating dict2BEDs.py so it's compatible to both Python2 and Python3
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       02f9aec rrnaBAMcounter.py edited online with Bitbucket
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       ffc257e Merged in rrnaBAMCounter_pythonupdate (pull request #22)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       6569fa5 Remove unused imports and convert print to python3
+
+2.10.1        Wed Mar 9 15:49:27 2022 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2f2b163 Python Tools - Run Processing : updating runProcessingMetrics2Json.py with same format as pipeline
+       8b349f5 Version bump to 2.10.0
+
+2.10.0        Thu Mar 3 15:15:38 2022 -0500        7 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       d8fff50 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       6af9e78 PYTHON TOOLS - Run Procssing : updates and fixes in runProcessingMetricsToJson.py + removing useless run processing tools
+       540404c Python tools - Run Processing : adding tool to push metrics of run processing into a standardized report in SON format
+       d9145c7 Version bump to 2.9.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      1 commits
+
+       c731ca7 transfer.sh - Testing removing the mkdir before rsync
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       9beef29 Merged in data_transfer_script (pull request #21)
+       3ca743d Updating transfer tool for syncing symlinks
+
+2.9.1        Fri Dec 17 10:47:28 2021 -0500        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       bf75bd7 Version bump to 2.9.0
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      2 commits
+
+       8687a39 fixed a typo
+       08641a3 added pca plots to the report improved to analyse ATAC-seq peaks
+
+2.9.0        Tue Dec 7 11:06:54 2021 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       b4d1fa5 MUGQIC_TOOLS - adding script to combine metrics from fgbio DemuxFastqs
+       605ae14 Version bump to 2.8.2
+
+2.8.2        Tue Nov 30 11:22:49 2021 -0500        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      5 commits
+
+       6b7b175 Updated VERSION prior new release
+       1f88a55 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       a8ce1bd PYTHON TOOLS - Run Processing : improved metrics in runProcessingSampleReport.py
+       43b17d9 Version bump to 2.8.2-beta
+       e01530f Version bump to 2.8.1
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b5cb280 adding signal_to_noise in epiQC pipeline
+
+2.8.1        Wed Oct 27 16:17:08 2021 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       e61de6e Version bump to 2.8.1-beta
+       5e1c9d6 Version bump to 2.8.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7f606de MGUQIC_TOOLS - ampliconSeq Tools : updated use of tmp in cleanOTUtable.sh
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      3 commits
+
+       39f2955 modified chipseq DiffBind report Fixed text decorations
+       eb08eaf minor fix to the path name
+       cba6fda Added KOPathawayAnalysis.R in the seq2fun protocol of the de-novo RNA-seq pipeline
+
+2.8.0        Wed Oct 13 13:17:49 2021 -0400        11 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       8752483 Version bump to 2.7.1-beta
+       cf1fd45 Version bump to 2.7.0
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      3 commits
+
+       3df3cf9 Fix to the rsync copy issue provoked by the slash at the end of the input arguemnt (fix by Paul S.)
+       ae6effa Fixed but so that script errors out correctly when no arguments are provided
+       bb4e920 Fixed permissions issue
+
+  jgalvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       3d972d0 Added first version of data transfer script tools/transfer.sh
+
+  José Héctor Gálvez López <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       1d65a64 Merged in data_transfer_script (pull request #20)
+       82f6eed Merged master into data_transfer_script
+
+  P-O Quirion <pioliqui@gmail.com>      1 commits
+
+       cc84f72 removing extra \
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       a4916fe Merged in goseq_fix (pull request #19)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       7a21f95 Fixes a bug caused by reading DGE results with NAs
+
+2.7.0        Wed Aug 18 14:14:48 2021 -0400        9 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       3ff4d3d updating version for release
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      2 commits
+
+       fdf9d17 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       3fa0c51 Version bump to 2.6.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      2 commits
+
+       85ff693 Fixing file name finding
+       82aae03 Changing name
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       f71165c Merged in IHEC_chipseq_metrics_fix (pull request #18)
+       12a2e94 Merged master into IHEC_chipseq_metrics_fix
+
+  Pierre-Olivier Quirion <pierre-olivier.quirion@computationalgenomics.ca>      1 commits
+
+       4b13b08 cleanOTUtable.sh edited online with Bitbucket
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       f6829c2 added epiqc.py file for epiQC report generation and signal_noise.py in the epiqc pipeline
+
+2.6.1        Mon Jul 26 19:22:14 2021 +0000        2 commits
+
+  Robert Eveleigh <eveleigh@beluga1.int.ets1.calculquebec.ca>      1 commits
+
+       63e3b93 sequenza fixes
+
+  Robert Eveleigh <robert.eveleigh@mcgill.ca>      1 commits
+
+       6c74997 Merged in tumor_pair (pull request #17)
+
+2.6.0        Fri Jun 18 17:44:38 2021 +0000        8 commits
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       0a770fa Version bump to 2.6.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       5ea76f9 MUGQIC_TOOLS -  bash tools : fixes Issue #1
+       dd2eee5 MUGQIC_TOOLS - bash tool : added 'ls' command in cleanOTUtable.sh to ensure 'copy' is over prior 'moving'
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      5 commits
+
+       b5580ca Removed the second if ladder
+       92da41b added paramter to change the comparison method. e.g deseq2 or edger
+       cc5a254 Decorated html output, center aligned plots, added figure captions and named chunks
+       dba8c2b Added some comments explaining the code
+       b407204 Added DiffBind.R file used in chipseq differential binding
+
+2.5.0        Tue Mar 30 16:24:40 2021 -0400        155 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       e30895d Version bump to 2.4.0
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      3 commits
+
+       a613bdd Version bump to 2.5.0
+       171104d Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       424214c Version bump to 2.5.0
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      148 commits
+
+       8550435 Fixing typo
+       db28643 Fixing typo
+       f9edca2 Fixing typo
+       d7c0d1c Cleaning and fixing tss script
+       3450864 Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       d27f908 Fixing IHEC chipseq metrics
+       affddba Fixing IHEC chipseq metrics
+       92054ae Fixing IHEC chipseq metrics
+       68ebf59 Fixing IHEC chipseq metrics
+       8984a6a Fixing IHEC chipseq metrics
+       bc7b86f Fixing IHEC chipseq metrics
+       1c08b4e Fixing IHEC chipseq metrics
+       43fdaf5 Fixing IHEC chipseq metrics
+       5ef2251 Switching from design to readset
+       f7bf2a9 Switching from design to readset
+       d3f5cf8 Switching from design to readset
+       75e42c2 Fixing IHEC chipseq metrics
+       accd9d5 Fixing IHEC chipseq metrics
+       931ee37 Fixing IHEC chipseq metrics
+       b37f0a7 Fixing IHEC chipseq metrics
+       db2335c Fixing IHEC chipseq metrics
+       9d5dcc7 Fixing IHEC chipseq metrics
+       7486d44 Fixing IHEC chipseq metrics
+       13b932a Merge branch 'IHEC_chipseq_metrics_fix' of https://bitbucket.org/mugqic/mugqic_tools into IHEC_chipseq_metrics_fix
+       27126a0 Fixing IHEC chipseq metrics
+       71e62a2 Fixing IHEC chipseq metrics
+       72d7c2d Fixing IHEC chipseq metrics
+       e4b1e4f Fixing IHEC chipseq metrics
+       22ce29f Fixing IHEC chipseq metrics
+       1c536e4 Fixing IHEC chipseq metrics
+       5b1df8d Fixing IHEC chipseq metrics
+       effffc2 Fixing IHEC chipseq metrics
+       10772dd Fixing IHEC chipseq metrics
+       35287e3 Fixing IHEC chipseq metrics
+       8b9788c Fixing IHEC chipseq metrics
+       a84d4b9 Fixing IHEC chipseq metrics
+       bb103de Fixing IHEC chipseq metrics
+       231e2cc Fixing IHEC chipseq metrics
+       193906a Fixing IHEC chipseq metrics
+       2cd3a95 Fixing IHEC chipseq metrics
+       7830440 Fixing IHEC chipseq metrics
+       3c40592 Fixing IHEC chipseq metrics
+       5fa6b2f Fixing IHEC chipseq metrics
+       4ed3980 Fixing IHEC chipseq metrics
+       223592e Debug
+       702a5f9 Switching from design to readset
+       62a4bba Switching from design to readset
+       da852e1 Switching from design to readset
+       be76982 Fixing IHEC chipseq metrics
+       8908e84 Switching from design to readser
+       e6678d2 Switching from design to readser
+       1afb177 Switching from design to readser
+       c4aa908 Switching from design to readser
+       231ba82 Switching from design to readser
+       475eeb1 Switching from design to readser
+       693109d Switching from design to readser
+       69abdcd Switching from design to readser
+       287ed42 Switching from design to readser
+       7faa335 Switching from design to readser
+       fee2ab9 Switching from design to readser
+       adbdd4b Switching from design to readser
+       8f0648e Switching from design to readser
+       db525ec Switching from design to readser
+       7f445c5 Switching from design to readser
+       581f387 Switching from design to readser
+       c6199ea Switching from design to readser
+       dfffe1d Switching from design to readser
+       311c4ff Switching from design to readser
+       ff14a6c Switching from design to readser
+       9b97e77 Switching from design to readser
+       a5d777e Switching from design to readser
+       d9fb8a7 Switching from design to readser
+       b5d2f9d Debug design file change chipseq pipeline
+       e0cbfda Fixing IHEC chipseq metrics
+       c9c6ec9 Fixing IHEC chipseq metrics
+       e69f170 Fixing IHEC chipseq metrics
+       f9ca01c Fixing IHEC chipseq metrics
+       64235fe Fixing IHEC chipseq metrics
+       606d466 Fixing IHEC chipseq metrics
+       410c501 Fixing IHEC chipseq metrics
+       8afc660 Fixing IHEC chipseq metrics
+       249a6b5 Fixing IHEC chipseq metrics
+       5ac8c8d Fixing IHEC chipseq metrics
+       4127e4e Fixing IHEC chipseq metrics
+       bc6879e Debug
+       2bd980e Fixing IHEC chipseq metrics
+       fd9fbb4 Fixing IHEC chipseq metrics
+       36ce67a Fixing IHEC chipseq metrics
+       7bc76b0 Fixing IHEC chipseq metrics
+       082131c Fixing IHEC chipseq metrics
+       053bc5d Fixing IHEC chipseq metrics
+       251bd82 Fixing IHEC chipseq metrics
+       a71fb4b Fixing IHEC chipseq metrics
+       29780fa Fixing IHEC chipseq metrics
+       50cd9aa Fixing IHEC chipseq metrics
+       42477c9 Fixing IHEC chipseq metrics
+       c0e7159 Fixing IHEC chipseq metrics
+       e23e896 Fixing IHEC chipseq metrics
+       f35b761 Fixing IHEC chipseq metrics
+       5929748 Fixing IHEC chipseq metrics
+       78da539 Fixing IHEC chipseq metrics
+       260750b Fixing IHEC chipseq metrics
+       b98693c Fixing IHEC chipseq metrics
+       a3087d2 Fixing IHEC chipseq metrics
+       086de46 Fixing IHEC chipseq metrics
+       affff8a Fixing IHEC chipseq metrics
+       b72e3ae Debug
+       ac1c9fd Switching from design to readset
+       802242c Switching from design to readset
+       b5f22a8 Switching from design to readset
+       2847309 Fixing IHEC chipseq metrics
+       13aacad Switching from design to readser
+       15c8ff9 Switching from design to readser
+       6617b09 Switching from design to readser
+       e22d822 Switching from design to readser
+       9d3cd7c Switching from design to readser
+       cda9fff Switching from design to readser
+       a738c8e Switching from design to readser
+       041abc3 Switching from design to readser
+       bbd6a4d Switching from design to readser
+       e0e96d4 Switching from design to readser
+       696a402 Switching from design to readser
+       19a380f Switching from design to readser
+       6226787 Switching from design to readser
+       efdf606 Switching from design to readser
+       aa35b4c Switching from design to readser
+       712e471 Switching from design to readser
+       17bdc05 Switching from design to readser
+       29f6f3c Switching from design to readser
+       03fcd21 Switching from design to readser
+       9206d7a Switching from design to readser
+       581600a Switching from design to readser
+       02a308b Switching from design to readser
+       ab9b34e Switching from design to readser
+       bf7a6e5 Debug design file change chipseq pipeline
+       e060522 Fixing IHEC chipseq metrics
+       ccbb492 Fixing IHEC chipseq metrics
+       e1bfb99 Fixing IHEC chipseq metrics
+       c6be1a6 Fixing IHEC chipseq metrics
+       5442b15 Fixing IHEC chipseq metrics
+       9f40a06 Fixing IHEC chipseq metrics
+       cd5912f Fixing IHEC chipseq metrics
+       b6abcf1 Fixing IHEC chipseq metrics
+       644d458 Fixing IHEC chipseq metrics
+       e13f7c0 Fixing IHEC chipseq metrics
+       66217c5 Fixing IHEC chipseq metrics
+       d98d7e0 Debug
+       96dd552 Fixing IHEC chipseq metrics
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      3 commits
+
+       22ea87d Merged in IHEC_chipseq_metrics_fix (pull request #15)
+       c99130a Merged master into IHEC_chipseq_metrics_fix
+       6aaaaa1 Merged master into IHEC_chipseq_metrics_fix
+
+2.4.0        Mon Mar 15 15:27:18 2021 -0400        13 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      8 commits
+
+       6a10cc4 MUGQIC_TOOLS - python tools : updated convertFastqHeaders to convert already demultiplexed fastq files only
+       7fa2afd MUGQIC-TOOLS - Python Tools : update convertFastqHeader with use of Bio.SeqIO.QualityIO.FastqGeneralIterator instead of Bio.SeqIO.parse to try speeding things...
+       647c5e7 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       7614df1 pytohn tools - convertFastqHeader - corrected output record handling
+       2cc1b36 adding tools for run processing pipeline + fastq header conversion tool
+       f6bdd97 adding tools for run processing pipeline + fastq header conversion tool
+       304278f Version bump to 2.3.3-beta
+       5a3e071 Version bump to 2.3.2
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       cc43663 Python tools - convertFastqHeaders : corrected typo
+       bf2c709 convertFastqHeaders.py edited online with Bitbucket
+
+  mathieu bourgey <mathieu.bourgey@mail.mcgill.ca>      1 commits
+
+       e7f4fdc add fastqIcounter.py from my perso repo
+
+  Robert Syme <rob.syme@gmail.com>      2 commits
+
+       1a983d8 Merged in Robert-Syme/ensure-that-mgi-library-name-parsing-cap-1615835329509 (pull request #16)
+       7be259e Ensure that MGI library name parsing captures letter prefix.
+
+2.3.2        Fri Apr 17 13:26:36 2020 -0400        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       a6f9432 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       869d24a Version bump to 2.3.1
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      4 commits
+
+       40f63d8 Added a script to run BLAST for Nanopore QC
+       6f4c3fb Merge branch 'nanopore_jhg' of bitbucket.org:mugqic/mugqic_tools into nanopore_jhg
+       e977d55 Added a tool to trim nanopore reads to a set length of 1000bp
+       3ca36d4 Added a tool to trim nanopore reads to a set length of 1000bp
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       7c066b9 Merged in nanopore_jhg (pull request #14)
+       368915d Merged master into nanopore_jhg
+
+2.3.1        Mon Mar 30 09:34:18 2020 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       d355b75 Version bump to 2.3.1-beta
+       b4e91eb Version bump to 2.3.0
+
+  pubudumanoj <pnawarat@abacus3.ferrier.genome.mcgill.ca>      2 commits
+
+       945d76e corrected typo in printing new restructured matrix size
+       31bdf7a Modified script to take rawRN interaction matrices. Added additional codes to re-structure the code
+
+2.3.0        Fri Feb 21 15:19:26 2020 -0500        17 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       aab730b correcting file permissions to some python tools
+       d9ba47c Version bump to 2.2.5-beta
+       5cba859 Version bump to 2.2.4
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      1 commits
+
+       4a2b153 Added a new python script to extract a certain number of bases from long nanopore reads, for use with BLAST QC.
+
+  Jose Hector Galvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       8b61def Merged in nanopore_jhg (pull request #12)
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      10 commits
+
+       4febc34 Merged in IHEC_chipseq_metrics_fix (pull request #11)
+       2b4d612 IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fix typo
+       208edcd IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Ed comment
+       b57833b IHEC_chipseq_metrics_max.sh edited online with Bitbucket - Fixing sambamba issue
+       e3ad940 Using sambamba to speed up
+       6108b26 Using sambamba to speed up
+       cfd4925 Fixing metrics
+       89d50d5 Fixing typo
+       11e5f3d Merged in Paul-Stretenowich/getfastabinedgcpy-edited-online-with-bit-1558131034321 (pull request #10)
+       af4f10f Correcting minor bug issue
+
+  pubudumanoj <pnawarat@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       b85eb34 Added hicrep.R to R-tools which does the hicrep analysis
+
+  rami.coles@mail.mcgill.ca <rcoles@abacus3.ferrier.genome.mcgill.ca>      1 commits
+
+       a83ea10 Added tool to compute signal to noise on ChIP-Seq signal tracks and EpiQC report tool
+
+2.2.4        Thu May 16 11:01:29 2019 -0400        13 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       4e1b0f4 added tool to create the cluster preset for SMRTLink
+       93ea18e Version bump to 2.2.4-beta
+       af0d356 Version bump to 2.2.3
+
+  Pierre-Olivier Quirion <pierre-olivier.quirion@computationalgenomics.ca>      2 commits
+
+       9064f33 Merged in fix_asva_plot_error (pull request #9)
+       49fa3dd Merged in fix_createBaitMapFile (pull request #8)
+
+  P-O Quirion <pioliqui@gmail.com>      2 commits
+
+       3a6188e fix for the plotting at the end
+       2159261 rewrite escaping
+
+  Robert Syme <rob.syme@gmail.com>      5 commits
+
+       e9d2b20 Merged in ballgown_fix (pull request #6)
+       8cde138 Explicit use of dplyr::contains
+       6380b43 Non-essential stylistic changes
+       fc52621 Ensures that design files that use empty cells instead of '0' are read correctly.
+       f91478c Ignore basic R project files (just in case).
+
+  Robert Syme <rsyme@seychelles.genome.mcgill.ca>      1 commits
+
+       d47ccdb Remove hard-coded output name and use file.path
 
 2.2.3        Wed May 1 15:46:36 2019 -0400        6 commits
 
