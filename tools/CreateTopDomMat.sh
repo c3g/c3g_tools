@@ -10,7 +10,7 @@ res=$2
 
 ## create file format
 tail -n +2  $input > ${input}.tmp
-awk -v res=${res} -F'[- \t]' '{print $1"\t"$2"\t"($2+res)}' ${input}.tmp > ${input}.bins
+awk -v res=${res} '{n=split($1, a, "-"); sub(/-[0-9]+$/, "", $1);print $1"\t"a[n]"\t"(a[n]+res)}' ${input}.tmp > ${input}.bins
 cut -f 2- ${input}.tmp > ${input}.tmp2
 paste ${input}.bins ${input}.tmp2 > ${input}.MatA
 rm -f ${input}.tmp ${input}.tmp2 ${input}.bins

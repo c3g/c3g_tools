@@ -23,7 +23,7 @@ usage = function(errM) {
   cat("       -w          : weights\n")
   cat("       -cor        : correlation\n")
   cat("       -h          : this help\n\n")
-  
+
   stop(errM)
 }
 
@@ -34,31 +34,30 @@ set.seed(123456789)
 #The three additional initial columns are the chromosome name
 #and mid-point coordinates of the two contact bins
 
-
 perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary=5000000, restructure_data=T, down_sampling="TRUE" ){
-  
+
   mat1[is.na(mat1)] <- 0;
   mat2[is.na(mat2)] <- 0;
-  
+
   #Rename the first column
   colnames(mat1)[1] <- "var1"
   colnames(mat2)[1] <- "var1"
-  
+
   #create a new column with chromosome name
   mat1$chr <- sub("\\-.*", "", mat1$var1)
   mat2$chr <- sub("\\-.*", "", mat2$var1)
-  
+
   #create a new column with bin start value
   mat1$bin_start <- as.numeric(sub(".*\\-", "", mat1$var1))
   mat2$bin_start <- as.numeric(sub(".*\\-", "", mat2$var1))
-  
+
   #create a new column with bin end value
   mat1$bin_end <- as.numeric(mat1$bin_start + bin)
   mat2$bin_end <- as.numeric(mat2$bin_start + bin)
-  
+
   mat1 <- as.data.frame(mat1)
   mat2 <- as.data.frame(mat2)
-  
+
   #Restructure the data frame acoording to the hicrep input format
   #Required structure of the data set
   ##       V1      V2       V3 V4 V5 V6 V7 V8 V9 V10
@@ -72,60 +71,66 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
   ## 8  chr22 7000000  8000000  0  0  0  0  0  0   0
   ## 9  chr22 8000000  9000000  0  0  0  0  0  0   0
   ## 10 chr22 9000000 10000000  0  0  0  0  0  0   0
-  
-  
+
   mat1 <- mat1[,c(dim(mat1)[2]-2,dim(mat1)[2]-1,dim(mat1)[2], 2:(dim(mat1)[2]-3))]
   mat2 <- mat2[,c(dim(mat2)[2]-2,dim(mat2)[2]-1,dim(mat2)[2], 2:(dim(mat2)[2]-3))]
-  
+
   print(paste("matrix 1 size=", dim(mat1)))
   print(paste("matrix 2 size=", dim(mat2)))
-  
+
   if(dim(mat1)[1]!=dim(mat2)[1]){
     if(dim(mat1)[1] < dim(mat2)[1]){
       mat2 <- mat2[1:dim(mat1)[1], 1:dim(mat1)[2]]
       print("matrix 2 size is adjusted")
-    }
-    else{
+    }else{
       mat1 <- mat1[1:dim(mat2)[1], 1:dim(mat2)[2]]
       print("matrix 1 size is adjusted")
     }
   }
-  
+
   if(down_sampling=="TRUE"){
-    
+
     #Down-sampling based on the smallest matrix
     #only the large matrix will be down-sampled
     print(paste("matrix 1 rows=",as.numeric(sum(mat1[,-c(1:3)]))))
     print(paste("matrix 2 rows=",as.numeric(sum(mat2[,-c(1:3)]))))
-    
+
     if(as.numeric(sum(mat1[,-c(1:3)])) == as.numeric(sum(mat2[,-c(1:3)]))){
-    } else if(as.numeric(sum(mat1[,-c(1:3)])) < as.numeric(sum(mat2[,-c(1:3)]))){
+
+      #No down-sampling
+      mat1_h <- mat1
+      mat2_h <- mat2
+
+    }else if(as.numeric(sum(mat1[,-c(1:3)])) < as.numeric(sum(mat2[,-c(1:3)]))){
+
+      #Down-sampling sample 2
       size <- as.numeric(sum(mat1[,-c(1:3)])) 
       mat2_h <- depth.adj(mat2, size, as.numeric(bin), out = 0)
       print("matrix 2 down-sampled")
       mat1_h <- mat1
-      
-    }
-    else{
-      
+
+    }else{
+
+      #Down-sampling sample 1
       size <- as.numeric(sum(mat2[,-c(1:3)])) 
       mat1_h <-  depth.adj(mat1, size, as.numeric(bin), out = 0)
       print("matrix 1 down-sampled")
       mat2_h <- mat2
-      
+
     }
+  }else if(down_sampling=="FALSE"){
+
+    #No down-sampling based on the given value
+    mat1_h <- mat1
+    mat2_h <- mat2
     
-  } else if(down_sampling=="FALSE"){
-    
-    #Doing nothing
-    
-  } else if(is.numeric(as.numeric(down_sampling))){
-  
+  }else if(is.numeric(as.numeric(down_sampling))){
+
+    #Down-sampling based on the given value
+    #both samples will be down sampled
     mat2 <-  depth.adj(mat2, as.numeric(down_sampling), as.numeric(bin), out = 0)
     mat1 <-  depth.adj(mat1, as.numeric(down_sampling), as.numeric(bin), out = 0)
     print("both matrices were down-sampled")
-    #Down-sampling based on the given value
-    #both the samples will be down sampled
     
     mat1_h <- mat1
     mat2_h <- mat2
@@ -134,15 +139,13 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
   
   print(paste("sample 1 new rows=",as.numeric(sum(mat1_h[,-c(1:3)])) ))
   print(paste("sample 2 new rows=",as.numeric(sum(mat2_h[,-c(1:3)])) ))
-  
-  #if down_sampling==false no down-sampling will be performed
-  
-  ##if smooth==TRUE optimal smoothing parameter will search using htrain function
+    
+  #if smooth==TRUE optimal smoothing parameter will search using htrain function
   if(smooth=="TRUE"){
-  print("Calculaitng optimal smoothing paramter")
-  smooth <- calculate_optimal_h(mat1_h, mat2_h, as.numeric(bin), as.numeric(boundary))
-  print("smoothing value calculated")
-  print(paste("Selected optimal smoothing value=",smooth))
+    print("Calculaitng optimal smoothing paramter")
+    smooth <- calculate_optimal_h(mat1_h, mat2_h, as.numeric(bin), as.numeric(boundary))
+    print("smoothing value calculated")
+    print(paste("Selected optimal smoothing value=",smooth))
   }
   Pre_HiC <- prep(mat1, mat2, as.numeric(bin), as.numeric(smooth), as.numeric(boundary))
   print("pcrep reproducibility score was calculated")
@@ -150,45 +153,37 @@ perform_hicrep <- function(mat1=NULL, mat2=NULL, bin=1000000, smooth=5, boundary
   return(list(SCC.out,smooth))
 }
 
-
-hicrep_analysis <- function(out_file=NULL, sample1=NULL,sample2=NULL, file1_path=NULL, file2_path=NULL, chr=NULL, bin=50000,smooth=5, boundary=500000,
-                            down_sampling="TRUE", corr=FALSE, weights=FALSE){
-  
+hicrep_analysis <- function(out_file=NULL, sample1=NULL,sample2=NULL, file1_path=NULL, file2_path=NULL, chr=NULL, bin=50000,smooth=5, boundary=500000, down_sampling="TRUE", corr=FALSE, weights=FALSE){
  
   mat1 <- fread(file1_path, data.table=F, na.strings=c("",NA,"NULL"))
   mat2 <- fread(file2_path, data.table=F, na.strings=c("",NA,"NULL"))
-  
 
   rscore <- perform_hicrep(mat1, mat2, bin=as.numeric(bin), boundary = as.numeric(boundary), down_sampling=down_sampling, smooth=smooth)
   
-  
   write.table(paste(rscore[[1]][[3]], rscore[[1]][[4]] ,rscore[[2]][[1]], sep="\t"), file = out_file, row.names = F, col.names = F, quote = F)
-  
+
   if(corr==TRUE) {
     write.table(as.data.frame(rscore[[1]][[1]]), file = paste0(out_file, ".corr"), row.names = F, col.names = T, quote = F)
   }
   if(weights==TRUE){
     write.table(as.data.frame(rscore[[1]][[2]]), file = paste0(out_file, ".weights"), row.names = F, col.names = T, quote = F)
   }
-
 }
 
 calculate_optimal_h <- function(mat1=NULL, mat2=NULL, bin=NULL, boundary=NULL){
-  
+
   # A fraction (10%) of data are first randomly sampled, then the scc for the sampled data is computed
   # at a series of smoothing parameterts in the ascending order. The samllest h at which the increment
   # of scc is less than 0.01 is saved. This procedure is repeat 10 times, and the mode of the 10 h’s is
   # outputed as the estimated optimal neighborhood size.
-  
-   h_hat <- htrain(mat1, mat2, as.numeric(bin), as.numeric(boundary), 0:10)
-   return(h_hat)
+  h_hat <- htrain(mat1, mat2, as.numeric(bin), as.numeric(boundary), 0:10)
+  return(h_hat)
 }
-
 
 ARG = commandArgs(trailingOnly=T)
 
 ## default arg values
-#no default args
+no default args
 
 ## get arg variables
 for (i in 1:length(ARG)) {
@@ -259,6 +254,4 @@ print(paste("smooth value calucaltion=",smooth))
 print(paste("Down-sampling=",smooth))
 print(paste("Boundary=",boundary))
 
-
-hicrep_analysis(out_file=out_path, sample1=sample1, sample2=sample2, file1_path=file1_path, file2_path=file2_path, chr=chr, bin=bin,
-                smooth=smooth, boundary=boundary, down_sampling=down_sampling, corr=as.logical(corr), weights=as.logical(weights))
+hicrep_analysis(out_file=out_path, sample1=sample1, sample2=sample2, file1_path=file1_path, file2_path=file2_path, chr=chr, bin=bin, smooth=smooth, boundary=boundary, down_sampling=down_sampling, corr=as.logical(corr), weights=as.logical(weights))

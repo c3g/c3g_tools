@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 ################################################################################
-# Copyright (C) 2014, 2015 GenAP, McGill University and Genome Quebec Innovation Centre
+# Copyright (C) 2014, 2022 GenAP, McGill University and Genome Quebec Innovation Centre
 #
 # This file is part of MUGQIC Pipelines.
 #
@@ -22,29 +22,40 @@
 import argparse
 import csv
 import glob
-import httplib
 import logging
 import os
 import re
+import sys
+if sys.version_info[0] < 3:
+    import httplib
+else:
+    import http.client
 
 log = logging.getLogger(__name__)
 
 class Sequence:
     def __init__(self, name, size):
-        self.name = name
-        self.size = size
+        self._name = name
+        self._size = size
 
     @property
-    def name():
+    def name(self):
         return self._name
+    @name.setter
+    def name(self, value):
+        self._name = value
+
     @property
-    def size():
+    def size(self):
         return self._size
+    @size.setter
+    def size(self, value):
+        self._size = value
 
 def main():
     # Parse options
     parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-    parser.add_argument("-d", "--dict", help="Sequence Dictionary", type=file, required=True)
+    parser.add_argument("-d", "--dict", help="Sequence Dictionary", type=argparse.FileType('r'), required=True)
     parser.add_argument("-b", "--beds", help="Output BED files", nargs="+", required=True)
     parser.add_argument("-c", "--chunk", help="chunk size in bp (optional ; Default no chunk)", type=int, default=0)
     parser.add_argument("-o", "--overlap", help="chunk overlap in bp (optional ; Default no overlap)", type=int, default=0)
@@ -64,7 +75,7 @@ def main():
         targetSize = total_size 
     currentBED = open(args.beds.pop(0), "w")
     for seq in ordered_dict:
-        print targetSize
+        print(targetSize)
         if len(args.beds) != 0 and currentSize != 0 and currentSize+seq.size >= targetSize:
             currentBED.close()
             print('File ' + currentBED.name + ' ' + str(currentSize))

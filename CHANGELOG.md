@@ -1,6 +1,367 @@
-46 tags, 709 commits
+69 tags, 832 commits
 
-HEAD        Fri Jun 18 11:09:52 2021 -0400        7 commits
+HEAD        Fri Apr 28 16:15:18 2023 +0000        0 commits
+
+2.11.3        Fri May 5 17:52:27 2023 +0000        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2df3ffd Python Tools - Updated getFastaBinedGC for Python3 compatibility
+       cc9910b Version bump to 2.11.2
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      4 commits
+
+       840ad06 Merged in diffBind_bam (pull request #29)
+       d626d7c R-tools DiffBind : changed default bam file name
+       29b6267 R-tools DiffBind : fixed typo
+       e6afe40 R-tools DiffBind : added input option to specify extension of bam files
+
+2.11.2        Tue Apr 4 12:53:12 2023 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       d0392e8 Improvements in runprocssing tools
+       374d0a3 Version bump to 2.11.1
+
+2.11.1        Fri Dec 2 10:47:35 2022 -0500        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       47765a1 Python tools - python-tools/AmpliconSeq_script.py : minor typo fix
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       4c7e2d7 CHANGELOG for 2.11.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      2 commits
+
+       568c9cd FastqReadNameEdit updated
+       ee3dc4a Some minor changes to R-tools
+
+2.11.0        Wed Nov 9 15:16:49 2022 +0000        19 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+
+       8278f1c undo nundesired changes in ihec_metrics
+       ef03f1e minor format change
+       fefa6a0 Python Scripts - updating run Processing metrics
+       5d3ec55 Python Scripts - added working_dir as 2nd argument in ihec_metrics
+       69da92f R-Scripts - Added batch efet corection to deseq2
+       3f10c69 Version bump to 2.10.10
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      13 commits
+
+       57b523a Version bump to 2.11.0
+       920057b R-tools - correct typo in deseq2.R
+       8913947 R-tools - corretions in deseq2.R
+       be3b365 R-TOOLS - cleaning deseq2.R from debug prints
+       da205b8 R-tools - some adjustments to the batch effect correction in deseq2.R
+       0c180c5 minor
+       fb9edf6 R-tools - Fixed deseq2.R for batch effect correction
+       02599f9 Python-tools - updates in AmpliconSeq_script.py
+       e4b4b52 R-tools - correcting deseq2.R with missing curly bracket
+       3ed5904 R-tools : updated help of deseq2.R
+       0209640 Python tools - minor formating in AmpliconSeq_script.py
+       08591da Python tools - updated parseTrinotateOutput to Python3 syntax
+       53e4353 Python tools - correct rrnaBAMconter python3 syntax
+
+2.10.10        Wed Sep 28 12:51:35 2022 -0400        9 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       c316557 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       fd73915 Python tools : CpG_coveragStats now compatible with Python3
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      5 commits
+
+       9204711 Merged in DiffBInd_hotfix (pull request #28)
+       7701f42 Debug latest commit
+       5595842 Adding contrastnb param for cit test for chipseq - atacseq pipeline
+       2303dc7 Reading chrList from input as a string being like "chr1,chr2" (ini file for GenPipes)
+       1a84904 Changing awk for allowing genomes to have "-" within its name
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       200a87b added anno_fuse for rnaseq pipeline
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b49abc9 Merged in rna_seq_update (pull request #27)
+
+2.10.9        Fri Jun 24 18:40:14 2022 +0000        5 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       66770a5 Version bump to 2.10.9
+       8a82bca Python tools - Run Processing metrics : improved alignment metrics function
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7685c96 methylKit.R edited online with Bitbucket
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       81ba9ec added a cutoff to remove based on readcounts
+
+  Pubudu Nawarathna <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       aa450a1 Merged in methylkit_diff_methy (pull request #26)
+
+2.10.8        Thu Jun 16 17:00:15 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      3 commits
+
+       7e2580b Version bump to 2.10.8
+       c3b5959 Python Tools : run processing metrics improved
+       c969134 Version bump to 2.10.7
+
+2.10.7        Tue Jun 7 17:26:05 2022 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7cc985c Run Procesisng : setting verifyBamID output as non-mandatory
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       af6e5b1 Version bump to 2.10.6
+
+2.10.6        Fri Jun 3 19:17:57 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7dff0c5 Version bump to 2.10.5
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       ff40611 Merged in DiffBInd_hotfix (pull request #25)
+       8705a96 Debugging asva.R
+
+2.10.5        Fri May 6 12:21:07 2022 -0400        8 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      6 commits
+
+       8b44038 Python Tools - RunRprocessingMetrics2json : allowing absence of verifyBamID metrics
+       29a69bf Version bump to 2.10.5
+       90cc30e Python Tools - updated preprocess.py to avoid empty lines insertion in the header
+       716a3a1 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       f63a433 Python Tools - updated preprocess.py for Python3 compatibility
+       81b8095 Version bump to 2.10.4
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       a11f9cf Merged in verifybamidfix (pull request #24)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       91089e2 Accept both tsv and selfSM extension for VerifyBamID
+
+2.10.4        Mon May 2 16:22:17 2022 +0000        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       13eb97d Version bump to 2.10.3
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      2 commits
+
+       9a0c243 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       890ef0b Python tools - updated fixVS2VCF.py and format2pcgr.py to be python3 compatible
+
+2.10.3        Mon Apr 11 14:48:08 2022 -0400        4 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       6387aa9 Version bump to 2.10.2
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      1 commits
+
+       eae38f3 Merged in DiffBInd_hotfix (pull request #23)
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       cdfd52a Added FDR and P-value cutoff to all the functions
+
+  Pubudu Nawarathna Mudiyanselage <pubudu@narval1.narval.calcul.quebec>      1 commits
+
+       99dfd96 Removed comments
+
+2.10.2        Tue Apr 5 12:37:33 2022 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       9a13ef3 Version bump to 2.10.1
+
+  Édouard Henrion <henrione@narval2.narval.calcul.quebec>      1 commits
+
+       23be1ae PYTHON TOOLS - Updating fixVS2VCF.py to run with Python3
+
+  Édouard Henrion <henrione@narval3.narval.calcul.quebec>      1 commits
+
+       169f9d4 PYTHON TOOLS : updating dict2BEDs.py so it's compatible to both Python2 and Python3
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       02f9aec rrnaBAMcounter.py edited online with Bitbucket
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       ffc257e Merged in rrnaBAMCounter_pythonupdate (pull request #22)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       6569fa5 Remove unused imports and convert print to python3
+
+2.10.1        Wed Mar 9 15:49:27 2022 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       2f2b163 Python Tools - Run Processing : updating runProcessingMetrics2Json.py with same format as pipeline
+       8b349f5 Version bump to 2.10.0
+
+2.10.0        Thu Mar 3 15:15:38 2022 -0500        7 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      4 commits
+
+       d8fff50 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       6af9e78 PYTHON TOOLS - Run Procssing : updates and fixes in runProcessingMetricsToJson.py + removing useless run processing tools
+       540404c Python tools - Run Processing : adding tool to push metrics of run processing into a standardized report in SON format
+       d9145c7 Version bump to 2.9.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      1 commits
+
+       c731ca7 transfer.sh - Testing removing the mkdir before rsync
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       9beef29 Merged in data_transfer_script (pull request #21)
+       3ca743d Updating transfer tool for syncing symlinks
+
+2.9.1        Fri Dec 17 10:47:28 2021 -0500        3 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       bf75bd7 Version bump to 2.9.0
+
+  pubudumanoj <pubudu.nawarathna@mail.mcgill.ca>      2 commits
+
+       8687a39 fixed a typo
+       08641a3 added pca plots to the report improved to analyse ATAC-seq peaks
+
+2.9.0        Tue Dec 7 11:06:54 2021 -0500        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       b4d1fa5 MUGQIC_TOOLS - adding script to combine metrics from fgbio DemuxFastqs
+       605ae14 Version bump to 2.8.2
+
+2.8.2        Tue Nov 30 11:22:49 2021 -0500        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      5 commits
+
+       6b7b175 Updated VERSION prior new release
+       1f88a55 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       a8ce1bd PYTHON TOOLS - Run Processing : improved metrics in runProcessingSampleReport.py
+       43b17d9 Version bump to 2.8.2-beta
+       e01530f Version bump to 2.8.1
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       b5cb280 adding signal_to_noise in epiQC pipeline
+
+2.8.1        Wed Oct 27 16:17:08 2021 -0400        6 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       e61de6e Version bump to 2.8.1-beta
+       5e1c9d6 Version bump to 2.8.0
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7f606de MGUQIC_TOOLS - ampliconSeq Tools : updated use of tmp in cleanOTUtable.sh
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      3 commits
+
+       39f2955 modified chipseq DiffBind report Fixed text decorations
+       eb08eaf minor fix to the path name
+       cba6fda Added KOPathawayAnalysis.R in the seq2fun protocol of the de-novo RNA-seq pipeline
+
+2.8.0        Wed Oct 13 13:17:49 2021 -0400        11 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      2 commits
+
+       8752483 Version bump to 2.7.1-beta
+       cf1fd45 Version bump to 2.7.0
+
+  Hector Galvez <jose.hector.galvez@computaitonalgenomics.ca>      3 commits
+
+       3df3cf9 Fix to the rsync copy issue provoked by the slash at the end of the input arguemnt (fix by Paul S.)
+       ae6effa Fixed but so that script errors out correctly when no arguments are provided
+       bb4e920 Fixed permissions issue
+
+  jgalvez <jose.hector.galvez@computationalgenomics.ca>      1 commits
+
+       3d972d0 Added first version of data transfer script tools/transfer.sh
+
+  José Héctor Gálvez López <jose.hector.galvez@computationalgenomics.ca>      2 commits
+
+       1d65a64 Merged in data_transfer_script (pull request #20)
+       82f6eed Merged master into data_transfer_script
+
+  P-O Quirion <pioliqui@gmail.com>      1 commits
+
+       cc84f72 removing extra \
+
+  Robert Syme <rob.syme@gmail.com>      1 commits
+
+       a4916fe Merged in goseq_fix (pull request #19)
+
+  Rob Syme <rob.syme@gmail.com>      1 commits
+
+       7a21f95 Fixes a bug caused by reading DGE results with NAs
+
+2.7.0        Wed Aug 18 14:14:48 2021 -0400        9 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       3ff4d3d updating version for release
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      2 commits
+
+       fdf9d17 Merge branch 'master' of bitbucket.org:mugqic/mugqic_tools
+       3fa0c51 Version bump to 2.6.1
+
+  Paul Stretenowich <paul.stretenowich@gmail.com>      2 commits
+
+       85ff693 Fixing file name finding
+       82aae03 Changing name
+
+  Paul Stretenowich <paul.stretenowich@mcgill.ca>      2 commits
+
+       f71165c Merged in IHEC_chipseq_metrics_fix (pull request #18)
+       12a2e94 Merged master into IHEC_chipseq_metrics_fix
+
+  Pierre-Olivier Quirion <pierre-olivier.quirion@computationalgenomics.ca>      1 commits
+
+       4b13b08 cleanOTUtable.sh edited online with Bitbucket
+
+  Pubudu Nawarathna Mudiyanselage <pubudu.nawarathna@mail.mcgill.ca>      1 commits
+
+       f6829c2 added epiqc.py file for epiQC report generation and signal_noise.py in the epiqc pipeline
+
+2.6.1        Mon Jul 26 19:22:14 2021 +0000        2 commits
+
+  Robert Eveleigh <eveleigh@beluga1.int.ets1.calculquebec.ca>      1 commits
+
+       63e3b93 sequenza fixes
+
+  Robert Eveleigh <robert.eveleigh@mcgill.ca>      1 commits
+
+       6c74997 Merged in tumor_pair (pull request #17)
+
+2.6.0        Fri Jun 18 17:44:38 2021 +0000        8 commits
+
+  Édouard Henrion <henrione@beluga2.int.ets1.calculquebec.ca>      1 commits
+
+       0a770fa Version bump to 2.6.0
 
   ehenrion <edouard.henrion@mcgill.ca>      2 commits
 
