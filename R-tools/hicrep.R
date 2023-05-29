@@ -183,7 +183,7 @@ calculate_optimal_h <- function(mat1=NULL, mat2=NULL, bin=NULL, boundary=NULL){
 ARG = commandArgs(trailingOnly=T)
 
 ## default arg values
-no default args
+#no default args
 
 ## get arg variables
 for (i in 1:length(ARG)) {
