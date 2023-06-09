@@ -131,17 +131,16 @@ def getIndexHash_from_splitBarcode(
     return dict_to_update
 
 def getIndexHash_from_BCL2fastq(
-    inputs,
+    input_file,
     readset,
     dict_to_update
     ):
 
     stats_json_file = ""
-    for in_file in inputs:
-        if "Stats.json" in in_file:
-            stats_json_file = in_file
-    if not stats_json_file:
-        sys.exit("Error - bcl2fasfq index metrics JSON file not found in  : " + "\n".join(inputs))
+    if "Stats.json" in input_file:
+        stats_json_file = input_file
+    else:
+        sys.exit("Error - bcl2fasfq index metrics JSON file not found in  : " + input_file)
 
     with open(stats_json_file, 'r') as json_file:
         stats_json = json.load(json_file)
