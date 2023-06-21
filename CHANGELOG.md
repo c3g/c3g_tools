@@ -1,6 +1,16 @@
-71 tags, 841 commits
+72 tags, 843 commits
 
-HEAD        Mon May 29 14:31:08 2023 +0000        0 commits
+HEAD        Thu Jun 8 21:22:57 2023 -0400        0 commits
+
+2.12.2        Thu Jun 8 21:24:45 2023 -0400        2 commits
+
+  Edouard Henrion <edouard.henrion@mcgill.ca>      1 commits
+
+       504679d Python Tools - RunProcessing : corrected bcl2fastq metrics
+
+  ehenrion <edouard.henrion@mcgill.ca>      1 commits
+
+       7720091 Version bump to 2.12.1
 
 2.12.1        Mon May 29 14:33:36 2023 +0000        2 commits
 
