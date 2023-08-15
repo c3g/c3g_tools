@@ -57,7 +57,7 @@ def getarg(argument):
         else:
             not_found = []
             for in_file in inputs:
-                if not os.path.exists(json_file):
+                if not os.path.exists(in_file):
                     not_found.append(in_file)
             if not_found:
                 sys.exit("Error - input file(s) not found :\n  " + "\n  ".join(not_found))
