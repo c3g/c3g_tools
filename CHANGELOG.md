@@ -1,6 +1,23 @@
-72 tags, 843 commits
+73 tags, 849 commits
 
-HEAD        Thu Jun 8 21:22:57 2023 -0400        0 commits
+HEAD        Wed Oct 18 14:07:21 2023 -0400        0 commits
+
+2.12.3        Wed Oct 18 14:36:25 2023 -0400        6 commits
+
+  Henrion <edouard.henrion@computationalgenomics.ca>      1 commits
+
+       4924acd Version bump to 2.12.2
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      4 commits
+
+       5d71c5a Version bump to 2.12.3
+       42834ec mugqic_tools : merge changes from rjme
+       890f006 run processing : add file sizes for fastqs and bams to run validation report
+       093364a run processing : fixed error in check for input file exist
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      1 commits
+
+       bc763b0 Merged in run_proc_file_sizes (pull request #31)
 
 2.12.2        Thu Jun 8 21:24:45 2023 -0400        2 commits
 

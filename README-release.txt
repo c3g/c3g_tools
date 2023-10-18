@@ -5,15 +5,15 @@ vim VERSION
 
 # Update mugqic_tools module version
 vim ../genpipes/resources/modules/mugqic_tools.sh
-(VERSION=2.12.0)
+(VERSION=2.12.3)
 
-# Tag the branch and push the tag. You'll need to have a gpg signature for this. Extra precaution
-git tag -s 2.12.0 -m 'Release 2.12.0'
+# Tag the branch and push the tag. 
+git tag 2.12.3 -m 'Release 2.12.3'
 git push -u origin --tags
 
 # Recreate the CHANGELOG.md
 bash ~/repo/dump_ChangeLog.sh > CHANGELOG.md
-git commit -a -m "Version bump to 2.12.0"
+git commit -a -m "Version bump to 2.12.3"
 git push
 
 # Create a release tarball archive
