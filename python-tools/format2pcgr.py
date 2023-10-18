@@ -46,7 +46,7 @@ def process_variant(variant, callers, type, normal, tumor):
         else:
             variant.INFO['NVAF'] = 0
 
-    elif(callers[0] == "GATK"):
+    elif callers[0] == "GATK":
         TAD = variant.format('AD')[tumor]
         variant.INFO['TDP'] = int(TAD.item(0))+int(TAD.item(1))
 
@@ -70,14 +70,14 @@ def process_variant(variant, callers, type, normal, tumor):
     #        variant.INFO['NVAF'] = 0
 
     else:
-        if(variant.format('AD')[tumor].item(0) < 0):
+        if variant.format('AD')[tumor].item(0) < 0:
             TDP =  variant.format('DP')[tumor]
             TAD = np.array([int(TDP),0])
 
         else:
             TAD = variant.format('AD')[tumor]
 
-        if(variant.format('AD')[normal].item(0) < 0):
+        if variant.format('AD')[normal].item(0) < 0:
             NDP =  variant.format('DP')[normal]
             NAD = np.array([int(NDP),0])
 
@@ -111,6 +111,7 @@ if __name__ == "__main__":
     parser.add_argument('-f', '--filter', help="minimum number of caller support (default:1)", default=1)
     parser.add_argument('-fo', '--filter_only', help="filter based on number of callers only", action="store_true", default=False)
     parser.add_argument('-to', '--tumor_only', help="add TDP and TVAF to tumor only vcf", action="store_true", default=False)
+    parser.add_argument('-tag', '--caller_tag', help="add caller name in cases on calling on one caller", required=False, default="GATK")
     args = parser.parse_args()
     args.logLevel = "INFO"
 
@@ -120,7 +121,7 @@ if __name__ == "__main__":
 
     sample_list = input.samples
 
-    if (sample_list.index(args.tumor_name) == 0):
+    if sample_list.index(args.tumor_name) == 0:
         normal_ordinal = 1
         tumor_ordinal = 0
 
@@ -133,7 +134,7 @@ if __name__ == "__main__":
         " Tumor: " + str(tumor_ordinal) + "\n"
     )
 
-    if(args.tumor_only == True):
+    if args.tumor_only == True:
         #input.add_info_to_header({'ID': 'TAL', 'Number': '1', 'Type': 'String', 'Description': 'Confidence of call i.e. number of callers supporting the variant'})
         input.add_info_to_header({'ID': 'TDP', 'Number': '1', 'Type': 'Integer', 'Description': 'Tumor depth derived from tumor AD field'})
         input.add_info_to_header({'ID': 'TVAF', 'Number': '1', 'Type': 'Float', 'Description': 'Tumor variant allele frequency derived from tumor AD field'})
@@ -148,20 +149,23 @@ if __name__ == "__main__":
     output = Writer(args.output_file, input)
 
     for variant in input:
-        if(args.tumor_only == False):
-            callers = variant.INFO.get('CALLERS').split(",")
-
-            if(len(callers) >= int(args.filter) and args.filter_only == True):
+        if not args.tumor_only and args.caller_tag:
+            if args.caller_tag != "GATK":
+                callers = [args.caller_tag]
+            else:
+                callers = variant.INFO.get('CALLERS').split(",")
+            
+            if len(callers) >= int(args.filter) and args.filter_only:
 
                 output.write_record(variant)
 
-            elif(len(callers) >= int(args.filter) and args.filter_only == False):
+            elif len(callers) >= int(args.filter) and not args.filter_only:
                 new_variant = process_variant(variant, callers, args.variant_type, normal_ordinal, tumor_ordinal)
 
                 output.write_record(new_variant)
-
-        elif(args.tumor_only == True):
-            callers= ['GATK']
+                
+        elif args.tumor_only:
+            callers = [args.caller_tag]
             new_variant = process_variant(variant, callers, args.variant_type, normal_ordinal, tumor_ordinal)
 
             output.write_record(new_variant)
