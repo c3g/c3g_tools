@@ -273,7 +273,7 @@ if(diff_method=="DBA_DESEQ2"){
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
-dba.ob.diff <- dba.report(dba.ob.cont, th=1, bUsePval=bUsePval)
+dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
 #' New correlation heatmap based on the count scores
