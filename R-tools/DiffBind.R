@@ -299,9 +299,9 @@ if(contrastnb=="cit"){
 
 #+ Fig3.2, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
 if(contrastnb=="cit"){
-  dba.plotPCA(dba.ob.cont, label=DBA_ID)
+  dba.plotPCA(dba.ob.cont, label=DBA_ID, th=th)
 } else {
-  dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID)
+  dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID, th=th)
 }
 
 #+ Fig4, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
