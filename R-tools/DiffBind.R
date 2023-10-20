@@ -257,14 +257,6 @@ libsizes <- cbind(LibReads=info$Reads, FRiP=info$FRiP, PeakReads=round(info$Read
 #' For each sample, multiplying the value in theReadscolumn by the correspondingFRiPvaluewill yield the number of reads that overlap a consensus peak
 as.data.frame(libsizes)
 
-#' New correlation heatmap based on the count scores
-
-#+ Fig2.1, fig.cap = "Fig 2.1: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
-plot(dba.ob.count)
-
-#+ Fig2.2, fig.cap = "Fig 2.2: PCA plot using affinity (read count) data for all sites" , fig.align = "center"
-dba.plotPCA(dba.ob.count,DBA_ID,label=DBA_CONDITION, th=th, bUsePval=bUsePval)
-
 #dba.ob.norm <- dba.normalize(dba.ob.count, method=DBA_DESEQ2)
 #print(noquote(diff_method))
 if(diff_method=="DBA_DESEQ2"){
@@ -281,6 +273,17 @@ if(diff_method=="DBA_DESEQ2"){
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
+dba.ob.diff <- dba.report(dba.ob.cont, th=1, bUsePval=bUsePval)
+write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
+
+#' New correlation heatmap based on the count scores
+
+#+ Fig2.1, fig.cap = "Fig 2.1: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
+plot(dba.ob.count)
+
+#+ Fig2.2, fig.cap = "Fig 2.2: PCA plot using affinity (read count) data for all sites" , fig.align = "center"
+dba.plotPCA(dba.ob.count,DBA_ID,label=DBA_CONDITION, th=th, bUsePval=bUsePval)
+
 #+ Fig3.1, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
 if(contrastnb=="cit"){
   plot(dba.ob.cont)
@@ -295,9 +298,6 @@ if(contrastnb=="cit"){
   dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID)
 }
 
-dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
-
-
 #+ Fig4, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
 dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE, th=th, bUsePval=bUsePval)
 
@@ -307,7 +307,6 @@ dba.plotMA(dba.ob.cont, th=th, bUsePval=bUsePval)
 #+ Fig6, fig.cap = "Fig 6: Volcano plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
 dba.plotVolcano(dba.ob.cont, th=th, bUsePval=bUsePval)
 
-write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
 #' Below table displays first 6 rows of the differential analysis results using `r diff_method`
 head(as.data.frame(dba.ob.diff))
