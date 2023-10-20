@@ -15,6 +15,7 @@
 #'  minMembers: 2
 #'  method: "DBA_DESEQ2"
 #'  th: 0.05
+#'  thT: 0.05
 #'  bUsePval: FALSE
 #'  contrastnb: 1
 #' output:
@@ -55,7 +56,8 @@ usage = function(errM) {
   cat("       -p              : peak file directory\n")
   cat("       -minMembers     : MinMembers in a group\n")
   cat("       -minOverlap     : minOverlap in a group\n")
-  cat("       -th             : FDR threshold\n")
+  cat("       -th             : FDR threshold to use in figures\n")
+  cat("       -thT            : FDR threshold to use for tables\n")
   cat("       -bUsePval       : Use P-value instead FDR\n")
   cat("       -contrastnb     : Number of contrast to use (if \"cit\" set, contrast is skipped)\n")
   cat("       -h              : this help\n\n")
@@ -79,6 +81,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   out_dir = params$dir
   diff_method = params$method
   th = params$th
+  thT = params$thT
   bUsePval = params$bUsePval
   contrastnb = params$contrastnb
   
@@ -103,6 +106,7 @@ minoverlap=2
 minmembers=2
 diff_method="DBA_DESEQ2"
 th = 0.05
+thT = 0.05
 bUsePval = FALSE
 contrastnb = 1
 
@@ -132,6 +136,8 @@ for (i in 1:length(ARG)) {
     out_dir = ARG[i+1]
   } else if (ARG[i] == "-th") {
     th = ARG[i+1]
+  } else if (ARG[i] == "-thT") {
+    thT = ARG[i+1]
   } else if (ARG[i] == "-bUsePval") {
     bUsePval = ARG[i+1]
   } else if (ARG[i] == "contrastnb") {
@@ -273,7 +279,7 @@ if(diff_method=="DBA_DESEQ2"){
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
-dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
+dba.ob.diff <- dba.report(dba.ob.cont, th=thT, bUsePval=bUsePval)
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
 #' New correlation heatmap based on the count scores
