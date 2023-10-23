@@ -15,6 +15,7 @@
 #'  minMembers: 2
 #'  method: "DBA_DESEQ2"
 #'  th: 0.05
+#'  thT: 0.05
 #'  bUsePval: FALSE
 #'  contrastnb: 1
 #' output:
@@ -55,7 +56,8 @@ usage = function(errM) {
   cat("       -p              : peak file directory\n")
   cat("       -minMembers     : MinMembers in a group\n")
   cat("       -minOverlap     : minOverlap in a group\n")
-  cat("       -th             : FDR threshold\n")
+  cat("       -th             : FDR threshold to use in figures\n")
+  cat("       -thT            : FDR threshold to use for tables\n")
   cat("       -bUsePval       : Use P-value instead FDR\n")
   cat("       -contrastnb     : Number of contrast to use (if \"cit\" set, contrast is skipped)\n")
   cat("       -h              : this help\n\n")
@@ -79,6 +81,7 @@ if(isTRUE(getOption('knitr.in.progress'))){
   out_dir = params$dir
   diff_method = params$method
   th = params$th
+  thT = params$thT
   bUsePval = params$bUsePval
   contrastnb = params$contrastnb
   
@@ -103,6 +106,7 @@ minoverlap=2
 minmembers=2
 diff_method="DBA_DESEQ2"
 th = 0.05
+thT = 0.05
 bUsePval = FALSE
 contrastnb = 1
 
@@ -132,6 +136,8 @@ for (i in 1:length(ARG)) {
     out_dir = ARG[i+1]
   } else if (ARG[i] == "-th") {
     th = ARG[i+1]
+  } else if (ARG[i] == "-thT") {
+    thT = ARG[i+1]
   } else if (ARG[i] == "-bUsePval") {
     bUsePval = ARG[i+1]
   } else if (ARG[i] == "contrastnb") {
@@ -244,7 +250,7 @@ dba.ob <- dba(sampleSheet=samplesheet, minOverlap=minoverlap)
 print(dba.ob)
 
 #' Using the data from the peak calls, a correlation heatmap can be generated which gives an initial clustering of the samples using the cross-correlations of each row of the binding matrix.
-#+ Fig1, fig.cap = "Fig 1: Correlation heatmap, using occupancy (peak caller score) data" , fig.align = "center"
+#+ Fig1, error = TRUE, fig.cap = "Fig 1: Correlation heatmap, using occupancy (peak caller score) data" , fig.align = "center"
 plot(dba.ob)
 
 dba.ob.count <- dba.count(dba.ob, bParallel=F)
@@ -273,38 +279,38 @@ if(diff_method=="DBA_DESEQ2"){
   dba.ob.cont <- dba.analyze(dba.ob.cont, bBlacklist=F, bGreylist=F, method=DBA_ALL_METHODS)
 }
 
-dba.ob.diff <- dba.report(dba.ob.cont, th=th, bUsePval=bUsePval)
+dba.ob.diff <- dba.report(dba.ob.cont, th=thT, bUsePval=bUsePval)
 write.table(dba.ob.diff, file=out_path, sep="\t", col.names=T, row.names=F, quote=F)
 
 #' New correlation heatmap based on the count scores
 
-#+ Fig2.1, fig.cap = "Fig 2.1: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
+#+ Fig2.1, error = TRUE, fig.cap = "Fig 2.1: Correlation heatmap, using affinity (read count) data" , fig.align = "center"
 plot(dba.ob.count)
 
-#+ Fig2.2, fig.cap = "Fig 2.2: PCA plot using affinity (read count) data for all sites" , fig.align = "center"
+#+ Fig2.2, error = TRUE, fig.cap = "Fig 2.2: PCA plot using affinity (read count) data for all sites" , fig.align = "center"
 dba.plotPCA(dba.ob.count,DBA_ID,label=DBA_CONDITION, th=th, bUsePval=bUsePval)
 
-#+ Fig3.1, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
+#+ Fig3.1, error = TRUE, fig.cap = "Fig 3.1: Correlation heatmap, using only significantly differentially bound sites" , fig.align = "center"
 if(contrastnb=="cit"){
   plot(dba.ob.cont)
 } else {
   plot(dba.ob.cont,contrast=contrastnb)
 }
 
-#+ Fig3.2, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
+#+ Fig3.2, error = TRUE, fig.cap = "Fig 3.2: PCA plot using affinity data for only differentially bound sites" , fig.align = "center"
 if(contrastnb=="cit"){
-  dba.plotPCA(dba.ob.cont, label=DBA_ID)
+  dba.plotPCA(dba.ob.cont, label=DBA_ID, th=th)
 } else {
-  dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID)
+  dba.plotPCA(dba.ob.cont, contrast=contrastnb, label=DBA_ID, th=th)
 }
 
-#+ Fig4, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
+#+ Fig4, error = TRUE, fig.cap = "Fig 4: Ven diagram of Gain vs Loss differentially bound sites" , fig.align = "center"
 dba.plotVenn(dba.ob.cont,contrast=1,bDB=TRUE,bGain=TRUE,bLoss=TRUE,bAll=FALSE, th=th, bUsePval=bUsePval)
 
-#+ Fig5, fig.cap = "Fig 5: MA plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
+#+ Fig5, error = TRUE, fig.cap = "Fig 5: MA plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
 dba.plotMA(dba.ob.cont, th=th, bUsePval=bUsePval)
 
-#+ Fig6, fig.cap = "Fig 6: Volcano plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
+#+ Fig6, error = TRUE, fig.cap = "Fig 6: Volcano plot of Resistant-Responsive contrast. Sites identified as significantly differentially bound shown in red" , fig.align = "center"
 dba.plotVolcano(dba.ob.cont, th=th, bUsePval=bUsePval)
 
 
