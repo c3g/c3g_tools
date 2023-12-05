@@ -167,10 +167,10 @@ for (i in 2:ncol(design)) {
 
     tmp <- read.table(paste(output_folder, "/additional_files/",designName,"/methtiles.merged.normalized.csv",sep=""), header=T, sep="\t", stringsAsFactors=F, check.names=F)
     a <- c(paste(tmp[,1],".",tmp[,2],".",tmp[,3],sep=""))
-    b <- cbind(tmp[,1:3], a, a, "+", tmp[,4:ncol(tmp)])
-    colnames(b)[4:6] <- c("peak","peak","strand")
+    b <- cbind(tmp[,1:3], a, "+", tmp[,4:ncol(tmp)])
+    colnames(b)[4:5] <- c("peak","strand")
     b[,2] <- b[,2]-1
-    write.table(b, paste(output_folder, "/additional_files/",designName,"/methtiles.merged.normalized.more_columns.bed",sep=""), quote=F, row.names=F, col.names=T, sep="\t")
+    write.table(b, paste(output_folder, "/additional_files/",designName,"/methtiles.merged.normalized.more_columns.tsv",sep=""), quote=F, row.names=F, col.names=T, sep="\t")
     print("Finish writing merged methylation profile per tile!");
 
     # Generate graphs
