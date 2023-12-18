@@ -263,6 +263,28 @@ def getQcHash(
 
     return dict_to_update
 
+def getFastpHash(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    
+    if ".fastp.json" in input_file:
+        fastp_json_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for fastp metrics : " + input_file)
+
+    with open(fastp_json_file, 'r') as json_file:
+        fastp_json = json.load(json_file)
+
+    dict_to_update['nb_reads'] = fastp_json['summary']['before_filtering']['total_reads']
+    dict_to_update['yield'] = fastp_json['summary']['before_filtering']['total_bases']
+    dict_to_update['duplicate_rate'] = fastp_json['duplication']['rate']
+    dict_to_update['avg_qual'] = (sum(fastp_json['read1_before_filtering']['quality_curves']['mean']) + sum(fastp_json['read2_before_filtering']['quality_curves']['mean'])) / 300
+    dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
+
+    return dict_to_update
+
 def getBlastHash(
     input_file,
     readset,
@@ -470,6 +492,10 @@ def report(
                 elif step == 'qc_graphs':
                     section = 'qc'
                     new_dict = getQcHash(inputs[0], readset, record[section])
+                
+                elif step == 'fastp':
+                    section = 'qc'
+                    new_dict = getFastpHash(inputs[0], readset, record[section])
 
                 elif step == 'blast':
                     section = 'blast'
