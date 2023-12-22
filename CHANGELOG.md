@@ -1,6 +1,22 @@
-75 tags, 863 commits
+76 tags, 868 commits
 
-HEAD        Wed Nov 29 15:03:50 2023 +0000        0 commits
+HEAD        Fri Dec 22 18:58:50 2023 +0000        0 commits
+
+2.12.6        Fri Dec 22 14:01:37 2023 -0500        5 commits
+
+  Jean-Michel Garant <jean-michel.garant@computationalgenomics.ca>      1 commits
+
+       39be23f Removing stray commas that causes tuples & arrays in json
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      3 commits
+
+       7907307 python_tools : fastp metrics to rp json
+       98eb063 Version bump to 2.12.6-beta
+       2ec2d71 Version bump to 2.12.5
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      1 commits
+
+       ccaa719 Merged in fastp_parser (pull request #35)
 
 2.12.5        Wed Nov 29 10:09:37 2023 -0500        5 commits
 
