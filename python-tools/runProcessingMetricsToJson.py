@@ -151,13 +151,13 @@ def getIndexHash_from_BCL2fastq(
 
     for i, sample in enumerate(stats_json['ConversionResults'][0]['DemuxResults']):
         if sample['SampleName'] == readset:
-            dict_to_update['pf_clusters'] = sample['NumberReads'],
-            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf),
-            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
-            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
-            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
-            dict_to_update['yield'] = sample['Yield'],
-            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
+            dict_to_update['pf_clusters'] = sample['NumberReads']
+            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf)
+            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane)
+            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads'])
+            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads'])
+            dict_to_update['yield'] = sample['Yield']
+            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield'])
             dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield'])
 
     return dict_to_update
@@ -260,6 +260,28 @@ def getQcHash(
     dict_to_update['duplicate_rate'] = root.attrib['duplicateRate']
     dict_to_update['nb_reads'] = root.attrib['nbReads']
     dict_to_update['nb_bases'] = root.attrib['nbBases']
+
+    return dict_to_update
+
+def getFastpHash(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    
+    if ".fastp.json" in input_file:
+        fastp_json_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for fastp metrics : " + input_file)
+
+    with open(fastp_json_file, 'r') as json_file:
+        fastp_json = json.load(json_file)
+
+    dict_to_update['nb_reads'] = fastp_json['summary']['before_filtering']['total_reads']
+    dict_to_update['yield'] = fastp_json['summary']['before_filtering']['total_bases']
+    dict_to_update['duplicate_rate'] = fastp_json['duplication']['rate']
+    dict_to_update['avg_qual'] = (sum(fastp_json['read1_before_filtering']['quality_curves']['mean']) + sum(fastp_json['read2_before_filtering']['quality_curves']['mean'])) / 300
+    dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
 
     return dict_to_update
 
@@ -470,6 +492,10 @@ def report(
                 elif step == 'qc_graphs':
                     section = 'qc'
                     new_dict = getQcHash(inputs[0], readset, record[section])
+                
+                elif step == 'fastp':
+                    section = 'qc'
+                    new_dict = getFastpHash(inputs[0], readset, record[section])
 
                 elif step == 'blast':
                     section = 'blast'
