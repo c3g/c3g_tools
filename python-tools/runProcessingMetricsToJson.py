@@ -151,13 +151,13 @@ def getIndexHash_from_BCL2fastq(
 
     for i, sample in enumerate(stats_json['ConversionResults'][0]['DemuxResults']):
         if sample['SampleName'] == readset:
-            dict_to_update['pf_clusters'] = sample['NumberReads'],
-            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf),
-            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane),
-            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads']),
-            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads']),
-            dict_to_update['yield'] = sample['Yield'],
-            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield']),
+            dict_to_update['pf_clusters'] = sample['NumberReads']
+            dict_to_update['pct_of_the_lane'] = 100*sample['NumberReads']/float(total_pf)
+            dict_to_update['pct_on_index_in_lane'] = 100*sample['NumberReads']/float(total_pf_onindex_inlane)
+            dict_to_update['pct_perfect_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['0']/float(sample['NumberReads'])
+            dict_to_update['pct_one_mismatch_barcode'] = 100*sample['IndexMetrics'][0]['MismatchCounts']['1']/float(sample['NumberReads'])
+            dict_to_update['yield'] = sample['Yield']
+            dict_to_update['pct_q30_bases'] = 100*sum([readMetrics['YieldQ30'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield'])
             dict_to_update['mean_quality_score'] = sum([readMetrics['QualityScoreSum'] for readMetrics in sample['ReadMetrics']])/float(sample['Yield'])
 
     return dict_to_update
