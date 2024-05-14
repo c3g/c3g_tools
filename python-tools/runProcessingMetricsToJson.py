@@ -346,7 +346,8 @@ def getAlignmentHash_from_picardMarkDup(
 
     dup_tsv = parseMetricsFile(dup_metrics_file)
 
-    dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION']
+    dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
+    print(type(dict_to_update['aligned_dup_rate']))
 
     return dict_to_update
 
@@ -437,11 +438,11 @@ def getAlignmentHash(
 
     freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else 'N/A'
 
-    dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED']
-    dict_to_update['mean_coverage'] = total_cov
-    dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS']
-    dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER']
-    dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE']
+    dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[2]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[2]['PCT_PF_READS_ALIGNED'])
+    dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else float(total_cov)
+    dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
+    dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
+    dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
     dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
