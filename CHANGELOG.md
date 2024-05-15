@@ -1,6 +1,18 @@
-76 tags, 868 commits
+77 tags, 872 commits
 
-HEAD        Fri Dec 22 18:58:50 2023 +0000        0 commits
+HEAD        Wed May 15 17:47:06 2024 +0000        0 commits
+
+2.12.7        Wed May 15 13:49:40 2024 -0400        4 commits
+
+  Jean-Michel Garant <jean-michel.garant@computationalgenomics.ca>      2 commits
+
+       bcb9856 Merged in metrics_types (pull request #36)
+       8a7d6b3 Add checks to make sure alignment metrics are passed as numerals not strings
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      2 commits
+
+       b3146b5 Version bump to 2.12.7-beta
+       34d6ab7 Version bump to 2.12.6
 
 2.12.6        Fri Dec 22 14:01:37 2023 -0500        5 commits
 
