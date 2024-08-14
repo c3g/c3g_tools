@@ -427,10 +427,13 @@ def getAlignmentHash(
         else:
             sex_det = "?"
 
-        if sex_det == gender:
-            sex_match = True
+        if gender and gender != "Unknown":
+            if sex_det == gender:
+                sex_match = True
+            else:
+                sex_match = False
         else:
-            sex_match = False
+            sex_match = None
     else:
         total_cov = "N/A"
         sex_det = "N/A"
