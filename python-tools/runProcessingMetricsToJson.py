@@ -415,10 +415,10 @@ def getAlignmentHash(
                 chrY_cov += int(row['TotalCoverage'])
                 chrY_covered_bases += int(row['TotalNbCoveredBases'])
             if row['IntervalName'] == "Total":
-                total_cov = row['MeanCoverage']
+                total_cov = float(row['MeanCoverage'])
 
-        chrX_cov = chrX_cov / float(chrX_covered_bases)
-        chrY_cov = chrY_cov / float(chrY_covered_bases) if chrY_covered_bases else float(0)
+        chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov
+        chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if chrY_covered_bases else float(0)
 
         if chrX_cov > 0.8:
             sex_det = "F"
