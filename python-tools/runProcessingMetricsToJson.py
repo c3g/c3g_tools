@@ -445,6 +445,7 @@ def getAlignmentHash(
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else float(total_cov)
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
+    dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(insert_tsv[0]['MEDIAN_INSERT_SIZE'])
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
     dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
