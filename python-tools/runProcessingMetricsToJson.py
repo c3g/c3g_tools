@@ -427,7 +427,7 @@ def getAlignmentHash(
         else:
             sex_det = "?"
 
-        if gender and gender != "Unknown":
+        if gender and gender != "Unknown" and sex_det != "?":
             if sex_det == gender:
                 sex_match = True
             else:
