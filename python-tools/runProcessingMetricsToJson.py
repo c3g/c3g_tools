@@ -427,7 +427,7 @@ def getAlignmentHash(
         else:
             sex_det = "?"
 
-        if gender and gender != "Unknown":
+        if gender and gender != "Unknown" and sex_det != "?":
             if sex_det == gender:
                 sex_match = True
             else:
@@ -435,16 +435,17 @@ def getAlignmentHash(
         else:
             sex_match = None
     else:
-        total_cov = "N/A"
-        sex_det = "N/A"
-        sex_match = "N/A"
+        total_cov = None
+        sex_det = None
+        sex_match = None
 
-    freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else 'N/A'
+    freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
 
     dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[2]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[2]['PCT_PF_READS_ALIGNED'])
-    dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else float(total_cov)
+    dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
+    dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(insert_tsv[0]['MEDIAN_INSERT_SIZE'])
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
     dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
