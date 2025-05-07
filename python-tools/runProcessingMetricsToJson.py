@@ -280,7 +280,7 @@ def getFastpHash(
     dict_to_update['nb_reads'] = fastp_json['summary']['before_filtering']['total_reads']
     dict_to_update['yield'] = fastp_json['summary']['before_filtering']['total_bases']
     dict_to_update['duplicate_rate'] = fastp_json['duplication']['rate']
-    quality_curve = fastp_json['read1_before_filtering']['quality_curves']['mean'].append(fastp_json['read2_before_filtering']['quality_curves']['mean']) if 'read2_before_filtering' in fastp_json else fastp_json['read1_before_filtering']['quality_curves']['mean']
+    quality_curve = fastp_json['read1_before_filtering']['quality_curves']['mean'] + fastp_json['read2_before_filtering']['quality_curves']['mean'] if 'read2_before_filtering' in fastp_json else fastp_json['read1_before_filtering']['quality_curves']['mean']
     dict_to_update['avg_qual'] = sum(quality_curve) / len(quality_curve)
     dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
 
