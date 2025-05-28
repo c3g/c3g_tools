@@ -205,7 +205,6 @@ def getIndexHash_from_BCLConvert(
 
     qual_csv = csv.DictReader(open(qual_csv_file, 'r'), delimiter=',')
 
-    
     bases = 0
     q30 = []
     q_scores = []
