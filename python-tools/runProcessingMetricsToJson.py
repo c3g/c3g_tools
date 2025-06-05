@@ -162,6 +162,63 @@ def getIndexHash_from_BCL2fastq(
 
     return dict_to_update
 
+def getIndexHash_from_BCLConvert(
+    input_files,
+    readset,
+    dict_to_update
+    ):
+
+    stats_csv_file = ""
+    qual_csv_file = ""
+    for in_file in input_files:
+        if "Demultiplex_Stats.csv" in in_file:
+            stats_csv_file = in_file
+        elif "Quality_Metrics.csv" in in_file:
+            qual_csv_file = in_file
+        else:
+            sys.exit("Error - Unexpected input file found for fastq metrics : " + in_file)
+    not_found = []
+    if not stats_csv_file:
+        not_found.append("Demultiplex_Stats.csv")
+    if not qual_csv_file:
+         not_found.append("Quality_Metrics.csv")
+    if not len(not_found) == 0:
+        sys.exit("Error - bclConvert index metrics file(s) not found :\n  " + "\n  ".join(not_found))
+
+    stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
+
+    total_pf = 0
+    total_pf_onindex_inlane = 0
+    for row in stats_csv:
+        total_pf += int(row['# Reads'])
+        if row['SampleID'] != 'Undetermined':
+            total_pf_onindex_inlane += int(row['# Reads'])
+
+    stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
+    for row in stats_csv:
+        if row['Sample_Name'] == readset:
+            dict_to_update['pf_clusters'] = int(row['# Reads'])
+            dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
+            dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
+            dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
+            dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
+
+    qual_csv = csv.DictReader(open(qual_csv_file, 'r'), delimiter=',')
+
+    bases = 0
+    q30 = []
+    q_scores = []
+    for row in qual_csv:
+        if row['Sample_Name'] == readset:
+            bases += int(row["Yield"])
+            if row['ReadNumber'] in ["1","2"]:
+                q30.append(float(row['% Q30']))
+                q_scores.append(float(row['Mean Quality Score (PF)']))
+    dict_to_update['yield'] = bases
+    dict_to_update['pct_q30_bases'] = 100*(sum(q30)/len(q30))
+    dict_to_update['mean_quality_score'] = sum(q_scores)/len(q_scores)
+    return dict_to_update
+
 def getIndexHash_from_DemuxFastqs(
     input_file,
     readset,
@@ -487,6 +544,8 @@ def report(
                                 barcode_name = readset_barcodes[0]
                             new_dict = getIndexHash_from_splitBarcode(inputs[0], barcode_name, barcode_sequences, record[section])
                         if platform == 'illumina':
+                            new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
+                        if platform == 'illumina_bcl2fastq':
                             new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
