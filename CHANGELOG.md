@@ -1,6 +1,38 @@
-79 tags, 881 commits
+80 tags, 899 commits
 
-HEAD        Thu Oct 17 15:02:51 2024 +0000        0 commits
+HEAD        Fri Jun 6 09:13:04 2025 -0400        0 commits
+
+2.12.10        Fri Jun 6 09:13:41 2025 -0400        18 commits
+
+  Jean-Michel Garant <jean-michel.garant@computationalgenomics.ca>      5 commits
+
+       a0cc255 Fix list concatenation of fastp quality curves mean
+       8262dff Merged in run_processing (pull request #41)
+       35b370b Support single end sequencing metricstojson for Freezeman
+       bab2c25 Nonetype instead of N/A string to comply with Freezeman ingestion
+       61c35a9 Include median insert size to the run_validation_json
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      6 commits
+
+       6f74e0a Version bump to 2.12.10
+       35a1715 update release instructions for github
+       e708592 Merge branch 'master' of github.com:c3g/c3g_tools
+       5449cdd formatting
+       c0812c7 updating run processing metrics parsers for bclconvert
+       3fac7e7 in run processing set sex_match to None if sex_det is equal to ? to avoid false sex concordance FALSE in multiqc report
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      6 commits
+
+       a05f8d4 Merged in bcl_convert_parsing (pull request #42)
+       893ddf9 Merged in rp_blast (pull request #40)
+       01e4a40 limit parallel jobs for runBlast.sh
+       39e1e14 replace standard blast with parallel blast for run processing
+       d232016 Version bump to 2.12.10-beta
+       57e6967 Version bump to 2.12.9
+
+  Paul STRETENOWICH <31796146+paulstretenowich@users.noreply.github.com>      1 commits
+
+       1b9ac43 Update README.md
 
 2.12.9        Thu Oct 17 11:11:42 2024 -0400        5 commits
 
