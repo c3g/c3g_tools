@@ -196,7 +196,7 @@ def getIndexHash_from_BCLConvert(
 
     stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
     for row in stats_csv:
-        if row['Sample_Name'] == readset:
+        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
             dict_to_update['pf_clusters'] = int(row['# Reads'])
             dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
             dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
@@ -209,7 +209,7 @@ def getIndexHash_from_BCLConvert(
     q30 = []
     q_scores = []
     for row in qual_csv:
-        if row['Sample_Name'] == readset:
+        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']): #== readset: # fix to make more specific and avoid accidental matches
             bases += int(row["Yield"])
             if row['ReadNumber'] in ["1","2"]:
                 q30.append(float(row['% Q30']))
@@ -475,7 +475,7 @@ def getAlignmentHash(
             if row['IntervalName'] == "Total":
                 total_cov = float(row['MeanCoverage'])
 
-        chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov
+        chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov if float(chrX_covered_bases) > 0 and total_cov > 0 else float(0)
         chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if chrY_covered_bases else float(0)
 
         if chrX_cov > 0.8:
@@ -503,7 +503,7 @@ def getAlignmentHash(
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
-    dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(insert_tsv[0]['MEDIAN_INSERT_SIZE'])
+    dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(float(insert_tsv[0]['MEDIAN_INSERT_SIZE']))
     dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
     dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
