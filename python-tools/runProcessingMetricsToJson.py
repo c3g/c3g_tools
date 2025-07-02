@@ -209,7 +209,7 @@ def getIndexHash_from_BCLConvert(
     q30 = []
     q_scores = []
     for row in qual_csv:
-        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']): #== readset: # fix to make more specific and avoid accidental matches
+        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
             bases += int(row["Yield"])
             if row['ReadNumber'] in ["1","2"]:
                 q30.append(float(row['% Q30']))
