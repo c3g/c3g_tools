@@ -1,6 +1,19 @@
-80 tags, 899 commits
+81 tags, 904 commits
 
-HEAD        Fri Jun 6 09:13:04 2025 -0400        0 commits
+HEAD        Fri Jul 4 11:04:20 2025 -0400        0 commits
+
+2.12.11        Fri Jul 4 11:06:51 2025 -0400        5 commits
+
+  MareikeJaniak <30602072+MareikeJaniak@users.noreply.github.com>      1 commits
+
+       a409baa Merge pull request #1 from c3g/rp_metrics_fixes
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      4 commits
+
+       2da5082 fix zero coverage error for chrY
+       478c312 remove comment
+       902aacf fixes for bclconvert metrics, insert size metrics
+       a1deb03 Version bump to 2.12.10
 
 2.12.10        Fri Jun 6 09:13:41 2025 -0400        18 commits
 
