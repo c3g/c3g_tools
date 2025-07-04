@@ -476,7 +476,7 @@ def getAlignmentHash(
                 total_cov = float(row['MeanCoverage'])
 
         chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov if float(chrX_covered_bases) > 0 and total_cov > 0 else float(0)
-        chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if chrY_covered_bases else float(0)
+        chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if float(chrY_covered_bases) > 0 and total_cov > 0 else float(0)
 
         if chrX_cov > 0.8:
             sex_det = "F"
