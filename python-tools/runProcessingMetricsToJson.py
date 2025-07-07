@@ -543,10 +543,11 @@ def report(
                             else:
                                 barcode_name = readset_barcodes[0]
                             new_dict = getIndexHash_from_splitBarcode(inputs[0], barcode_name, barcode_sequences, record[section])
-                        if platform == 'illumina':
-                            new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
-                        if platform == 'illumina_bcl2fastq':
-                            new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
+                        if platform == 'illumina' or platform == 'illumina_bcl2fastq':
+                            if "Stats.json" in inputs[0]:
+                                new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
+                            else:
+                                new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
