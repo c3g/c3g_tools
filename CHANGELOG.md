@@ -1,6 +1,16 @@
-81 tags, 904 commits
+81 tags, 908 commits
 
-HEAD        Fri Jul 4 11:04:20 2025 -0400        0 commits
+HEAD        Mon Jul 7 10:33:11 2025 -0400        4 commits
+
+  MareikeJaniak <30602072+MareikeJaniak@users.noreply.github.com>      1 commits
+
+       dd3ac91 Merge pull request #2 from c3g/rp_metrics_fixes
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      3 commits
+
+       c298d35 Version bump to 2.12.12
+       e9e9254 bug fix to choose between parsing of bcl2fast or bclconvert
+       d8f85ed Version bump to 2.12.11
 
 2.12.11        Fri Jul 4 11:06:51 2025 -0400        5 commits
 
