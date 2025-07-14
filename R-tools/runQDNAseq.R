@@ -1,4 +1,6 @@
-#!/usr/bin/env Rscript
+# runs QDNAseq analysis for chromosomal aberrations
+# Author: Robert Eveleigh, 2025
+# Usage: Rscript runQDNAseq.R --input_bam <bam> --outdir <out_dir> --binsize <int> --reference <hg38>
 
 # Load necessary libraries
 library(QDNAseq)
@@ -10,7 +12,7 @@ parser <- ArgumentParser(description = "Perform CNV analysis using QDNAseq")
 
 parser$add_argument("-i", "--input_bam", dest="bamfile", required=TRUE, help="Path to the input BAM file")
 parser$add_argument("-o", "--outdir", dest="outdir", required=TRUE, help="Path to the output directory")
-parser$add_argument("-b", "--binsize", dest="binsize", type="integer", default=15, help="Bin size in kb (default: 15)") # Added binsize argument
+parser$add_argument("-b", "--binsize", dest="binsize", type="integer", default=15, help="Bin size in kb (default: 15)")
 parser$add_argument("-r", "--reference", dest="reference", default="hg19", choices=c("hg19", "hg38"), help="Reference genome (hg19 or hg38, default: hg19)") # Added reference genome argument
 parser$add_argument("-s", "--sample", dest="sample", required = TRUE, help="Name of the sample, used to name output files")
 
@@ -18,17 +20,19 @@ args <- parser$parse_args()
 
 # Check if the output directory exists, if not create it.
 if (!dir.exists(args$outdir)) {
-    dir.create(args$outdir, recursive = TRUE) # recursive = TRUE will create parent folders if needed
+    dir.create(args$outdir, recursive = TRUE)
 }
 
 # STEP 1: Load bins with specified size
 if (args$reference == "hg19") {
   bins <- getBinAnnotations(binSize = args$binsize)
 } else if (args$reference == "hg38") {
-  bins <- getBinAnnotations(binSize = args$binsize, genome = "hg38") # Specify reference genome
+  bins <- getBinAnnotations(binSize = args$binsize, genome = "hg38")
+} else {
+  bins <- getBinAnnotations(binSize = args$binsize, genome = args$reference)
 }
 
-# STEP 2: Process BAM files 
+# STEP 2: Process BAM files
 options(future.globals.maxSize = 2000 * 1024^2) # Set to 2GB (adjust as needed)
 
 readCounts <- binReadCounts(bins, bamfiles = args$bamfile, chunkSize = "chr")
