@@ -4,7 +4,6 @@
 
 # Load necessary libraries
 library(QDNAseq)
-library(QDNAseq.hg38)
 library(argparse)
 
 # Set up argument parsing
@@ -22,6 +21,8 @@ args <- parser$parse_args()
 if (!dir.exists(args$outdir)) {
     dir.create(args$outdir, recursive = TRUE)
 }
+
+library(paste("QDNAseq.", args$reference, sep = ""))
 
 # STEP 1: Load bins with specified size
 if (args$reference == "hg19") {
