@@ -4,43 +4,80 @@
 
 # Load necessary libraries
 library(QDNAseq)
-library(argparse)
 
-# Set up argument parsing
-parser <- ArgumentParser(description = "Perform CNV analysis using QDNAseq")
+# Usage
+usage = function(errM) {
+  cat("\nUsage : Rscript -i <input> -o <out_dir> [options]\n")
+  cat("     -i  : bam file\n")
+  cat("     -o  : output directory\n")
+  cat("     -b  : bin size, default = 15\n")
+  cat("     -r  : reference to use, default = hg19\n")
+  cat("     -s  : sample name\n\n")
 
-parser$add_argument("-i", "--input_bam", dest="bamfile", required=TRUE, help="Path to the input BAM file")
-parser$add_argument("-o", "--outdir", dest="outdir", required=TRUE, help="Path to the output directory")
-parser$add_argument("-b", "--binsize", dest="binsize", type="integer", default=15, help="Bin size in kb (default: 15)")
-parser$add_argument("-r", "--reference", dest="reference", default="hg19", choices=c("hg19", "hg38"), help="Reference genome (hg19 or hg38, default: hg19)") # Added reference genome argument
-parser$add_argument("-s", "--sample", dest="sample", required = TRUE, help="Name of the sample, used to name output files")
+  stop(errM)
+}
 
-args <- parser$parse_args()
+ARG <- commandArgs(trailingOnly = T)
+
+# default arg values
+bamfile <- ""
+outdir <- ""
+binsize <- 15
+reference <- "hg19"
+sample <- ""
+
+## get arg variables
+for (i in 1:length(ARG)) {
+    if (ARG[i] == "-i") {
+        bamfile <- ARG[i+1]
+    } else if (ARG[i] == "-o") {
+        outdir <- ARG[i+1]
+    } else if (ARG[i] == "-b") {
+        binsize <- ARG[i+1]
+    } else if (ARG[i] == "-r") {
+        reference <- ARG[i+1]
+    } else if (ARG[i] == "-s") {
+        sample <- ARG[i+1]
+    } else if (ARG[i] == "-h") {
+        usage("")
+    }
+}
+
+## check arg consitency
+if (!(file.exists(bamfile))) {
+    usage("Error : Bam file not found")
+}
+if (out_path == "") {
+    usage("Error : Output directory not specified")
+}
+if (sample == "") {
+    usage("Error : Sample name not specified")
+}
 
 # Check if the output directory exists, if not create it.
-if (!dir.exists(args$outdir)) {
-    dir.create(args$outdir, recursive = TRUE)
+if (!dir.exists(outdir)) {
+    dir.create(outdir, recursive = TRUE)
 }
 
 library(paste("QDNAseq.", args$reference, sep = ""))
 
 # STEP 1: Load bins with specified size
-if (args$reference == "hg19") {
-  bins <- getBinAnnotations(binSize = args$binsize)
-} else if (args$reference == "hg38") {
-  bins <- getBinAnnotations(binSize = args$binsize, genome = "hg38")
+if (reference == "hg19") {
+  bins <- getBinAnnotations(binSize = binsize)
+} else if (reference == "hg38") {
+  bins <- getBinAnnotations(binSize = binsize, genome = "hg38")
 } else {
-  bins <- getBinAnnotations(binSize = args$binsize, genome = args$reference)
+  bins <- getBinAnnotations(binSize = binsize, genome = reference)
 }
 
 # STEP 2: Process BAM files
 options(future.globals.maxSize = 2000 * 1024^2) # Set to 2GB (adjust as needed)
 
-readCounts <- binReadCounts(bins, bamfiles = args$bamfile, chunkSize = "chr")
+readCounts <- binReadCounts(bins, bamfiles = bamfile, chunkSize = "chr")
 
 # Helper function to generate a *single* output file name
 make_output_filename <- function(basename, format = "pdf") {
-    file.path(args$outdir, paste0(sample, ".", basename, ".", args$binsize, "k.", args$reference, ".", format))
+    file.path(outdir, paste0(sample, ".", basename, ".", binsize, "k.", reference, ".", format))
 }
 
 pdf(make_output_filename("read_counts_per_bin"), width =  8, height = 4)
