@@ -8,6 +8,7 @@ import sys
 import getopt
 import re
 import json
+import logging
 import csv
 import subprocess
 import time
@@ -49,7 +50,7 @@ def getarg(argument):
         if not step:
             sys.exit("Error - step parameter is required")
         if not readset and step not in ['basecall', 'index', 'fastq']:
-            sys.exit("Error - readset parameter is requeired for step " + step)
+            sys.exit("Error - readset parameter is required for step " + step)
         if not platform:
             sys.exit("Error - platform parameter is required")
         if len(inputs) == 0:
@@ -60,7 +61,7 @@ def getarg(argument):
                 if not os.path.exists(in_file):
                     not_found.append(in_file)
             if not_found:
-                sys.exit("Error - input file(s) not found :\n  " + "\n  ".join(not_found))
+                logging.warning("Warning - input file(s) not found :\n  " + "\n  ".join(not_found))
 
         return json_file, step, platform, inputs, readset
 
@@ -450,7 +451,7 @@ def getAlignmentHash(
         # don't do anythign as it could just be an RNA case...
         #not_found.append(readset + ".sorted.metrics.targetCoverage.txt")
     if not len(not_found) == 0:
-        sys.exit("Error - alignement metrics file(s) not found :\n  " + "\n  ".join(not_found))
+        sys.exit("Error - alignment metrics file(s) not found :\n  " + "\n  ".join(not_found))
 
     align_tsv = parseMetricsFile(alignment_summary_metrics_file)
     if os.path.isfile(insert_size_metrics_file):
