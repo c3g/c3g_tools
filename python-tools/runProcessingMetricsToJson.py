@@ -442,8 +442,8 @@ def getAlignmentHash(
     not_found = []
     if not alignment_summary_metrics_file:
         not_found.append(readset + ".sorted.metrics.alignment_summary_metrics")
-    if not insert_size_metrics_file:
-         not_found.append(readset + ".sorted.metrics.insert_size_metrics")
+    #if not insert_size_metrics_file:
+    #     not_found.append(readset + ".sorted.metrics.insert_size_metrics")
     # if not verify_bam_id_file:
     #     not_found.append(readset + ".sorted.metrics.verifyBamId.tsv")
 #    if not target_coverage_file:
@@ -453,7 +453,10 @@ def getAlignmentHash(
         sys.exit("Error - alignement metrics file(s) not found :\n  " + "\n  ".join(not_found))
 
     align_tsv = parseMetricsFile(alignment_summary_metrics_file)
-    insert_tsv = parseMetricsFile(insert_size_metrics_file)
+    if os.path.isfile(insert_size_metrics_file):
+        insert_tsv = parseMetricsFile(insert_size_metrics_file)
+    else:
+        insert_tsv = None
     if os.path.isfile(verify_bam_id_file):
         verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
     else:
@@ -503,8 +506,9 @@ def getAlignmentHash(
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
     dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
     dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
-    dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(float(insert_tsv[0]['MEDIAN_INSERT_SIZE']))
-    dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
+    if insert_tsv:
+        dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(float(insert_tsv[0]['MEDIAN_INSERT_SIZE']))
+        dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
     dict_to_update['freemix'] = freemix
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
