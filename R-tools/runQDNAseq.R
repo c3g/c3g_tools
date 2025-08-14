@@ -1,13 +1,13 @@
 # runs QDNAseq analysis for chromosomal aberrations
 # Author: Robert Eveleigh, 2025
-# Usage: Rscript runQDNAseq.R --input_bam <bam> --outdir <out_dir> --binsize <int> --reference <hg38>
+# Usage: Rscript runQDNAseq.R -i <input_bam> -o <out_dir> -b <int> -r <hg38> -s <sample_name>
 
 # Load necessary libraries
 library(QDNAseq)
 
 # Usage
 usage = function(errM) {
-  cat("\nUsage : Rscript -i <input> -o <out_dir> [options]\n")
+  cat("\nUsage : Rscript -i <input> -o <out_dir> -s <sample_name> [options]\n")
   cat("     -i  : bam file\n")
   cat("     -o  : output directory\n")
   cat("     -b  : bin size, default = 15\n")
