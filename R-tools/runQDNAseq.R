@@ -47,7 +47,7 @@ for (i in 1:length(ARG)) {
 if (!(file.exists(bamfile))) {
     usage("Error : Bam file not found")
 }
-if (out_path == "") {
+if (outdir == "") {
     usage("Error : Output directory not specified")
 }
 if (sample == "") {
