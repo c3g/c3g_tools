@@ -11,17 +11,23 @@ from cyvcf2 import VCF, Writer
 import numpy as np
 
 def process_variant(variant, callers, type, normal, tumor):
-
-    if callers[0] == "varscan2":
+    if callers[0] == "clairS":
+        variant.INFO['TAL'] = ",".join(callers)
+        variant.INFO['TDP'] = variant.format('DP')[tumor].item()
+        variant.INFO['TVAF'] = variant.format('AF')[tumor].item()
+        variant.INFO['NDP'] = variant.format('NDP')[tumor].item()
+        variant.INFO['NVAF'] = variant.format('NAF')[tumor].item()
+        
+    elif callers[0] == "varscan2":
         TDP4 = variant.format('DP4').item(tumor).split(",")
         NDP4 = variant.format('DP4').item(normal).split(",")
         variant.INFO['TAL'] = ",".join(callers)
         variant.INFO['TDP'] = int(TDP4[0]) + int(TDP4[1]) + int(TDP4[2]) + int(TDP4[3])
         variant.INFO['TVAF'] = float((int(TDP4[2]) + int(TDP4[3]))/ \
-                                     (int(TDP4[0])+ int(TDP4[1]) + int(TDP4[2]) + int(TDP4[3])))
+                                    (int(TDP4[0])+ int(TDP4[1]) + int(TDP4[2]) + int(TDP4[3])))
         variant.INFO['NDP'] = int(NDP4[0]) + int(NDP4[1]) + int(NDP4[2]) + int(NDP4[3])
         variant.INFO['NVAF'] = float((int(NDP4[2]) + int(NDP4[3])) / \
-                                     (int(NDP4[0]) + int(NDP4[1]) + int(NDP4[2]) + int(NDP4[3])))
+                                    (int(NDP4[0]) + int(NDP4[1]) + int(NDP4[2]) + int(NDP4[3])))
         #print(callers[0],DP4)
 
     elif callers[0] == "strelka2" and variant.is_indel and type == "somatic":
@@ -34,7 +40,7 @@ def process_variant(variant, callers, type, normal, tumor):
 
         if variant.INFO['TDP'] != 0:
             variant.INFO['TVAF'] = float(int(TAR.item(0))/ \
-                                     (int(TAR.item(0)) + int(TIR.item(1))))
+                                    (int(TAR.item(0)) + int(TIR.item(1))))
         else:
             variant.INFO['TVAF'] = 0
 
@@ -42,7 +48,7 @@ def process_variant(variant, callers, type, normal, tumor):
 
         if variant.INFO['NDP'] != 0:
             variant.INFO['NVAF'] = float(int(NAR.item(0))/ \
-                                     (int(NAR.item(0)) + int(NIR.item(1))))
+                                    (int(NAR.item(0)) + int(NIR.item(1))))
         else:
             variant.INFO['NVAF'] = 0
 
@@ -52,7 +58,7 @@ def process_variant(variant, callers, type, normal, tumor):
 
         if variant.INFO['TDP'] != 0:
             variant.INFO['TVAF'] = float(int(TAD.item(1))/ \
-                                     (int(TAD.item(0))+int(TAD.item(1))))
+                                    (int(TAD.item(0))+int(TAD.item(1))))
         else:
             variant.INFO['TVAF'] = 0
 
@@ -65,7 +71,7 @@ def process_variant(variant, callers, type, normal, tumor):
 
     #    if int(NAD.item(0))+int(NAD.item(1)) != 0:
     #        variant.INFO['NVAF'] = float(int(NAD.item(1))/ \
-    #                                 (int(NAD.item(0))+int(NAD.item(1))))
+    #                                (int(NAD.item(0))+int(NAD.item(1))))
     #    else:
     #        variant.INFO['NVAF'] = 0
 
@@ -90,13 +96,13 @@ def process_variant(variant, callers, type, normal, tumor):
 
         if variant.INFO['TDP'] != 0:
             variant.INFO['TVAF'] = float(int(TAD.item(1))/ \
-                                     (int(TAD.item(0))+int(TAD.item(1))))
+                                    (int(TAD.item(0))+int(TAD.item(1))))
         else:
             variant.INFO['TVAF'] = 0
 
         if variant.INFO['NDP'] != 0:
                 variant.INFO['NVAF'] = float(int(NAD.item(1))/ \
-                                     (int(NAD.item(0))+int(NAD.item(1))))
+                                    (int(NAD.item(0))+int(NAD.item(1))))
         else:
                 variant.INFO['NVAF'] = 0
 
@@ -121,13 +127,16 @@ if __name__ == "__main__":
 
     sample_list = input.samples
 
-    if sample_list.index(args.tumor_name) == 0:
-        normal_ordinal = 1
-        tumor_ordinal = 0
-
+    if args.tumor_only:
+        tumor_ordinal = sample_list.index(args.tumor_name)
+        normal_ordinal = None
     else:
-        normal_ordinal = 0
-        tumor_ordinal = 1
+        if sample_list.index(args.tumor_name) == 0:
+            normal_ordinal = 1
+            tumor_ordinal = 0
+        else:
+            normal_ordinal = 0
+            tumor_ordinal = 1
 
     sys.stderr.write(
         "Sample positions - Normal:" + str(normal_ordinal) +
@@ -153,20 +162,23 @@ if __name__ == "__main__":
             if args.caller_tag != "GATK":
                 callers = [args.caller_tag]
             else:
-                callers = variant.INFO.get('CALLERS').split(",")
-            
+                try:
+                    callers = variant.INFO.get('CALLERS').split(",")
+                except AttributeError:
+                    callers = [args.caller_tag]
+
             if len(callers) >= int(args.filter) and args.filter_only:
 
                 output.write_record(variant)
 
             elif len(callers) >= int(args.filter) and not args.filter_only:
                 new_variant = process_variant(variant, callers, args.variant_type, normal_ordinal, tumor_ordinal)
-
                 output.write_record(new_variant)
-                
+
         elif args.tumor_only:
             callers = [args.caller_tag]
             new_variant = process_variant(variant, callers, args.variant_type, normal_ordinal, tumor_ordinal)
-
             output.write_record(new_variant)
-
+    
+    output.close()
+    input.close()
