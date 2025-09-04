@@ -33,7 +33,7 @@ for (i in 1:length(ARG)) {
     } else if (ARG[i] == "-o") {
         outdir <- ARG[i+1]
     } else if (ARG[i] == "-b") {
-        binsize <- ARG[i+1]
+        binsize <- as.numeric(ARG[i+1])
     } else if (ARG[i] == "-r") {
         reference <- ARG[i+1]
     } else if (ARG[i] == "-s") {
