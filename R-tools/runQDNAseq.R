@@ -59,7 +59,7 @@ if (!dir.exists(outdir)) {
     dir.create(outdir, recursive = TRUE)
 }
 
-library(paste("QDNAseq.", reference, sep = ""))
+library(paste("QDNAseq.", reference, sep = ""), character.only = TRUE)
 
 # STEP 1: Load bins with specified size
 if (reference == "hg19") {
