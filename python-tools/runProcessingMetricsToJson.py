@@ -502,11 +502,15 @@ def getAlignmentHash(
         sex_match = None
 
     freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
+    if align_tsv[0]['CATEGORY'] == "UNPAIRED":
+        index = 0
+    else:
+        index = 2
 
-    dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[2]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[2]['PCT_PF_READS_ALIGNED'])
+    dict_to_update['pf_read_alignment_rate'] = align_tsv[index]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[index]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[index]['PCT_PF_READS_ALIGNED'])
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
-    dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
-    dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
+    dict_to_update['chimeras'] = align_tsv[index]['PCT_CHIMERAS'] if isinstance(align_tsv[index]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[index]['PCT_CHIMERAS'])
+    dict_to_update['adapter_dimers'] = align_tsv[index]['PCT_ADAPTER'] if isinstance(align_tsv[index]['PCT_ADAPTER'], (int, float)) else float(align_tsv[index]['PCT_ADAPTER'])
     if insert_tsv:
         dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(float(insert_tsv[0]['MEDIAN_INSERT_SIZE']))
         dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
