@@ -477,7 +477,7 @@ def getAlignmentHash(
                 chrY_cov += int(row['TotalCoverage'])
                 chrY_covered_bases += int(row['TotalNbCoveredBases'])
             if row['IntervalName'] == "Total":
-                total_cov = float(row['MeanCoverage']) if row['MeanCoverage'] != "NA" else total_cov = float(0)
+                total_cov = float(row['MeanCoverage']) if row['MeanCoverage'] != "NA" else float(0)
 
         chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov if float(chrX_covered_bases) > 0 and total_cov > 0 else float(0)
         chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if float(chrY_covered_bases) > 0 and total_cov > 0 else float(0)
