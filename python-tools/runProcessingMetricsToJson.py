@@ -362,10 +362,11 @@ def getBlastHash(
         blast_result = [line.rstrip() for line in f]
 
     # best match
-    m = re.search("(?P<hits>\w+) (?P<match>[\w\.]+)", blast_result[0].lstrip())
     best_match = None
-    if m:
-        best_match = BlastResult(m.group('hits'), m.group('match'))
+    if len(blast_result) > 0:
+        m = re.search("(?P<hits>\w+) (?P<match>[\w\.]+)", blast_result[0].lstrip())
+        if m:
+            best_match = BlastResult(m.group('hits'), m.group('match'))
 
     # 2nd hit
     nd_hit = None
