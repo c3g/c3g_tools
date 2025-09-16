@@ -339,7 +339,7 @@ def getFastpHash(
     dict_to_update['yield'] = fastp_json['summary']['before_filtering']['total_bases']
     dict_to_update['duplicate_rate'] = fastp_json['duplication']['rate']
     quality_curve = fastp_json['read1_before_filtering']['quality_curves']['mean'] + fastp_json['read2_before_filtering']['quality_curves']['mean'] if 'read2_before_filtering' in fastp_json else fastp_json['read1_before_filtering']['quality_curves']['mean']
-    dict_to_update['avg_qual'] = sum(quality_curve) / len(quality_curve)
+    dict_to_update['avg_qual'] = sum(quality_curve) / len(quality_curve) if len(quality_curve) != 0 else 0
     dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
 
     return dict_to_update
@@ -362,10 +362,11 @@ def getBlastHash(
         blast_result = [line.rstrip() for line in f]
 
     # best match
-    m = re.search("(?P<hits>\w+) (?P<match>[\w\.]+)", blast_result[0].lstrip())
     best_match = None
-    if m:
-        best_match = BlastResult(m.group('hits'), m.group('match'))
+    if len(blast_result) > 0:
+        m = re.search("(?P<hits>\w+) (?P<match>[\w\.]+)", blast_result[0].lstrip())
+        if m:
+            best_match = BlastResult(m.group('hits'), m.group('match'))
 
     # 2nd hit
     nd_hit = None
@@ -477,7 +478,7 @@ def getAlignmentHash(
                 chrY_cov += int(row['TotalCoverage'])
                 chrY_covered_bases += int(row['TotalNbCoveredBases'])
             if row['IntervalName'] == "Total":
-                total_cov = float(row['MeanCoverage'])
+                total_cov = float(row['MeanCoverage']) if row['MeanCoverage'] != "NA" else float(0)
 
         chrX_cov = (chrX_cov / float(chrX_covered_bases)) / total_cov if float(chrX_covered_bases) > 0 and total_cov > 0 else float(0)
         chrY_cov = (chrY_cov / float(chrY_covered_bases)) / total_cov if float(chrY_covered_bases) > 0 and total_cov > 0 else float(0)
@@ -502,11 +503,15 @@ def getAlignmentHash(
         sex_match = None
 
     freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
+    if align_tsv[0]['CATEGORY'] == "UNPAIRED":
+        index = 0
+    else:
+        index = 2
 
-    dict_to_update['pf_read_alignment_rate'] = align_tsv[2]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[2]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[2]['PCT_PF_READS_ALIGNED'])
+    dict_to_update['pf_read_alignment_rate'] = align_tsv[index]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[index]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[index]['PCT_PF_READS_ALIGNED'])
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
-    dict_to_update['chimeras'] = align_tsv[2]['PCT_CHIMERAS'] if isinstance(align_tsv[2]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[2]['PCT_CHIMERAS'])
-    dict_to_update['adapter_dimers'] = align_tsv[2]['PCT_ADAPTER'] if isinstance(align_tsv[2]['PCT_ADAPTER'], (int, float)) else float(align_tsv[2]['PCT_ADAPTER'])
+    dict_to_update['chimeras'] = align_tsv[index]['PCT_CHIMERAS'] if isinstance(align_tsv[index]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[index]['PCT_CHIMERAS'])
+    dict_to_update['adapter_dimers'] = align_tsv[index]['PCT_ADAPTER'] if isinstance(align_tsv[index]['PCT_ADAPTER'], (int, float)) else float(align_tsv[index]['PCT_ADAPTER'])
     if insert_tsv:
         dict_to_update['median_aligned_insert_size'] = insert_tsv[0]['MEDIAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEDIAN_INSERT_SIZE'], (int, int)) else int(float(insert_tsv[0]['MEDIAN_INSERT_SIZE']))
         dict_to_update['average_aligned_insert_size'] = insert_tsv[0]['MEAN_INSERT_SIZE'] if isinstance(insert_tsv[0]['MEAN_INSERT_SIZE'], (int, float)) else float(insert_tsv[0]['MEAN_INSERT_SIZE'])
