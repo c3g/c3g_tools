@@ -1,13 +1,48 @@
-81 tags, 908 commits
+83 tags, 930 commits
 
-HEAD        Mon Jul 7 10:33:11 2025 -0400        4 commits
+HEAD        Tue Sep 16 11:49:06 2025 -0400        0 commits
+
+2.12.13        Tue Sep 16 11:50:06 2025 -0400        21 commits
+
+  MareikeJaniak <30602072+MareikeJaniak@users.noreply.github.com>      1 commits
+
+       ad0abdc Merge pull request #3 from c3g/nanopore_revamp
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      7 commits
+
+       1a6c936 Version bump to 2.12.13
+       d603a03 qdnaseq : debug bin size type
+       5f470f1 debug qdnaseq
+       590b041 set permissions
+       56ade02 debug QDNAseq
+       87fb7ec script to convert savana output to cnvkit like output for use in pcgr
+       f056f00 update format2pcgr for clairS inputs
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      13 commits
+
+       38fbb65 fix for parsing empty blast results file
+       7fea6f5 debug alignment hash for samples with no reads
+       7c502bd fix for total coverage being NA for samples with no reads
+       8fec135 fix for total coverage being NA for samples with no reads
+       07cf6dd fix for division error when 0 values in fastp outputs
+       adb8d51 debug loading package with paste
+       09d2b45 fix inconsistencies in usage
+       dd87fe3 remove argparse dependency
+       2eb436d load qdnaseq genome package based on reference requested
+       b645dea R-tools/runQDNAseq.R
+       3a63311 R : add script for QDNAseq analysis
+       9d651c0 rp metrics : change exit to warning
+       7132077 rp metrics : check if insert size metrics file exists before parsing
+
+2.12.12        Mon Jul 7 10:40:03 2025 -0400        5 commits
 
   MareikeJaniak <30602072+MareikeJaniak@users.noreply.github.com>      1 commits
 
        dd3ac91 Merge pull request #2 from c3g/rp_metrics_fixes
 
-  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      3 commits
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      4 commits
 
+       856c868 Version bump to 2.12.12
        c298d35 Version bump to 2.12.12
        e9e9254 bug fix to choose between parsing of bcl2fast or bclconvert
        d8f85ed Version bump to 2.12.11
