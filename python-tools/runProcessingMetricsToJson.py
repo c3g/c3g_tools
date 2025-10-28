@@ -521,6 +521,80 @@ def getAlignmentHash(
 
     return dict_to_update
 
+def getAlignmentHash_from_dragen(
+    inputs,
+    readset,
+    gender,
+    dict_to_update
+    ):
+
+    mapping_metrics_file = ""
+    wgs_coverage_metrics_file = ""
+    verify_bam_id_file = ""
+    ploidy_estimation_metrics_file = ""
+    for in_file in inputs:
+        if ".mapping_metrics.csv" in in_file:
+            mapping_metrics_file = in_file
+        elif ".wgs_coverage_metrics.csv" in in_file:
+            wgs_coverage_metrics_file = in_file
+        elif ".sorted.metrics.verifyBamId.tsv" in in_file:
+            verify_bam_id_file = in_file
+        elif ".sorted.metrics.verifyBamId.selfSM" in in_file:
+            verify_bam_id_file = in_file
+        elif ".ploidy_estimation_metrics.csv" in in_file:
+            ploidy_estimation_metrics_file = in_file
+        else:
+            sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
+
+        if os.path.isfile(ploidy_estimation_metrics_file):
+            sex_match_reader = csv.DictReader(open(ploidy_estimation_metrics_file, 'r'), fieldnames=["first","second","metric","value"])
+            for row in sex_match_reader:
+                if row['metric'] == "Ploidy estimation":
+                    sex_chr = str(row['value'])
+                    if sex_chr == "XX":
+                        sex_det = "F"
+                    elif sex_chr == "XY":
+                        sex_det = "M"
+                    else:
+                        sex_det = "?"
+                
+            if gender and gender != "Unknown" and sex_det != "?":
+                if sex_det == gender:
+                    sex_match = True
+                else:
+                    sex_match = False
+            else:
+                sex_match = None
+        
+        else:
+            sex_det = None
+            sex_match = None
+
+        if os.path.isfile(mapping_metrics_file):
+            mapping_metrics_reader = csv.DictReader(open(mapping_metrics_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
+            for row in sex_match_reader:
+                if "SUMMARY" in row["first"]:
+                    if row["metric"] == "Mapped reads":
+                        alignment_rate = row["percent"]
+                    if row["metric"] == "Number of unique & mapped reads (excl. duplicate marked reads)":
+                        aligned_dup_rate = row["percent"]
+                    if row["metric"] == "Total alignments":
+                        total_alignments = row["value"]
+                    if row["metric"] == "Supplementary (chimeric) alignments":
+                        chimeras = float(int(row["value"]) / int(total_alignments))
+                    if row["metric"] == "Insert length: mean":
+                        average_insert_size = row["value"]
+                    if row["metric"] == "Insert length: median":
+                        median_insert_size = row["value"]
+
+    dict_to_update['inferred_sex'] = sex_det
+    dict_to_update['sex_concordance'] = sex_match
+    dict_to_update['aligned_dup_rate'] = aligned_dup_rate
+    dict_to_update['chimeras'] = chimeras
+    dict_to_update['median_aligned_insert_size'] = median_insert_size
+    dict_to_update['average_aligned_insert_size'] = average_insert_size
+
+
 def report(
     json_file,
     step,
