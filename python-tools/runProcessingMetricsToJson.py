@@ -344,6 +344,40 @@ def getFastpHash(
 
     return dict_to_update
 
+def getQCHash_from_dragen(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    """
+    TBD if we use this or run fastp on the fastqs. Missing metrics for avg_qual and duplicate rate.
+    """
+
+    if ".mapping_metrics.csv" in input_file:
+        qc_dragen_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+
+    if os.path.isfile(qc_dragen_file):
+        qc_dragen_reader = csv.DictReader(open(qc_dragen_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
+        for row in qc_dragen_reader:
+                if "SUMMARY" in row["first"]:
+                    if row["metrics"] == "Total input reads":
+                        nb_reads = row["value"]
+                   # if row["metric"] == "Number of duplicate marked reads":
+                   #     duplicate_rate = row["percent"]
+                    if row["metric"] == "Total bases":
+                        total_yield = row["value"]
+                    if row["metrics"] == "Q30 bases":
+                        pct_q30_bases = row["percent"]
+
+    dict_to_update['nb_reads'] = nb_reads
+    dict_to_update['yield'] = total_yield
+    #dict_to_update['duplicate_rate'] = duplicate_rate
+    dict_to_update['pct_q30_bases'] = pct_q30_bases
+
+    return dict_to_update
+
 def getBlastHash(
     input_file,
     readset,
@@ -535,7 +569,7 @@ def getAlignmentHash_from_dragen(
     for in_file in inputs:
         if ".mapping_metrics.csv" in in_file:
             mapping_metrics_file = in_file
-        elif ".wgs_coverage_metrics.csv" in in_file:
+        elif ".wgs_overall_mean_cov.csv" in in_file:
             wgs_coverage_metrics_file = in_file
         elif ".sorted.metrics.verifyBamId.tsv" in in_file:
             verify_bam_id_file = in_file
@@ -572,7 +606,7 @@ def getAlignmentHash_from_dragen(
 
         if os.path.isfile(mapping_metrics_file):
             mapping_metrics_reader = csv.DictReader(open(mapping_metrics_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
-            for row in sex_match_reader:
+            for row in mapping_metrics_reader:
                 if "SUMMARY" in row["first"]:
                     if row["metric"] == "Mapped reads":
                         alignment_rate = row["percent"]
@@ -587,13 +621,24 @@ def getAlignmentHash_from_dragen(
                     if row["metric"] == "Insert length: median":
                         median_insert_size = row["value"]
 
+        if os.path.isfile(wgs_coverage_metrics_file):
+            wgs_coverage_metrics_reader = csv.DictReader(open(wgs_coverage_metrics_file, 'r'), fieldnames=["metric","value"])
+            for row in wgs_coverage_metrics_reader:
+                if row["metric"] == "Average alignment coverage over wgs":
+                    mean_coverage = row["metric"]
+
+        if os.path.isfile(verify_bam_id_file):
+            verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
+            freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
+
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
     dict_to_update['aligned_dup_rate'] = aligned_dup_rate
     dict_to_update['chimeras'] = chimeras
     dict_to_update['median_aligned_insert_size'] = median_insert_size
     dict_to_update['average_aligned_insert_size'] = average_insert_size
-
+    dict_to_update['mean_coverage'] = mean_coverage
+    dict_to_update['freemix'] = freemix
 
 def report(
     json_file,
@@ -658,7 +703,10 @@ def report(
                 elif step == 'metrics':
                     section = 'alignment'
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
-                    new_dict = getAlignmentHash(inputs, readset, gender, record[section])
+                    if ".mapping_metrics.csv" in [input for input in inputs]:
+                        new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
+                    else:
+                        new_dict = getAlignmentHash(inputs, readset, gender, record[section])
 
                 else:
                     new_dict = None
