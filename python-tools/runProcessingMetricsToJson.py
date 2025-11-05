@@ -640,6 +640,73 @@ def getAlignmentHash_from_dragen(
     dict_to_update['mean_coverage'] = mean_coverage
     dict_to_update['freemix'] = freemix
 
+def getAlignmentHash_from_revio(
+    inputs,
+    readset,
+    gender,
+    dict_to_update
+    ):
+
+    nanoplot_metrics_file = ""
+    mosdepth_metrics_file = ""
+    for in_file in inputs:
+        if ".aligned.NanoStats.txt" in in_file:
+            nanoplot_metrics_file = in_file
+        elif ".mosdepth.summary.txt" in in_file:
+            mosdepth_metrics_file = in_file
+        else:
+            sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
+
+        if os.path.isfile(mosdepth_metrics_file):
+            coverage_reader = csv.DictReader(open(mosdepth_metrics_file, 'r'))
+
+            chrX_cov = 0
+            chrY_cov = 0
+            total_cov = 0
+
+            for row in coverage_reader:
+                if row['chrom'] == "chrX":
+                    chrX_cov = row['mean']
+                if row['chrom'] == "chrY":
+                    chrY_cov = row['mean']
+                if row['chrom'] == "total":
+                    total_cov = row['mean']
+            
+            if (float(chrX_cov) / float(total_cov)) > 0.8:
+                sex_det = "F"
+            elif (float(chrY_cov) / float(total_cov)) > 0.25:
+                sex_det = "M"
+            else:
+                sex_det = "?"
+
+            if gender and gender != "Unknown" and sex_det != "?":
+                if sex_det == gender:
+                    sex_match = True
+                else:
+                    sex_match = False
+            else:
+                sex_match = None
+        
+        else:
+            total_cov = None
+            sex_det = None
+            sex_match = None
+
+        if os.path.isfile(nanoplot_metrics_file):
+            nanoplot_metrics_reader = csv.DictReader(open(nanoplot_metrics_file, 'r'), fieldnames=["metric","value"], delimiter=":")
+            for row in nanoplot_metrics_reader:
+                if row["metric"] == "Total bases":
+                    total_bases = row["value"]
+                if row["metric"] == "Total bases aligned":
+                    aligned_bases = row["value"]
+                
+
+    dict_to_update['inferred_sex'] = sex_det
+    dict_to_update['sex_concordance'] = sex_match
+    dict_to_update['mean_coverage'] = total_cov
+    dict_to_update['pf_read_alignment_rate'] = (float(aligned_bases) / float(total_bases))
+
+
 def report(
     json_file,
     step,
@@ -677,6 +744,8 @@ def report(
                                 new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                             else:
                                 new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
+                        if platform == 'revio':
+                            new_dict = getIndexHash_from_revio(inputs, readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
@@ -692,6 +761,10 @@ def report(
                     section = 'qc'
                     new_dict = getFastpHash(inputs[0], readset, record[section])
 
+                elif step == 'metrics_nanoplot':
+                    section = 'qc'
+                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+
                 elif step == 'blast':
                     section = 'blast'
                     new_dict = getBlastHash(inputs[0], readset, record[step])
@@ -705,6 +778,8 @@ def report(
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
                     if ".mapping_metrics.csv" in [input for input in inputs]:
                         new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
+                    elif ".aligned.NanoStats.txt" in [input for input in inputs]:
+                        new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
 
