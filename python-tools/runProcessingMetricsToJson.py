@@ -778,7 +778,7 @@ def report(
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
                     if ".mapping_metrics.csv" in [input for input in inputs]:
                         new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
-                    elif ".aligned.NanoStats.txt" in [input for input in inputs]:
+                    elif ".mosdepth.summary.txt" in [input for input in inputs]:
                         new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
