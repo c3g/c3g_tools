@@ -649,6 +649,7 @@ def getAlignmentHash_from_revio(
 
     nanoplot_metrics_file = ""
     mosdepth_metrics_file = ""
+    print("running revio step")
     for in_file in inputs:
         if ".aligned.NanoStats.txt" in in_file:
             nanoplot_metrics_file = in_file
@@ -658,7 +659,7 @@ def getAlignmentHash_from_revio(
             sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
 
         if os.path.isfile(mosdepth_metrics_file):
-            coverage_reader = csv.DictReader(open(mosdepth_metrics_file, 'r'))
+            coverage_reader = csv.DictReader(open(mosdepth_metrics_file, 'r'), delimiter="\t")
 
             chrX_cov = 0
             chrY_cov = 0
@@ -696,9 +697,9 @@ def getAlignmentHash_from_revio(
             nanoplot_metrics_reader = csv.DictReader(open(nanoplot_metrics_file, 'r'), fieldnames=["metric","value"], delimiter=":")
             for row in nanoplot_metrics_reader:
                 if row["metric"] == "Total bases":
-                    total_bases = row["value"]
+                    total_bases = row["value"].strip().replace(',','')
                 if row["metric"] == "Total bases aligned":
-                    aligned_bases = row["value"]
+                    aligned_bases = row["value"].strip().replace(',','')
                 
 
     dict_to_update['inferred_sex'] = sex_det
@@ -778,7 +779,7 @@ def report(
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
                     if ".mapping_metrics.csv" in [input for input in inputs]:
                         new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
-                    elif ".mosdepth.summary.txt" in [input for input in inputs]:
+                    elif platform == "revio":
                         new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
