@@ -378,6 +378,40 @@ def getQCHash_from_dragen(
 
     return dict_to_update
 
+def getNanoplotHash(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    """
+    Parsing qc metrics from NanoStats output.
+    """
+
+    if ".NanoStats.txt" in input_file:
+        qc_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+
+    if os.path.isfile(qc_file):
+        qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
+        for row in qc_reader:
+                if "Mean read quality" in row["metric"]:
+                    mean_quality = float(row["value"].strip())
+                if "Number of reads" in row["metric"]:
+                    nb_reads = int(row["value"].strip().replace(',',''))
+                if row["metric"] == "Total bases":
+                    total_yield = int(row["value"].strip().replace(',',''))
+                if ">Q30" in row["metric"]:
+                    pct_q30_bases = row["value"].strip().split(" ")[1].replace('(', '').replace(')','').replace('%','')
+
+    dict_to_update['nb_reads'] = nb_reads
+    dict_to_update['avg_qual'] = mean_quality
+    dict_to_update['yield'] = total_yield
+    #dict_to_update['duplicate_rate'] = duplicate_rate
+    dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+
+    return dict_to_update
+
 def getBlastHash(
     input_file,
     readset,
