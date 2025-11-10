@@ -398,9 +398,9 @@ def getNanoplotHash(
                 if "Mean read quality" in row["metric"]:
                     mean_quality = float(row["value"].strip())
                 if "Number of reads" in row["metric"]:
-                    nb_reads = int(row["value"].strip().replace(',',''))
+                    nb_reads = int(float(row["value"].strip().replace(',','')))
                 if row["metric"] == "Total bases":
-                    total_yield = int(row["value"].strip().replace(',',''))
+                    total_yield = int(float(row["value"].strip().replace(',','')))
                 if ">Q30" in row["metric"]:
                     pct_q30_bases = row["value"].strip().split(" ")[1].replace('(', '').replace(')','').replace('%','')
 
