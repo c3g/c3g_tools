@@ -808,12 +808,15 @@ def report(
                     section = 'alignment'
                     new_dict = getAlignmentHash_from_picardMarkDup(inputs[0], readset, record[section])
 
+                elif step == 'align':
+                    section = 'alignment'
+                    gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
+                    new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
+
                 elif step == 'metrics':
                     section = 'alignment'
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
-                    if ".mapping_metrics.csv" in [input for input in inputs]:
-                        new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
-                    elif platform == "revio":
+                    if platform == "revio":
                         new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
