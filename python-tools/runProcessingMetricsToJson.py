@@ -212,11 +212,12 @@ def getIndexHash_from_BCLConvert(
     q30 = []
     q_scores = []
     for row in qual_csv:
-        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
-            bases += int(row["Yield"])
-            if row['ReadNumber'] in ["1","2"]:
-                q30.append(float(row['% Q30']))
-                q_scores.append(float(row['Mean Quality Score (PF)']))
+        if row['Lane'] == lane:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']) or re.match(readset.split("_")[0], row['SampleID']):
+                bases += int(row["Yield"])
+                if row['ReadNumber'] in ["1","2"]:
+                    q30.append(float(row['% Q30']))
+                    q_scores.append(float(row['Mean Quality Score (PF)']))
     dict_to_update['yield'] = bases
     dict_to_update['pct_q30_bases'] = 100*(sum(q30)/len(q30))
     dict_to_update['mean_quality_score'] = sum(q_scores)/len(q_scores)
