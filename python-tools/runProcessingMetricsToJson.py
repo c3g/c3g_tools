@@ -22,9 +22,10 @@ def getarg(argument):
         json_file=""
         step=""
         readset=None
+        lane=None
         platform=""
         inputs=[]
-        optli,arg = getopt.getopt(argument[1:],"j:s:r:p:i:h",['json_file','step','readset','platform','input','help'])
+        optli,arg = getopt.getopt(argument[1:],"j:s:r:p:i:h",['json_file','step','readset','lane','platform','input','help'])
         if len(optli) == 0 :
             usage()
             sys.exit("Error : No argument given")
@@ -35,6 +36,8 @@ def getarg(argument):
                 step=str(value)
             if option in ("-r","--readset"):
                 readset=str(value)
+            if option in ("-l", "--lane"):
+                lane=str(value)
             if option in ("-p","--platform"):
                 platform=str(value)
             if option in ("-i","--input"):
@@ -850,12 +853,13 @@ def usage():
     print("    -j    JSON file to be updated")
     print("    -s    step of the pipeline calling for update (basecall, index, fastq, fastqc, qc_graphs, blast, picard_mark_duplicates, metrics)")
     print("    -r    readset for which to fetch metrics and update the JSON")
+    print(".   -l    lane for which to fetch metrics and update JSON")
     print("    -p    sequencing platform (illumina, mgig400, mgit7) : this guides the tool in determining which inputs it has to search for")
     print("    -i    input metrics file being parsed to update the JSON (could be multiple input metrics files)")
     print("    -h    this help\n")
 
 def main():
-    json_file, step, platform, inputs, readset = getarg(sys.argv)
+    json_file, step, platform, inputs, readset = getarg(sys.argv), lane = getarg(sys.argv)
 
     # finally (unlock) will execute even if exceptions occur
     try:
@@ -879,7 +883,8 @@ def main():
             step,
             platform,
             inputs,
-            readset
+            readset,
+            lane
         )
 
     finally:
