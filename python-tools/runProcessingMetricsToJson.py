@@ -66,7 +66,7 @@ def getarg(argument):
             if not_found:
                 logging.warning("Warning - input file(s) not found :\n  " + "\n  ".join(not_found))
 
-        return json_file, step, platform, inputs, readset
+        return json_file, step, platform, inputs, readset, lane
 
 def lock(filepath):
     unlocked = True
@@ -201,8 +201,15 @@ def getIndexHash_from_BCLConvert(
 
     stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
     for row in stats_csv:
-        if row['Lane'] == lane:
-            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']) or re.match(readset.split("_")[0], row['SampleID']):
+        try:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
+                dict_to_update['pf_clusters'] = int(row['# Reads'])
+                dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
+                dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
+                dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
+                dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
+        except:
+            if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
                 dict_to_update['pf_clusters'] = int(row['# Reads'])
                 dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
                 dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
@@ -215,12 +222,25 @@ def getIndexHash_from_BCLConvert(
     q30 = []
     q_scores = []
     for row in qual_csv:
-        if row['Lane'] == lane:
-            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']) or re.match(readset.split("_")[0], row['SampleID']):
+        if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
+            bases += int(row["Yield"])
+            if row['ReadNumber'] in ["1","2"]:
+                q30.append(float(row['% Q30']))
+                q_scores.append(float(row['Mean Quality Score (PF)']))
+
+        try:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
                 bases += int(row["Yield"])
                 if row['ReadNumber'] in ["1","2"]:
                     q30.append(float(row['% Q30']))
                     q_scores.append(float(row['Mean Quality Score (PF)']))
+        except:
+            if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
+                bases += int(row["Yield"])
+                if row['ReadNumber'] in ["1","2"]:
+                    q30.append(float(row['% Q30']))
+                    q_scores.append(float(row['Mean Quality Score (PF)']))
+
     dict_to_update['yield'] = bases
     dict_to_update['pct_q30_bases'] = 100*(sum(q30)/len(q30))
     dict_to_update['mean_quality_score'] = sum(q_scores)/len(q_scores)
@@ -859,7 +879,7 @@ def usage():
     print("    -h    this help\n")
 
 def main():
-    json_file, step, platform, inputs, readset = getarg(sys.argv), lane = getarg(sys.argv)
+    json_file, step, platform, inputs, readset, lane = getarg(sys.argv)
 
     # finally (unlock) will execute even if exceptions occur
     try:
