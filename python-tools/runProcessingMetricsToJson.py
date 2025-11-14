@@ -25,7 +25,7 @@ def getarg(argument):
         lane=None
         platform=""
         inputs=[]
-        optli,arg = getopt.getopt(argument[1:],"j:s:r:p:i:h",['json_file','step','readset','lane','platform','input','help'])
+        optli,arg = getopt.getopt(argument[1:],"j:s:r:l:p:i:h",['json_file','step','readset','lane','platform','input','help'])
         if len(optli) == 0 :
             usage()
             sys.exit("Error : No argument given")
