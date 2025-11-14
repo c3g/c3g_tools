@@ -166,6 +166,7 @@ def getIndexHash_from_BCL2fastq(
 def getIndexHash_from_BCLConvert(
     input_files,
     readset,
+    lane,
     dict_to_update
     ):
 
@@ -197,12 +198,13 @@ def getIndexHash_from_BCLConvert(
 
     stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
     for row in stats_csv:
-        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
-            dict_to_update['pf_clusters'] = int(row['# Reads'])
-            dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
-            dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
-            dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
-            dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
+        if row['Lane'] == lane:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']) or re.match(readset.split("_")[0], row['SampleID']):
+                dict_to_update['pf_clusters'] = int(row['# Reads'])
+                dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
+                dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
+                dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
+                dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
 
     qual_csv = csv.DictReader(open(qual_csv_file, 'r'), delimiter=',')
 
@@ -747,7 +749,8 @@ def report(
     step,
     platform,
     inputs,
-    readset=None
+    readset=None,
+    lane=None
     ):
 
     with open(json_file, 'r') as json_fh:
@@ -778,7 +781,7 @@ def report(
                             if "Stats.json" in inputs[0]:
                                 new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                             else:
-                                new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
+                                new_dict = getIndexHash_from_BCLConvert(inputs, readset, lane, record[section])
                         if platform == 'revio':
                             new_dict = getIndexHash_from_revio(inputs, readset, record[section])
                         if platform == 'mgig400':
