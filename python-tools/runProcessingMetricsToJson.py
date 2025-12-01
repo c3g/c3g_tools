@@ -695,7 +695,7 @@ def getAlignmentHash_from_dragen(
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
-    dict_to_update['aligned_dup_rate'] = ((mapped_reads - dup_reads) / total_reads) * 100
+    dict_to_update['aligned_dup_rate'] = ((int(mapped_reads) - int(dup_reads)) / int(total_reads)) * 100
     dict_to_update['chimeras'] = chimeras
     dict_to_update['median_aligned_insert_size'] = median_insert_size
     dict_to_update['average_aligned_insert_size'] = average_insert_size
