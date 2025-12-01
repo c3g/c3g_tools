@@ -674,6 +674,7 @@ def getAlignmentHash_from_dragen(
                         dup_reads = row["value"]
                     if row["metric"] == "Mapped reads":
                         mapped_reads = row["value"]
+                        alignment_rate = row["percent"]
                     if row["metric"] == "Total alignments":
                         total_alignments = row["value"]
                     if row["metric"] == "Supplementary (chimeric) alignments":
@@ -687,7 +688,7 @@ def getAlignmentHash_from_dragen(
             wgs_coverage_metrics_reader = csv.DictReader(open(wgs_coverage_metrics_file, 'r'), fieldnames=["metric","value"])
             for row in wgs_coverage_metrics_reader:
                 if row["metric"] == "Average alignment coverage over wgs":
-                    mean_coverage = row["metric"]
+                    mean_coverage = row["value"]
 
         if os.path.isfile(verify_bam_id_file):
             verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
@@ -697,11 +698,12 @@ def getAlignmentHash_from_dragen(
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
-    dict_to_update['aligned_dup_rate'] = ((int(mapped_reads) - int(dup_reads)) / int(total_reads)) * 100
+    dict_to_update['pf_read_alignment_rate'] = float(alignment_rate) / 100
+    dict_to_update['aligned_dup_rate'] = (int(mapped_reads) - int(dup_reads)) / int(total_reads)
     dict_to_update['chimeras'] = chimeras
-    dict_to_update['median_aligned_insert_size'] = median_insert_size
-    dict_to_update['average_aligned_insert_size'] = average_insert_size
-    dict_to_update['mean_coverage'] = mean_coverage
+    dict_to_update['median_aligned_insert_size'] = float(median_insert_size)
+    dict_to_update['average_aligned_insert_size'] = float(average_insert_size)
+    dict_to_update['mean_coverage'] = float(mean_coverage)
     dict_to_update['freemix'] = freemix
 
 def getAlignmentHash_from_revio(
