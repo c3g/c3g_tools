@@ -786,9 +786,8 @@ def getQcHash_from_somalier(
 
     if os.path.isfile(pairs_file):
         data = []
-        pairs_reader = csv.DictReader(open(pairs_file, 'r'), delimiter="\t")
+        pairs_reader = next(csv.DictReader(open(pairs_file, 'r'), delimiter="\t"))
 
-        next(pairs_reader)
         for row in pairs_reader:
             if float(row[2]) >= 0.8:
                 data.append(row[0:14])
