@@ -691,7 +691,9 @@ def getAlignmentHash_from_dragen(
 
         if os.path.isfile(verify_bam_id_file):
             verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
-            freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
+            freemix = verifyBamID_tsv[0]['FREEMIX']
+        else:
+            freemix = None
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
