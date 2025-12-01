@@ -715,7 +715,6 @@ def getAlignmentHash_from_revio(
 
     nanoplot_metrics_file = ""
     mosdepth_metrics_file = ""
-    print("running revio step")
     for in_file in inputs:
         if ".aligned.NanoStats.txt" in in_file:
             nanoplot_metrics_file = in_file
@@ -773,6 +772,49 @@ def getAlignmentHash_from_revio(
     dict_to_update['mean_coverage'] = total_cov
     dict_to_update['pf_read_alignment_rate'] = (float(aligned_bases) / float(total_bases))
 
+def getQcHash_from_somalier(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+
+    pairs_file = ""
+    if ".pairs.tsv" in input_file:
+        pairs_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for somalier metrics : " + input_file)
+
+    if os.path.isfile(pairs_file):
+        data = []
+        pairs_reader = csv.DictReader(open(pairs_file, 'r'), delimiter="\t")
+
+        next(pairs_reader)
+        for row in pairs_reader:
+            if float(row[2]) >= 0.8:
+                data.append(row[0:14])
+
+        genotype_matches = []
+        for l in data:
+            genotype_matches.append([l[0], l[1], l[2], l[13]])
+            genotype_matches.append([l[1], l[0], l[2], l[13]])
+
+        snp_array_match = False
+        matches = {}
+        for l in genotype_matches:
+                if readset == '_'.join(l[0].split("_")[1:]):
+                    if readset == '_'.join(l[1].split("_")[1:]):
+                        snp_array_match = True
+                    else:
+                        matches[l[1]] = {
+                            "sample_name" : '_'.join(l[1].split('_')[1:-1]),
+                            "biosample_id" : l[1].rsplit('_', 1)[-1],
+                            "plate_barcode" : l[1].split("_")[0],
+                            "percent_match" : float(l[2]) * 100,
+                            "n_sites" : int(l[3])
+                            }
+                    
+    dict_to_update['matches_SNP_array'] = snp_array_match
+    dict_to_update['other_matches'] = matches
 
 def report(
     json_file,
@@ -853,6 +895,10 @@ def report(
                         new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
+
+                elif step == 'check_fluidigm_match':
+                    section = 'qc'
+                    new_dict = getQcHash_from_somalier(inputs[0], readset, record[section])
 
                 else:
                     new_dict = None
