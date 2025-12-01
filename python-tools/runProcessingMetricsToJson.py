@@ -668,7 +668,12 @@ def getAlignmentHash_from_dragen(
             mapping_metrics_reader = csv.DictReader(open(mapping_metrics_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
             for row in mapping_metrics_reader:
                 if "SUMMARY" in row["first"]:
+                    if row["metric"] == "Total input reads":
+                        total_reads = row["value"]
+                    if row["metric"] == "Number of duplicate marked reads":
+                        dup_reads = row["value"]
                     if row["metric"] == "Mapped reads":
+                        mapped_reads = row["value"]
                         alignment_rate = row["percent"]
                     if row["metric"] == "Number of unique & mapped reads (excl. duplicate marked reads)":
                         aligned_dup_rate = row["percent"]
@@ -693,7 +698,7 @@ def getAlignmentHash_from_dragen(
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
-    dict_to_update['aligned_dup_rate'] = aligned_dup_rate
+    dict_to_update['aligned_dup_rate'] = aligned_dup_rate if aligned_dup_rate else ((mapped_reads - dup_reads) / total_reads) * 100
     dict_to_update['chimeras'] = chimeras
     dict_to_update['median_aligned_insert_size'] = median_insert_size
     dict_to_update['average_aligned_insert_size'] = average_insert_size
