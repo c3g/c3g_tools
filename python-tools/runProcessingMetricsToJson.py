@@ -800,8 +800,8 @@ def getQcHash_from_somalier(
         snp_array_match = False
         matches = {}
         for l in genotype_matches:
-                if readset == '_'.join(l[0].split("_")[1:]):
-                    if readset == '_'.join(l[1].split("_")[1:]):
+                if readset.split("_")[:-1][0] in l[0].split("_"):
+                    if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
                         snp_array_match = True
                     else:
                         matches[l[1]] = {
