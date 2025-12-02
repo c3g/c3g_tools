@@ -791,12 +791,12 @@ def getQcHash_from_somalier(
         for row in pairs_reader:
             if float(row['relatedness']) >= 0.8:
                 print(row)
-                data.append(row[0:14])
+                data.append(row)
 
         genotype_matches = []
         for l in data:
-            genotype_matches.append([l[0], l[1], l[2], l[13]])
-            genotype_matches.append([l[1], l[0], l[2], l[13]])
+            genotype_matches.append([l['#sample_a'], l['sample_b'], l['relatedness'], l['n']])
+            genotype_matches.append([l['sample_b'], l['#sample_a'], l['relatedness'], l['n']])
 
         snp_array_match = False
         matches = {}
