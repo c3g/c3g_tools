@@ -790,6 +790,7 @@ def getQcHash_from_somalier(
 
         for row in pairs_reader:
             if float(row['relatedness']) >= 0.8:
+                print(row)
                 data.append(row[0:14])
 
         genotype_matches = []
