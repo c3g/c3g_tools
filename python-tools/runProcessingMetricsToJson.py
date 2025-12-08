@@ -801,7 +801,7 @@ def getQcHash_from_somalier(
         self_match = {}
         other_matches = {}
         for l in genotype_matches:
-                if f"{prefix}_{readset.split("_")[:-1][0]}" == l[0]:
+                if f"{prefix}_{readset.split('_')[:-1][0]}" == l[0]:
                     if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
                         self_match[l[1]] = {
                             "sample_name" : '_'.join(l[1].split('_')[1:-1]),
