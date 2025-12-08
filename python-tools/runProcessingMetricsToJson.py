@@ -785,6 +785,7 @@ def getQcHash_from_somalier(
         sys.exit("Error - Unexpected input file found for somalier metrics : " + input_file)
 
     if os.path.isfile(pairs_file):
+        prefix = os.path.basename(pairs_file).split('_')[0]
         data = []
         pairs_reader = csv.DictReader(open(pairs_file, 'r'), delimiter="\t")
 
@@ -800,7 +801,7 @@ def getQcHash_from_somalier(
         self_match = {}
         other_matches = {}
         for l in genotype_matches:
-                if readset.split("_")[:-1][0] in l[0].split("_"):
+                if f"{prefix}_{readset.split("_")[:-1][0]}" == l[0]:
                     if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
                         self_match[l[1]] = {
                             "sample_name" : '_'.join(l[1].split('_')[1:-1]),
