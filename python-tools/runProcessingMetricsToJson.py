@@ -797,14 +797,20 @@ def getQcHash_from_somalier(
             genotype_matches.append([l['#sample_a'], l['sample_b'], l['relatedness'], l['n']])
             genotype_matches.append([l['sample_b'], l['#sample_a'], l['relatedness'], l['n']])
 
-        snp_array_match = False
-        matches = {}
+        self_match = {}
+        other_matches = {}
         for l in genotype_matches:
                 if readset.split("_")[:-1][0] in l[0].split("_"):
                     if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
-                        snp_array_match = True
+                        self_match[l[1]] = {
+                            "sample_name" : '_'.join(l[1].split('_')[1:-1]),
+                            "biosample_id" : l[1].rsplit('_', 1)[-1],
+                            "plate_barcode" : l[1].split("_")[0],
+                            "percent_match" : float(l[2]) * 100,
+                            "n_sites" : int(l[3])
+                        }
                     else:
-                        matches[l[1]] = {
+                        other_matches[l[1]] = {
                             "sample_name" : '_'.join(l[1].split('_')[1:-1]),
                             "biosample_id" : l[1].rsplit('_', 1)[-1],
                             "plate_barcode" : l[1].split("_")[0],
@@ -812,8 +818,8 @@ def getQcHash_from_somalier(
                             "n_sites" : int(l[3])
                             }
                     
-    dict_to_update['matches_SNP_array'] = snp_array_match
-    dict_to_update['other_matches'] = matches
+    dict_to_update['self_snp_array_match'] = self_match
+    dict_to_update['other_snp_array_matches'] = other_matches
 
 def report(
     json_file,
