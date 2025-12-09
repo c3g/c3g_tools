@@ -421,8 +421,12 @@ def getNanoplotHash(
     if os.path.isfile(qc_file):
         qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
         for row in qc_reader:
+                if 'Mean read length' in row['metric']:
+                    mean_read_length = float(row['value'].strip().replace(',',''))
                 if "Mean read quality" in row["metric"]:
                     mean_quality = float(row["value"].strip())
+                if 'Median read length' in row['metric']:
+                    median_read_length = float(row['value'].strip().replace(',',''))
                 if "Number of reads" in row["metric"]:
                     nb_reads = int(float(row["value"].strip().replace(',','')))
                 if row["metric"] == "Total bases":
@@ -435,6 +439,8 @@ def getNanoplotHash(
     dict_to_update['yield'] = total_yield
     #dict_to_update['duplicate_rate'] = duplicate_rate
     dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+    dict_to_update['mean_read_length'] = mean_read_length
+    dict_to_update['median_read_length'] = median_read_length
 
     return dict_to_update
 
@@ -504,7 +510,7 @@ def getAlignmentHash_from_picardMarkDup(
         dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
     else:
         dict_to_update['aligned_dup_rate'] = None
-        
+
     return dict_to_update
 
 def getAlignmentHash(
