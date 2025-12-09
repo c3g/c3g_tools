@@ -500,9 +500,11 @@ def getAlignmentHash_from_picardMarkDup(
 
     dup_tsv = parseMetricsFile(dup_metrics_file)
 
-    dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
-    print(type(dict_to_update['aligned_dup_rate']))
-
+    if dup_tsv[0]['PERCENT_DUPLICATION'] != '?':
+        dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
+    else:
+        dict_to_update['aligned_dup_rate'] = None
+        
     return dict_to_update
 
 def getAlignmentHash(
