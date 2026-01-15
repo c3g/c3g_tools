@@ -22,9 +22,10 @@ def getarg(argument):
         json_file=""
         step=""
         readset=None
+        lane=None
         platform=""
         inputs=[]
-        optli,arg = getopt.getopt(argument[1:],"j:s:r:p:i:h",['json_file','step','readset','platform','input','help'])
+        optli,arg = getopt.getopt(argument[1:],"j:s:r:l:p:i:h",['json_file','step','readset','lane','platform','input','help'])
         if len(optli) == 0 :
             usage()
             sys.exit("Error : No argument given")
@@ -35,6 +36,8 @@ def getarg(argument):
                 step=str(value)
             if option in ("-r","--readset"):
                 readset=str(value)
+            if option in ("-l", "--lane"):
+                lane=str(value)
             if option in ("-p","--platform"):
                 platform=str(value)
             if option in ("-i","--input"):
@@ -63,7 +66,7 @@ def getarg(argument):
             if not_found:
                 logging.warning("Warning - input file(s) not found :\n  " + "\n  ".join(not_found))
 
-        return json_file, step, platform, inputs, readset
+        return json_file, step, platform, inputs, readset, lane
 
 def lock(filepath):
     unlocked = True
@@ -166,6 +169,7 @@ def getIndexHash_from_BCL2fastq(
 def getIndexHash_from_BCLConvert(
     input_files,
     readset,
+    lane,
     dict_to_update
     ):
 
@@ -197,12 +201,20 @@ def getIndexHash_from_BCLConvert(
 
     stats_csv = csv.DictReader(open(stats_csv_file, 'r'), delimiter=',')
     for row in stats_csv:
-        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
-            dict_to_update['pf_clusters'] = int(row['# Reads'])
-            dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
-            dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
-            dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
-            dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
+        try:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
+                dict_to_update['pf_clusters'] = int(row['# Reads'])
+                dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
+                dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
+                dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
+                dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
+        except:
+            if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
+                dict_to_update['pf_clusters'] = int(row['# Reads'])
+                dict_to_update['pct_of_the_lane'] = 100*(int(row['# Reads'])/float(total_pf))
+                dict_to_update['pct_on_index_in_lane'] = 100*(int(row['# Reads'])/float(total_pf_onindex_inlane))
+                dict_to_update['pct_perfect_barcode'] = 100*(float(row['% Perfect Index Reads']))
+                dict_to_update['pct_one_mismatch_barcode'] = 100*(float(row['% One Mismatch Index Reads']))
 
     qual_csv = csv.DictReader(open(qual_csv_file, 'r'), delimiter=',')
 
@@ -210,11 +222,25 @@ def getIndexHash_from_BCLConvert(
     q30 = []
     q_scores = []
     for row in qual_csv:
-        if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
+        if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
             bases += int(row["Yield"])
             if row['ReadNumber'] in ["1","2"]:
                 q30.append(float(row['% Q30']))
                 q_scores.append(float(row['Mean Quality Score (PF)']))
+
+        try:
+            if row['Sample_Name'] == readset or re.match(readset + r'_[A-Z]', row['Sample_Name']):
+                bases += int(row["Yield"])
+                if row['ReadNumber'] in ["1","2"]:
+                    q30.append(float(row['% Q30']))
+                    q_scores.append(float(row['Mean Quality Score (PF)']))
+        except:
+            if row['Lane'] == lane and re.match(readset.split("_")[0], row['SampleID']):
+                bases += int(row["Yield"])
+                if row['ReadNumber'] in ["1","2"]:
+                    q30.append(float(row['% Q30']))
+                    q_scores.append(float(row['Mean Quality Score (PF)']))
+
     dict_to_update['yield'] = bases
     dict_to_update['pct_q30_bases'] = 100*(sum(q30)/len(q30))
     dict_to_update['mean_quality_score'] = sum(q_scores)/len(q_scores)
@@ -344,6 +370,80 @@ def getFastpHash(
 
     return dict_to_update
 
+def getQCHash_from_dragen(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    """
+    TBD if we use this or run fastp on the fastqs. Missing metrics for avg_qual and duplicate rate.
+    """
+
+    if ".mapping_metrics.csv" in input_file:
+        qc_dragen_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+
+    if os.path.isfile(qc_dragen_file):
+        qc_dragen_reader = csv.DictReader(open(qc_dragen_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
+        for row in qc_dragen_reader:
+                if "SUMMARY" in row["first"]:
+                    if row["metrics"] == "Total input reads":
+                        nb_reads = row["value"]
+                   # if row["metric"] == "Number of duplicate marked reads":
+                   #     duplicate_rate = row["percent"]
+                    if row["metric"] == "Total bases":
+                        total_yield = row["value"]
+                    if row["metrics"] == "Q30 bases":
+                        pct_q30_bases = row["percent"]
+
+    dict_to_update['nb_reads'] = nb_reads
+    dict_to_update['yield'] = total_yield
+    #dict_to_update['duplicate_rate'] = duplicate_rate
+    dict_to_update['pct_q30_bases'] = pct_q30_bases
+
+    return dict_to_update
+
+def getNanoplotHash(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+    """
+    Parsing qc metrics from NanoStats output.
+    """
+
+    if ".NanoStats.txt" in input_file:
+        qc_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+
+    if os.path.isfile(qc_file):
+        qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
+        for row in qc_reader:
+                if 'Mean read length' in row['metric']:
+                    mean_read_length = float(row['value'].strip().replace(',',''))
+                if "Mean read quality" in row["metric"]:
+                    mean_quality = float(row["value"].strip())
+                if 'Median read length' in row['metric']:
+                    median_read_length = float(row['value'].strip().replace(',',''))
+                if "Number of reads" in row["metric"]:
+                    nb_reads = int(float(row["value"].strip().replace(',','')))
+                if row["metric"] == "Total bases":
+                    total_yield = int(float(row["value"].strip().replace(',','')))
+                if ">Q30" in row["metric"]:
+                    pct_q30_bases = row["value"].strip().split(" ")[1].replace('(', '').replace(')','').replace('%','')
+
+    dict_to_update['nb_reads'] = nb_reads
+    dict_to_update['avg_qual'] = mean_quality
+    dict_to_update['yield'] = total_yield
+    #dict_to_update['duplicate_rate'] = duplicate_rate
+    dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+    dict_to_update['mean_read_length'] = mean_read_length
+    dict_to_update['median_read_length'] = median_read_length
+
+    return dict_to_update
+
 def getBlastHash(
     input_file,
     readset,
@@ -406,8 +506,10 @@ def getAlignmentHash_from_picardMarkDup(
 
     dup_tsv = parseMetricsFile(dup_metrics_file)
 
-    dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
-    print(type(dict_to_update['aligned_dup_rate']))
+    if dup_tsv[0]['PERCENT_DUPLICATION'] != '?':
+        dict_to_update['aligned_dup_rate'] = dup_tsv[0]['PERCENT_DUPLICATION'] if isinstance(dup_tsv[0]['PERCENT_DUPLICATION'], (int, float)) else float(dup_tsv[0]['PERCENT_DUPLICATION'])
+    else:
+        dict_to_update['aligned_dup_rate'] = None
 
     return dict_to_update
 
@@ -521,12 +623,220 @@ def getAlignmentHash(
 
     return dict_to_update
 
+def getAlignmentHash_from_dragen(
+    inputs,
+    readset,
+    gender,
+    dict_to_update
+    ):
+
+    mapping_metrics_file = ""
+    wgs_coverage_metrics_file = ""
+    verify_bam_id_file = ""
+    ploidy_estimation_metrics_file = ""
+    for in_file in inputs:
+        if ".mapping_metrics.csv" in in_file:
+            mapping_metrics_file = in_file
+        elif ".wgs_overall_mean_cov.csv" in in_file:
+            wgs_coverage_metrics_file = in_file
+        elif ".sorted.metrics.verifyBamId.tsv" in in_file:
+            verify_bam_id_file = in_file
+        elif ".sorted.metrics.verifyBamId.selfSM" in in_file:
+            verify_bam_id_file = in_file
+        elif ".ploidy_estimation_metrics.csv" in in_file:
+            ploidy_estimation_metrics_file = in_file
+        else:
+            sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
+
+        if os.path.isfile(ploidy_estimation_metrics_file):
+            sex_match_reader = csv.DictReader(open(ploidy_estimation_metrics_file, 'r'), fieldnames=["first","second","metric","value"])
+            for row in sex_match_reader:
+                if row['metric'] == "Ploidy estimation":
+                    sex_chr = str(row['value'])
+                    if sex_chr == "XX":
+                        sex_det = "F"
+                    elif sex_chr == "XY":
+                        sex_det = "M"
+                    else:
+                        sex_det = "?"
+                
+            if gender and gender != "Unknown" and sex_det != "?":
+                if sex_det == gender:
+                    sex_match = True
+                else:
+                    sex_match = False
+            else:
+                sex_match = None
+        
+        else:
+            sex_det = None
+            sex_match = None
+
+        if os.path.isfile(mapping_metrics_file):
+            mapping_metrics_reader = csv.DictReader(open(mapping_metrics_file, 'r'), fieldnames=["first","second","metric","value", "percent"])
+            for row in mapping_metrics_reader:
+                if "SUMMARY" in row["first"]:
+                    if row["metric"] == "Total input reads":
+                        total_reads = row["value"]
+                    if row["metric"] == "Number of duplicate marked reads":
+                        dup_reads = row["value"]
+                    if row["metric"] == "Mapped reads":
+                        mapped_reads = row["value"]
+                        alignment_rate = row["percent"]
+                    if row["metric"] == "Total alignments":
+                        total_alignments = row["value"]
+                    if row["metric"] == "Supplementary (chimeric) alignments":
+                        chimeras = float(int(row["value"]) / int(total_alignments))
+                    if row["metric"] == "Insert length: mean":
+                        average_insert_size = row["value"]
+                    if row["metric"] == "Insert length: median":
+                        median_insert_size = row["value"]
+
+        if os.path.isfile(wgs_coverage_metrics_file):
+            wgs_coverage_metrics_reader = csv.DictReader(open(wgs_coverage_metrics_file, 'r'), fieldnames=["metric","value"])
+            for row in wgs_coverage_metrics_reader:
+                if row["metric"] == "Average alignment coverage over wgs":
+                    mean_coverage = row["value"]
+
+        if os.path.isfile(verify_bam_id_file):
+            verifyBamID_tsv = parseMetricsFile(verify_bam_id_file)
+            freemix = verifyBamID_tsv[0]['FREEMIX']
+        else:
+            freemix = None
+
+    dict_to_update['inferred_sex'] = sex_det
+    dict_to_update['sex_concordance'] = sex_match
+    dict_to_update['pf_read_alignment_rate'] = float(alignment_rate) / 100
+    dict_to_update['aligned_dup_rate'] = (int(mapped_reads) - int(dup_reads)) / int(total_reads)
+    dict_to_update['chimeras'] = chimeras
+    dict_to_update['median_aligned_insert_size'] = float(median_insert_size)
+    dict_to_update['average_aligned_insert_size'] = float(average_insert_size)
+    dict_to_update['mean_coverage'] = float(mean_coverage)
+    dict_to_update['freemix'] = freemix
+
+def getAlignmentHash_from_revio(
+    inputs,
+    readset,
+    gender,
+    dict_to_update
+    ):
+
+    nanoplot_metrics_file = ""
+    mosdepth_metrics_file = ""
+    for in_file in inputs:
+        if ".aligned.NanoStats.txt" in in_file:
+            nanoplot_metrics_file = in_file
+        elif ".mosdepth.summary.txt" in in_file:
+            mosdepth_metrics_file = in_file
+        else:
+            sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
+
+        if os.path.isfile(mosdepth_metrics_file):
+            coverage_reader = csv.DictReader(open(mosdepth_metrics_file, 'r'), delimiter="\t")
+
+            chrX_cov = 0
+            chrY_cov = 0
+            total_cov = 0
+
+            for row in coverage_reader:
+                if row['chrom'] == "chrX":
+                    chrX_cov = row['mean']
+                if row['chrom'] == "chrY":
+                    chrY_cov = row['mean']
+                if row['chrom'] == "total":
+                    total_cov = row['mean']
+            
+            if (float(chrX_cov) / float(total_cov)) > 0.8:
+                sex_det = "F"
+            elif (float(chrY_cov) / float(total_cov)) > 0.25:
+                sex_det = "M"
+            else:
+                sex_det = "?"
+
+            if gender and gender != "Unknown" and sex_det != "?":
+                if sex_det == gender:
+                    sex_match = True
+                else:
+                    sex_match = False
+            else:
+                sex_match = None
+        
+        else:
+            total_cov = None
+            sex_det = None
+            sex_match = None
+
+        if os.path.isfile(nanoplot_metrics_file):
+            nanoplot_metrics_reader = csv.DictReader(open(nanoplot_metrics_file, 'r'), fieldnames=["metric","value"], delimiter=":")
+            for row in nanoplot_metrics_reader:
+                if row["metric"] == "Total bases":
+                    total_bases = row["value"].strip().replace(',','')
+                if row["metric"] == "Total bases aligned":
+                    aligned_bases = row["value"].strip().replace(',','')
+                
+
+    dict_to_update['inferred_sex'] = sex_det
+    dict_to_update['sex_concordance'] = sex_match
+    dict_to_update['mean_coverage'] = total_cov
+    dict_to_update['pf_read_alignment_rate'] = (float(aligned_bases) / float(total_bases))
+
+def getQcHash_from_somalier(
+    input_file,
+    readset,
+    dict_to_update
+    ):
+
+    pairs_file = ""
+    if ".pairs.tsv" in input_file:
+        pairs_file = input_file
+    else:
+        sys.exit("Error - Unexpected input file found for somalier metrics : " + input_file)
+
+    if os.path.isfile(pairs_file):
+        prefix = os.path.basename(pairs_file).split('_')[0]
+        data = []
+        pairs_reader = csv.DictReader(open(pairs_file, 'r'), delimiter="\t")
+
+        for row in pairs_reader:
+            if float(row['relatedness']) >= 0.8:
+                data.append(row)
+
+        genotype_matches = []
+        for l in data:
+            genotype_matches.append([l['#sample_a'], l['sample_b'], l['relatedness'], l['n']])
+            genotype_matches.append([l['sample_b'], l['#sample_a'], l['relatedness'], l['n']])
+
+        self_match = {}
+        other_matches = {}
+        for l in genotype_matches:
+                if f"{prefix}_{readset.split('_')[:-1][0]}" == l[0]:
+                    if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
+                        self_match[l[1]] = {
+                            "sample_name" : '_'.join(l[1].split('_')[1:-1]),
+                            "biosample_id" : l[1].rsplit('_', 1)[-1],
+                            "plate_barcode" : l[1].split("_")[0],
+                            "percent_match" : float(l[2]) * 100,
+                            "n_sites" : int(l[3])
+                        }
+                    else:
+                        other_matches[l[1]] = {
+                            "sample_name" : '_'.join(l[1].split('_')[1:-1]),
+                            "biosample_id" : l[1].rsplit('_', 1)[-1],
+                            "plate_barcode" : l[1].split("_")[0],
+                            "percent_match" : float(l[2]) * 100,
+                            "n_sites" : int(l[3])
+                            }
+                    
+    dict_to_update['self_snp_array_match'] = self_match
+    dict_to_update['other_snp_array_matches'] = other_matches
+
 def report(
     json_file,
     step,
     platform,
     inputs,
-    readset=None
+    readset=None,
+    lane=None
     ):
 
     with open(json_file, 'r') as json_fh:
@@ -557,7 +867,9 @@ def report(
                             if "Stats.json" in inputs[0]:
                                 new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                             else:
-                                new_dict = getIndexHash_from_BCLConvert(inputs, readset, record[section])
+                                new_dict = getIndexHash_from_BCLConvert(inputs, readset, lane, record[section])
+                        if platform == 'revio':
+                            new_dict = getIndexHash_from_revio(inputs, readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
@@ -573,6 +885,10 @@ def report(
                     section = 'qc'
                     new_dict = getFastpHash(inputs[0], readset, record[section])
 
+                elif step == 'metrics_nanoplot':
+                    section = 'qc'
+                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+
                 elif step == 'blast':
                     section = 'blast'
                     new_dict = getBlastHash(inputs[0], readset, record[step])
@@ -581,10 +897,22 @@ def report(
                     section = 'alignment'
                     new_dict = getAlignmentHash_from_picardMarkDup(inputs[0], readset, record[section])
 
+                elif step == 'align':
+                    section = 'alignment'
+                    gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
+                    new_dict = getAlignmentHash_from_dragen(inputs, readset, gender, record[section])
+
                 elif step == 'metrics':
                     section = 'alignment'
                     gender = record[section]['reported_sex'] if report_version == "1.0" else run_report_json['readsets'][readset]['reported_sex']
-                    new_dict = getAlignmentHash(inputs, readset, gender, record[section])
+                    if platform == "revio":
+                        new_dict = getAlignmentHash_from_revio(inputs, readset, gender, record[section])
+                    else:
+                        new_dict = getAlignmentHash(inputs, readset, gender, record[section])
+
+                elif step == 'check_fluidigm_match':
+                    section = 'qc'
+                    new_dict = getQcHash_from_somalier(inputs[0], readset, record[section])
 
                 else:
                     new_dict = None
@@ -611,12 +939,13 @@ def usage():
     print("    -j    JSON file to be updated")
     print("    -s    step of the pipeline calling for update (basecall, index, fastq, fastqc, qc_graphs, blast, picard_mark_duplicates, metrics)")
     print("    -r    readset for which to fetch metrics and update the JSON")
+    print(".   -l    lane for which to fetch metrics and update JSON")
     print("    -p    sequencing platform (illumina, mgig400, mgit7) : this guides the tool in determining which inputs it has to search for")
     print("    -i    input metrics file being parsed to update the JSON (could be multiple input metrics files)")
     print("    -h    this help\n")
 
 def main():
-    json_file, step, platform, inputs, readset = getarg(sys.argv)
+    json_file, step, platform, inputs, readset, lane = getarg(sys.argv)
 
     # finally (unlock) will execute even if exceptions occur
     try:
@@ -640,7 +969,8 @@ def main():
             step,
             platform,
             inputs,
-            readset
+            readset,
+            lane
         )
 
     finally:
