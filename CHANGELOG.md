@@ -1,6 +1,51 @@
-83 tags, 930 commits
+84 tags, 964 commits
 
-HEAD        Tue Sep 16 11:49:06 2025 -0400        0 commits
+HEAD        Thu Jan 15 15:00:44 2026 -0500        0 commits
+
+2.12.14        Thu Jan 15 15:08:55 2026 -0500        34 commits
+
+  MareikeJaniak <30602072+MareikeJaniak@users.noreply.github.com>      1 commits
+
+       b81c127 Merge pull request #4 from c3g/dragen_parsing
+
+  mareike.janiak@computationalgenomics.ca <mareike.janiak@computationalgenomics.ca>      5 commits
+
+       99978b0 Version bump to 2.12.14
+       87264b4 debug parsing bclconvert from dragen
+       c16cdc4 debug nanoplot parsing
+       9cf145b parsing string to float alignment rate
+       3efc0e4 Version bump to 2.12.13
+
+  Mareike Janiak <mareike.janiak@computationalgenomics.ca>      28 commits
+
+       32ec174 add mean and median read length to qc metrics for nanoplot
+       a66b1dd handle ? in mark dup for samples with 0 reads
+       2054e61 improve snp array match section
+       aaf210d improve snp array match section
+       64beacf improve snp array match section
+       8122931 add cram and crai as input file options
+       64c93e4 improve parsing for somalier for cphi
+       d9e1c38 debug parsing for somalier
+       dfd74bc debug parsing for somalier
+       c686342 debug parsing for somalier
+       d908a7f debug parsing for somalier
+       3a605e9 debug parsing for somalier
+       74de848 add parsing for somalier
+       0b3b6f5 parsing aligned metrics from dragen output
+       7511730 parsing aligned dup rate from new dragen output
+       7a9a70f parsing aligned dup rate from new dragen output
+       7eefdb8 parsing aligned dup rate from new dragen output
+       8d8a784 parsing aligned dup rate from new dragen output
+       c68359e debug addition of lane argument
+       dea8888 debug addition of lane argument
+       7cfc433 fix for dragen bclconvert parsing
+       a9fa08b fix for dragen bclconvert parsing
+       5f38b95 improvements for dragen parsing
+       07edef3 add parsing for nanoplot
+       ab35ef0 change input check for revio metrics
+       5c22651 updates for parsing revio metrics
+       3eebf06 improving parsing for alignment metrics from dragen processing
+       2696440 adding initial parsing for alignment metrics from dragen processing
 
 2.12.13        Tue Sep 16 11:50:06 2025 -0400        21 commits
 
