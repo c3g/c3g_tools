@@ -1,6 +1,15 @@
 # Performs differential gene expression with DESeq2
 # Written by Edouard Henrion - May 2017
 # Usage : Rscript deseq2.R -d path_design -c path_rawcountfile -o output_dir
+#
+# Modified by Senthil - Feb 2026
+# Changes to merge block (lines 53-86):
+#   - Prefixed edgeR columns with "edgeR_" (log_FC, log_CPM, p.value, adj.p.value)
+#   - Included all DESeq2 result columns (baseMean, log2FoldChange, lfcSE, stat,
+#     pvalue, padj) with "deseq2_" prefix in dge_results.csv
+#   - Column order: id | gene_symbol | edgeR stats | deseq2 stats | sample counts
+#   - Sorted by deseq2_padj ascending
+#   - deseq2_results.csv output remains unchanged
 
 library(DESeq2)
 library(methods)
@@ -20,12 +29,12 @@ usage = function(errM) {
 }
 
 set.seed(123456789)
-perform_dge = function(counts, groups, batch, count_limit, path) {
+perform_dge = function(counts, groups, batch, count_limit, path, locfit = 0) {
 
     # Retain row which have > count_limit
     counts <- round(counts[rowSums(counts) > count_limit, ])
 
-    # Normalize and do test    
+    # Normalize and do test
     if ((length(batch)==1) && (batch=="")) {
         coldata = data.frame(row.names=colnames(counts), condition=groups)
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~condition)
@@ -34,21 +43,55 @@ perform_dge = function(counts, groups, batch, count_limit, path) {
         ddsFullCountTable = DESeq2::DESeqDataSetFromMatrix(countData = counts, colData=coldata, design=~batch+condition)
     }
 
-    dds <- DESeq2::DESeq(ddsFullCountTable)
+    if (locfit == 1) {
+        cat("Using fitType='local' for dispersion estimation\n")
+        dds <- DESeq2::DESeq(ddsFullCountTable, fitType = "local")
+    } else {
+        dds <- DESeq2::DESeq(ddsFullCountTable)
+    }
     res <- DESeq2::results(dds)
-    res[, 1] = row.names(res)
-    res[, 5] = as.numeric(format(res[, 5], digits=2))
-    res[, 6] = as.numeric(format(res[, 6], digits=2))
-    colnames(res)[c(1, 5, 6)] = c("id", "deseq2.p-value", "deseq2.adj.pvalue")
-    write.table(res[order(res[, 6]), c(1, 5, 6)], paste(path, "deseq2_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+
+    # Convert to data.frame and add id column (do NOT overwrite baseMean)
+    res_df <- as.data.frame(res)
+    res_df <- cbind(id = row.names(res_df), res_df)
+    rownames(res_df) <- NULL
+
+    # Write full DESeq2 results (7 columns: id, baseMean, log2FoldChange, lfcSE, stat, pvalue, padj)
+    write.table(res_df[order(res_df$padj), ], paste(path, "deseq2_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+
+    # Merge with edgeR results for combined dge_results.csv
     if ((length(batch)==1) && (batch=="")) {
         fileOpen = paste(path, "edger_results.csv", sep="/")
-        d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
-        res <- as.data.frame(res)
-        d2 <- merge(d1, res[, c(1, 5, 6)], by.x=1, by.y=1, sep="\t")
-        d2 <- d2[order(d2[, (ncol(d2)-1)]), ]
-        vecWrite <- c(1:4, (ncol(d2)-1), ncol(d2), 5:6, 7:(ncol(d2)-2))
-        write.table(d2[, vecWrite], paste(path, "dge_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+        if (file.exists(fileOpen)) {
+            d1 <- read.table(fileOpen, header=T, sep="\t", quote="", comment.char="")
+
+            # Prefix edgeR statistical columns (columns 3-6), leave id, gene_symbol, and sample counts as-is
+            edger_stat_cols <- c("log_FC", "log_CPM", "edger.p.value", "edger.adj.p.value")
+            colnames(d1)[3:6] <- paste0("edgeR_", edger_stat_cols)
+
+            # Prepare full DESeq2 data with prefixed columns
+            deseq2_for_merge <- data.frame(
+                id = res_df$id,
+                deseq2_baseMean = res_df$baseMean,
+                deseq2_log2FoldChange = res_df$log2FoldChange,
+                deseq2_lfcSE = res_df$lfcSE,
+                deseq2_stat = res_df$stat,
+                deseq2_pvalue = res_df$pvalue,
+                deseq2_padj = res_df$padj
+            )
+
+            d2 <- merge(d1, deseq2_for_merge, by.x=1, by.y=1)
+
+            # Column order: id | gene_symbol | edgeR stats | deseq2 stats | sample counts
+            n_edger <- ncol(d1)
+            edger_stat_idx <- 2:6                        # gene_symbol + 4 edgeR stat cols
+            deseq2_stat_idx <- (n_edger + 1):(n_edger + 6)  # 6 deseq2 columns appended by merge
+            sample_idx <- 7:n_edger                      # sample count columns from edgeR table
+            d2 <- d2[order(d2$deseq2_padj), ]
+            write.table(d2[, c(1, edger_stat_idx, deseq2_stat_idx, sample_idx)], paste(path, "dge_results.csv", sep="/"), quote=FALSE, sep="\t", eol="\n", na="NA", dec=".", row.names=FALSE, col.names=TRUE)
+        } else {
+            cat(paste("Warning: edgeR results not found at", fileOpen, "- skipping dge_results.csv merge\n"))
+        }
     }
 }
 
@@ -146,5 +189,5 @@ for (i in 2:ncol(design)) {
     cat(paste("Design : ", paste(subsampleN, group, sep="=", collapse=" ; "), "\n", spe=""))
 
     # Perform gene differential expressoin
-    perform_dge(current_countMatrix, group, batch, count_limit, name_folder)
+    perform_dge(current_countMatrix, group, batch, count_limit, name_folder, locfit)
 }
