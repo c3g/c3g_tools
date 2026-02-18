@@ -367,6 +367,8 @@ def getFastpHash(
     quality_curve = fastp_json['read1_before_filtering']['quality_curves']['mean'] + fastp_json['read2_before_filtering']['quality_curves']['mean'] if 'read2_before_filtering' in fastp_json else fastp_json['read1_before_filtering']['quality_curves']['mean']
     dict_to_update['avg_qual'] = sum(quality_curve) / len(quality_curve) if len(quality_curve) != 0 else 0
     dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
+    dict_to_update['mean_read_length'] = (fastp_json['summary']['before_filtering']['read1_mean_length'] + fastp_json['summary']['before_filtering']['read2_mean_length']) / 2
+    dict_to_update['median_read_length'] = None
 
     return dict_to_update
 
@@ -912,7 +914,7 @@ def report(
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
 
-                elif step == 'check_fluidigm_match':
+                elif step == 'check_sample_mixup':
                     section = 'qc'
                     new_dict = getQcHash_from_somalier(inputs[0], readset, record[section])
 
