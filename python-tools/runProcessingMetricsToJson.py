@@ -809,7 +809,7 @@ def getQcHash_from_somalier(
         self_match = {}
         other_matches = {}
         for l in genotype_matches:
-                if f"{prefix}_{readset.split('_')[:-1][0]}" == l[0]:
+                if f"{prefix}_{readset.split('_')[:-1][0]}" == '_'.join(l[0].split('_')[:-1]):
                     if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
                         self_match[l[1]] = {
                             "sample_name" : '_'.join(l[1].split('_')[1:-1]),
@@ -826,6 +826,8 @@ def getQcHash_from_somalier(
                             "percent_match" : float(l[2]) * 100,
                             "n_sites" : int(l[3])
                             }
+                    print(self_match)
+                    print(other_matches)
                     
     dict_to_update['self_snp_array_match'] = self_match
     dict_to_update['other_snp_array_matches'] = other_matches
