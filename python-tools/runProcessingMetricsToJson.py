@@ -828,8 +828,6 @@ def getQcHash_from_somalier(
                             "percent_match" : float(l[2]) * 100,
                             "n_sites" : int(l[3])
                             }
-                    print(self_match)
-                    print(other_matches)
                     
     dict_to_update['self_snp_array_match'] = self_match
     dict_to_update['other_snp_array_matches'] = other_matches
