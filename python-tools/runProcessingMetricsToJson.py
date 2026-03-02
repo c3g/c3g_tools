@@ -418,7 +418,9 @@ def getNanoplotHash(
     if ".NanoStats.txt" in input_file:
         qc_file = input_file
     else:
-        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+        sys.exit("Error - Unexpected input file found for qc/index metrics : " + input_file)
+
+    print(dict_to_update)
 
     if os.path.isfile(qc_file):
         qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
@@ -870,8 +872,6 @@ def report(
                                 new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                             else:
                                 new_dict = getIndexHash_from_BCLConvert(inputs, readset, lane, record[section])
-                        if platform == 'revio':
-                            new_dict = getIndexHash_from_revio(inputs, readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
@@ -889,6 +889,10 @@ def report(
 
                 elif step == 'metrics_nanoplot':
                     section = 'qc'
+                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+
+                elif step == 'metrics_nanoplot_index':
+                    section = 'index'
                     new_dict = getNanoplotHash(inputs[0], readset, record[section])
 
                 elif step == 'blast':
