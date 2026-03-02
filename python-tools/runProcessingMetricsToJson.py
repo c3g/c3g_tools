@@ -409,6 +409,8 @@ def getQCHash_from_dragen(
 def getNanoplotHash(
     input_file,
     readset,
+    section,
+    json_file,
     dict_to_update
     ):
     """
@@ -418,9 +420,7 @@ def getNanoplotHash(
     if ".NanoStats.txt" in input_file:
         qc_file = input_file
     else:
-        sys.exit("Error - Unexpected input file found for qc/index metrics : " + input_file)
-
-    print(dict_to_update)
+        sys.exit(f"Error - Unexpected input file found for {section} metrics : {input_file}")
 
     if os.path.isfile(qc_file):
         qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
@@ -438,13 +438,21 @@ def getNanoplotHash(
                 if ">Q30" in row["metric"]:
                     pct_q30_bases = row["value"].strip().split(" ")[1].replace('(', '').replace(')','').replace('%','')
 
-    dict_to_update['nb_reads'] = nb_reads
-    dict_to_update['avg_qual'] = mean_quality
-    dict_to_update['yield'] = total_yield
-    #dict_to_update['duplicate_rate'] = duplicate_rate
-    dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
-    dict_to_update['mean_read_length'] = mean_read_length
-    dict_to_update['median_read_length'] = median_read_length
+    if section == 'qc':
+        dict_to_update['nb_reads'] = nb_reads
+        dict_to_update['avg_qual'] = mean_quality
+        dict_to_update['yield'] = total_yield
+        #dict_to_update['duplicate_rate'] = duplicate_rate
+        dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+        dict_to_update['mean_read_length'] = mean_read_length
+        dict_to_update['median_read_length'] = median_read_length
+
+        report(json_file, "metrics_nanoplot_index", "revio", input_file, readset)
+
+    elif section == 'index':
+        dict_to_update['yield'] = total_yield
+        dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+        dict_to_update['mean_quality_score'] = mean_quality
 
     return dict_to_update
 
@@ -889,11 +897,11 @@ def report(
 
                 elif step == 'metrics_nanoplot':
                     section = 'qc'
-                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+                    new_dict = getNanoplotHash(inputs[0], readset, section, json_file, record[section])
 
                 elif step == 'metrics_nanoplot_index':
                     section = 'index'
-                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+                    new_dict = getNanoplotHash(inputs[0], readset, section, json_file, record[section])
 
                 elif step == 'blast':
                     section = 'blast'
