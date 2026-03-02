@@ -447,8 +447,6 @@ def getNanoplotHash(
         dict_to_update['mean_read_length'] = mean_read_length
         dict_to_update['median_read_length'] = median_read_length
 
-        report(json_file, "metrics_nanoplot_index", "revio", input_file, readset)
-
     elif section == 'index':
         dict_to_update['yield'] = total_yield
         dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
