@@ -779,7 +779,7 @@ def getAlignmentHash_from_revio(
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
-    dict_to_update['mean_coverage'] = total_cov
+    dict_to_update['mean_coverage'] = float(total_cov)
     dict_to_update['pf_read_alignment_rate'] = (float(aligned_bases) / float(total_bases))
 
 def getQcHash_from_somalier(
