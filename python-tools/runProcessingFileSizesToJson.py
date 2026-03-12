@@ -76,7 +76,7 @@ def getFileSizeHash(
             fastq2 = in_file
             fastq2_size = getFileSize(fastq2)
             dict_to_update['fastq_2']['size'] = fastq2_size
-        elif ".bam" in in_file or ".cram" in in_file:
+        elif ".bam$" in in_file or ".cram$" in in_file:
             bam = in_file
             bam_size = getFileSize(bam)
             dict_to_update['bam']['size'] = bam_size
