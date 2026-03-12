@@ -85,7 +85,7 @@ def getFileSizeHash(
             bai_size = getFileSize(bai)
             dict_to_update['bai']['size'] = bai_size
         else:
-            sys.exit("Error - Unexpected input file found")
+            sys.exit("Error - Unexpected input file found: " + in_file)
 
     return dict_to_update
 
