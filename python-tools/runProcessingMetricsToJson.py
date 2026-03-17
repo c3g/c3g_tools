@@ -367,6 +367,8 @@ def getFastpHash(
     quality_curve = fastp_json['read1_before_filtering']['quality_curves']['mean'] + fastp_json['read2_before_filtering']['quality_curves']['mean'] if 'read2_before_filtering' in fastp_json else fastp_json['read1_before_filtering']['quality_curves']['mean']
     dict_to_update['avg_qual'] = sum(quality_curve) / len(quality_curve) if len(quality_curve) != 0 else 0
     dict_to_update['pct_q30_bases'] = fastp_json['summary']['before_filtering']['q30_rate'] * 100
+    dict_to_update['mean_read_length'] = (fastp_json['summary']['before_filtering']['read1_mean_length'] + fastp_json['summary']['before_filtering']['read2_mean_length']) / 2
+    dict_to_update['median_read_length'] = None
 
     return dict_to_update
 
@@ -407,6 +409,8 @@ def getQCHash_from_dragen(
 def getNanoplotHash(
     input_file,
     readset,
+    section,
+    json_file,
     dict_to_update
     ):
     """
@@ -416,7 +420,7 @@ def getNanoplotHash(
     if ".NanoStats.txt" in input_file:
         qc_file = input_file
     else:
-        sys.exit("Error - Unexpected input file found for qc metrics : " + input_file)
+        sys.exit(f"Error - Unexpected input file found for {section} metrics : {input_file}")
 
     if os.path.isfile(qc_file):
         qc_reader = csv.DictReader(open(qc_file, 'r'), fieldnames=["metric","value"], delimiter=":")
@@ -434,13 +438,19 @@ def getNanoplotHash(
                 if ">Q30" in row["metric"]:
                     pct_q30_bases = row["value"].strip().split(" ")[1].replace('(', '').replace(')','').replace('%','')
 
-    dict_to_update['nb_reads'] = nb_reads
-    dict_to_update['avg_qual'] = mean_quality
-    dict_to_update['yield'] = total_yield
-    #dict_to_update['duplicate_rate'] = duplicate_rate
-    dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
-    dict_to_update['mean_read_length'] = mean_read_length
-    dict_to_update['median_read_length'] = median_read_length
+    if section == 'qc':
+        dict_to_update['nb_reads'] = nb_reads
+        dict_to_update['avg_qual'] = mean_quality
+        dict_to_update['yield'] = total_yield
+        #dict_to_update['duplicate_rate'] = duplicate_rate
+        dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+        dict_to_update['mean_read_length'] = mean_read_length
+        dict_to_update['median_read_length'] = median_read_length
+
+    elif section == 'index':
+        dict_to_update['yield'] = total_yield
+        dict_to_update['pct_q30_bases'] = float(pct_q30_bases)
+        dict_to_update['mean_quality_score'] = mean_quality
 
     return dict_to_update
 
@@ -777,7 +787,7 @@ def getAlignmentHash_from_revio(
 
     dict_to_update['inferred_sex'] = sex_det
     dict_to_update['sex_concordance'] = sex_match
-    dict_to_update['mean_coverage'] = total_cov
+    dict_to_update['mean_coverage'] = float(total_cov)
     dict_to_update['pf_read_alignment_rate'] = (float(aligned_bases) / float(total_bases))
 
 def getQcHash_from_somalier(
@@ -809,7 +819,7 @@ def getQcHash_from_somalier(
         self_match = {}
         other_matches = {}
         for l in genotype_matches:
-                if f"{prefix}_{readset.split('_')[:-1][0]}" == l[0]:
+                if f"{prefix}_{readset.split('_')[:-1][0]}" == '_'.join(l[0].split('_')[:-1]):
                     if readset.split("_")[:-1][0] == '_'.join(l[1].split("_")[1:-1]):
                         self_match[l[1]] = {
                             "sample_name" : '_'.join(l[1].split('_')[1:-1]),
@@ -868,8 +878,6 @@ def report(
                                 new_dict = getIndexHash_from_BCL2fastq(inputs[0], readset, record[section])
                             else:
                                 new_dict = getIndexHash_from_BCLConvert(inputs, readset, lane, record[section])
-                        if platform == 'revio':
-                            new_dict = getIndexHash_from_revio(inputs, readset, record[section])
                         if platform == 'mgig400':
                             new_dict = getIndexHash_from_DemuxFastqs(inputs[0], readset, record[section])
 
@@ -887,7 +895,11 @@ def report(
 
                 elif step == 'metrics_nanoplot':
                     section = 'qc'
-                    new_dict = getNanoplotHash(inputs[0], readset, record[section])
+                    new_dict = getNanoplotHash(inputs[0], readset, section, json_file, record[section])
+
+                elif step == 'metrics_nanoplot_index':
+                    section = 'index'
+                    new_dict = getNanoplotHash(inputs[0], readset, section, json_file, record[section])
 
                 elif step == 'blast':
                     section = 'blast'
@@ -910,7 +922,7 @@ def report(
                     else:
                         new_dict = getAlignmentHash(inputs, readset, gender, record[section])
 
-                elif step == 'check_fluidigm_match':
+                elif step == 'check_sample_mixup':
                     section = 'qc'
                     new_dict = getQcHash_from_somalier(inputs[0], readset, record[section])
 
