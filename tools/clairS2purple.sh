@@ -7,9 +7,8 @@ set -e
 set -o pipefail
 
 usage() {
-    echo "Usage: $(basename $0) -i <input.vcf.gz> -o <output.vcf.gz> -t <TUMOR> -n <NORMAL>" >&2
+    echo "Usage: $(basename $0) -i <input.vcf.gz> -t <TUMOR> -n <NORMAL>" >&2
     echo "  -i  Input ClairS somatic VCF (compressed)" >&2
-    echo "  -o  Output VCF file (will be compressed)" >&2
     echo "  -t  Tumor sample name" >&2
     echo "  -n  Normal sample name" >&2
     exit 1
@@ -20,17 +19,16 @@ OUTPUT_VCF=""
 TUMOR_SAMPLE=""
 NORMAL_SAMPLE=""
 
-while getopts ":i:o:t:n:" opt; do
+while getopts ":i:t:n:" opt; do
     case $opt in
         i) INPUT_VCF=$OPTARG ;;
-        o) OUTPUT_VCF=$OPTARG ;;
         t) TUMOR_SAMPLE=$OPTARG ;;
         n) NORMAL_SAMPLE=$OPTARG ;;
         *) usage ;;
     esac
 done
 
-if [[ -z "$INPUT_VCF" ]] || [[ -z "$OUTPUT_VCF" ]] || [[ -z "$TUMOR_SAMPLE" ]] || [[ -z "$NORMAL_SAMPLE" ]]; then
+if [[ -z "$INPUT_VCF" ]] || [[ -z "$TUMOR_SAMPLE" ]] || [[ -z "$NORMAL_SAMPLE" ]]; then
     echo "ERROR: Missing required arguments" >&2
     usage
 fi
@@ -38,11 +36,6 @@ fi
 if [[ ! -s "$INPUT_VCF" ]]; then
     echo "ERROR: Input VCF file does not exist or is empty: $INPUT_VCF" >&2
     exit 1
-fi
-
-OUTPUT_DIR=$(dirname "$OUTPUT_VCF")
-if [[ "$OUTPUT_DIR" != "." ]]; then
-    mkdir -p "$OUTPUT_DIR"
 fi
 
 echo "Converting ClairS VCF to PURPLE format..." >&2
@@ -100,8 +93,6 @@ BEGIN { FS = OFS = "\t" }
     TUMOR_OUT = GT ":" TR "," TA ":" TDP
     NORMAL_OUT = NORM_GT ":" NR "," NA ":" NDP
     print $1, $2, $3, $4, $5, $6, $7, $8, "GT:AD:DP", TUMOR_OUT, NORMAL_OUT
-}' | bgzip > "$OUTPUT_VCF"
-
-tabix -f -p vcf "$OUTPUT_VCF"
+}'
 
 echo "Done. Output: $OUTPUT_VCF" >&2
