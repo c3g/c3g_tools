@@ -76,7 +76,7 @@ def getFileSizeHash(
             fastq2 = in_file
             fastq2_size = getFileSize(fastq2)
             dict_to_update['fastq_2']['size'] = fastq2_size
-        elif ".bai" in in_file or ".crai" in in_file:
+        elif ".bai" in in_file or ".crai" in in_file or ".pbi" in in_file:
             bai = in_file
             bai_size = getFileSize(bai)
             dict_to_update['bai']['size'] = bai_size
