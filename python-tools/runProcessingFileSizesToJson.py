@@ -66,6 +66,8 @@ def getFileSizeHash(
     fastq2 = ""
     bam = ""
     bai = ""
+    extra_bam = ""
+    extra_bai = ""
 
     for in_file in inputs:
         if "_R1_001.fastq.gz" in in_file:
@@ -76,7 +78,15 @@ def getFileSizeHash(
             fastq2 = in_file
             fastq2_size = getFileSize(fastq2)
             dict_to_update['fastq_2']['size'] = fastq2_size
-        elif ".bai" in in_file or ".crai" in in_file:
+        elif ".fail_reads.bam.pbi" in in_file:
+            extra_bai = in_file
+            extra_bai_size = getFileSize(extra_bai)
+            dict_to_update['extra_bai']['size'] = extra_bai_size
+        elif ".fail_reads.bam" in in_file:
+            extra_bam = in_file
+            extra_bam_size = getFileSize(extra_bam)
+            dict_to_update['extra_bam']['size'] = extra_bam_size
+        elif ".bai" in in_file or ".crai" in in_file or ".pbi" in in_file:
             bai = in_file
             bai_size = getFileSize(bai)
             dict_to_update['bai']['size'] = bai_size
