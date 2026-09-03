@@ -67,7 +67,8 @@ def getFileSizeHash(
     bam = ""
     bai = ""
     extra_bam = ""
-    extra_bai = ""
+    extra_index = ""
+    vcf_tar = ""
 
     for in_file in inputs:
         if "_R1_001.fastq.gz" in in_file:
@@ -79,9 +80,9 @@ def getFileSizeHash(
             fastq2_size = getFileSize(fastq2)
             dict_to_update['fastq_2']['size'] = fastq2_size
         elif ".fail_reads.bam.pbi" in in_file:
-            extra_bai = in_file
-            extra_bai_size = getFileSize(extra_bai)
-            dict_to_update['extra_bai']['size'] = extra_bai_size
+            extra_index = in_file
+            extra_index_size = getFileSize(extra_index)
+            dict_to_update['extra_index']['size'] = extra_index_size
         elif ".fail_reads.bam" in in_file:
             extra_bam = in_file
             extra_bam_size = getFileSize(extra_bam)
@@ -94,6 +95,10 @@ def getFileSizeHash(
             bam = in_file
             bam_size = getFileSize(bam)
             dict_to_update['bam']['size'] = bam_size
+        elif "variants.tar.gz" in in_file:
+            vcf_tar = in_file
+            vcf_tar_size = getFileSize(vcf_tar)
+            dict_to_update['variants']['size'] = vcf_tar_size
         else:
             sys.exit("Error - Unexpected input file found: " + in_file)
 
