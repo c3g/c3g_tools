@@ -614,7 +614,7 @@ def getAlignmentHash(
         sex_det = None
         sex_match = None
 
-    freemix = verifyBamID_tsv[0]['FREEMIX'] if verifyBamID_tsv else None
+    freemix = float(verifyBamID_tsv[0]['FREEMIX']) if verifyBamID_tsv else None
     if align_tsv[0]['CATEGORY'] == "UNPAIRED":
         index = 0
     else:
