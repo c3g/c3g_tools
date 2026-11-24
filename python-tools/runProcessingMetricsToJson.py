@@ -622,12 +622,12 @@ def getAlignmentHash(
 
     rnaseqc_reader = None
     if os.path.isfile(rnaseqc_metrics_file):
-        rnaseqc_reader = csv.DictReader(open(rnaseqc_metrics_file, 'r'), delimiter='\t')
+        rnaseqc_reader = csv.DictReader(open(rnaseqc_metrics_file, 'r'), delimiter='\t', fieldnames=['metric', 'value'])
         for row in rnaseqc_reader:
-            if row[0] == "Exonic Rate":
-                exonic_rate = float(row[1])
-            if row[0] == "rRNA Rate":
-                rrna_rate = float(row[1])
+            if row['metric'] == "Exonic Rate":
+                exonic_rate = float(row['value'])
+            if row['metric'] == "rRNA Rate":
+                rrna_rate = float(row['value'])
             
     dict_to_update['pf_read_alignment_rate'] = align_tsv[index]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[index]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[index]['PCT_PF_READS_ALIGNED'])
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
