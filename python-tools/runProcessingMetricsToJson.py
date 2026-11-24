@@ -534,6 +534,7 @@ def getAlignmentHash(
     insert_size_metrics_file = ""
     verify_bam_id_file = ""
     target_coverage_file = ""
+    rnaseqc_metrics_file = ""
     for in_file in inputs:
         if ".sorted.metrics.alignment_summary_metrics" in in_file:
             alignment_summary_metrics_file = in_file
@@ -549,8 +550,7 @@ def getAlignmentHash(
             # nothing iRNA specific has been implemented for now...
             continue
         elif ".rnaseqc.sorted.dup.metrics.tsv" in in_file:
-            # nothing iRNA specific has been implemented for now...
-            continue
+            rnaseqc_metrics_file = in_file
         else:
             sys.exit("Error - Unexpected input file found for alignment metrics : " + in_file)
     not_found = []
@@ -620,8 +620,20 @@ def getAlignmentHash(
     else:
         index = 2
 
+    rnaseqc_reader = None
+    if os.path.isfile(rnaseqc_metrics_file):
+        rnaseqc_reader = csv.DictReader(open(rnaseqc_metrics_file, 'r'), delimiter='\t')
+        for row in rnaseqc_reader:
+            if row[0] == "Exonic Rate":
+                exonic_rate = float(row[1])
+            if row[0] == "rRNA Rate":
+                rrna_rate = float(row[1])
+            
     dict_to_update['pf_read_alignment_rate'] = align_tsv[index]['PCT_PF_READS_ALIGNED'] if isinstance(align_tsv[index]['PCT_PF_READS_ALIGNED'], (int, float)) else float(align_tsv[index]['PCT_PF_READS_ALIGNED'])
     dict_to_update['mean_coverage'] = total_cov if isinstance(total_cov, (int, float)) else None
+    if rnaseqc_reader:
+        dict_to_update['exonic_rate'] = exonic_rate if isinstance(exonic_rate, (int, float)) else None
+        dict_to_update['rRNA_rate'] = rrna_rate if isinstance(rrna_rate, (int, float)) else None
     dict_to_update['chimeras'] = align_tsv[index]['PCT_CHIMERAS'] if isinstance(align_tsv[index]['PCT_CHIMERAS'], (int, float)) else float(align_tsv[index]['PCT_CHIMERAS'])
     dict_to_update['adapter_dimers'] = align_tsv[index]['PCT_ADAPTER'] if isinstance(align_tsv[index]['PCT_ADAPTER'], (int, float)) else float(align_tsv[index]['PCT_ADAPTER'])
     if insert_tsv:
